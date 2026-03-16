@@ -9,7 +9,38 @@
     style="--hero-bg: url('{{ section.settings.image | image_url: width: 2000 }}')"
   {%- endif -%}
 >
-  {%- if section.settings.image != blank -%}
+  {%- if section.settings.bg_video != blank -%}
+    <div class="hero-banner__bg-video">
+      {{ section.settings.bg_video | video_tag: autoplay: true, muted: true, loop: true, playsinline: true, class: 'hero-banner__video-el' }}
+    </div>
+  {%- elsif section.settings.video_url != blank -%}
+    <div class="hero-banner__bg-video">
+      {%- assign video_src = section.settings.video_url -%}
+      {%- if video_src contains 'youtube.com' or video_src contains 'youtu.be' -%}
+        {%- if video_src contains 'watch?v=' -%}
+          {%- assign yt_id = video_src | split: 'watch?v=' | last | split: '&' | first -%}
+        {%- elsif video_src contains 'youtu.be/' -%}
+          {%- assign yt_id = video_src | split: 'youtu.be/' | last | split: '?' | first -%}
+        {%- endif -%}
+        <iframe
+          class="hero-banner__video-el"
+          src="https://www.youtube.com/embed/{{ yt_id }}?autoplay=1&mute=1&loop=1&playlist={{ yt_id }}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1"
+          allow="autoplay; encrypted-media"
+          frameborder="0"
+          loading="eager"
+        ></iframe>
+      {%- elsif video_src contains 'vimeo.com' -%}
+        {%- assign vimeo_id = video_src | split: 'vimeo.com/' | last | split: '?' | first -%}
+        <iframe
+          class="hero-banner__video-el"
+          src="https://player.vimeo.com/video/{{ vimeo_id }}?autoplay=1&muted=1&loop=1&background=1"
+          allow="autoplay; encrypted-media"
+          frameborder="0"
+          loading="eager"
+        ></iframe>
+      {%- endif -%}
+    </div>
+  {%- elsif section.settings.image != blank -%}
     <img
       src="{{ section.settings.image | image_url: width: 2000 }}"
       alt="{{ section.settings.image.alt | escape }}"
@@ -19,6 +50,8 @@
       fetchpriority="high"
       loading="eager"
     >
+  {%- else -%}
+    <img src="{{ 'hero-brewing.jpg' | asset_url }}" alt="" class="hero-banner__bg-img" loading="eager">
   {%- endif -%}
 
   <div class="hero-banner__overlay" style="opacity: {{ overlay_alpha }};"></div>
@@ -101,6 +134,36 @@
     object-fit: cover;
     object-position: center;
     display: block;
+  }
+
+  .hero-banner__bg-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .hero-banner__video-el {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: cover;
+    border: none;
+  }
+
+  /* For iframes which don't support object-fit, scale up */
+  iframe.hero-banner__video-el {
+    width: 177.78vh; /* 16:9 ratio */
+    height: 100vh;
+    min-width: 100%;
+    min-height: 56.25vw; /* 16:9 ratio */
   }
 
   .hero-banner__overlay {
@@ -291,6 +354,11 @@
   "name": "t:sections.hero_banner.name",
   "settings": [
     {
+      "type": "video",
+      "id": "bg_video",
+      "label": "t:sections.hero_banner.settings.bg_video.label"
+    },
+    {
       "type": "image_picker",
       "id": "image",
       "label": "t:sections.hero_banner.settings.image.label"
@@ -299,7 +367,8 @@
       "type": "video_url",
       "id": "video_url",
       "label": "t:sections.hero_banner.settings.video_url.label",
-      "accept": ["youtube", "vimeo"]
+      "accept": ["youtube", "vimeo"],
+      "info": "t:sections.hero_banner.settings.video_url.info"
     },
     {
       "type": "text",

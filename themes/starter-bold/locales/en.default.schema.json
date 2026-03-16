@@ -123,11 +123,15 @@
     "hero_banner": {
       "name": "Hero banner",
       "settings": {
+        "bg_video": {
+          "label": "Background video (uploaded)"
+        },
         "image": {
           "label": "Background image"
         },
         "video_url": {
-          "label": "Background video URL"
+          "label": "Background video URL (YouTube/Vimeo)",
+          "info": "Plays as background when set. Takes priority over image."
         },
         "badge_text": {
           "label": "Badge text"
