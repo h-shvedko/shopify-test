@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<title>ArtVault — Starter Bold Theme Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   ArtVault — Starter Bold Theme
+   Art/Creative Studios E-Commerce
+
+   Colors: Forest green + warm wood tones
+   Typography: Playfair Display (headings) + Inter (body)
+   Vibe: Fun, energetic, dense & immersive
+   ============================================ */
+
+:root {
+  --color-primary: #2D5A3D;
+  --color-primary-light: #3A7A52;
+  --color-primary-dark: #1E3D2A;
+  --color-accent: #C8956C;
+  --color-accent-light: #E8C4A0;
+  --color-accent-dark: #A07048;
+  --color-bg: #FAFAF7;
+  --color-bg-alt: #F0EDE8;
+  --color-bg-dark: #1A1A18;
+  --color-bg-warm: #F5F0EB;
+  --color-text: #1A1A18;
+  --color-text-secondary: #6B6B63;
+  --color-text-light: #F0EDE8;
+  --color-text-muted: #9B9B8F;
+  --color-border: #E0DDD6;
+  --color-success: #2D5A3D;
+  --color-error: #C44536;
+  --color-wood: #8B6F47;
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --radius: 4px;
+  --radius-lg: 8px;
+  --container: 1400px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body { font-family: var(--font-body); color: var(--color-text); background: var(--color-bg); line-height: 1.6; }
+img { max-width: 100%; height: auto; display: block; }
+a { color: inherit; text-decoration: none; }
+
+.container { max-width: var(--container); margin: 0 auto; padding: 0 24px; }
+
+h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; line-height: 1.2; }
+h1 { font-size: 4rem; }
+h2 { font-size: 2.75rem; }
+h3 { font-size: 1.5rem; }
+
+/* ---- DESIGN LABEL ---- */
+.design-label {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+  background: var(--color-primary-dark); color: white; text-align: center;
+  padding: 8px; font-size: 0.75rem; font-family: var(--font-body);
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.design-label span { color: var(--color-accent-light); font-weight: 600; }
+
+/* ---- PAGE LABELS ---- */
+.page-label {
+  background: var(--color-primary); color: white; padding: 40px 24px;
+  text-align: center; font-family: var(--font-heading); font-size: 1.5rem;
+  letter-spacing: 0.05em; border-top: 4px solid var(--color-accent);
+}
+
+/* ============================================
+   HEADER / NAVIGATION
+   ============================================ */
+.header {
+  position: sticky; top: 32px; z-index: 100;
+  background: rgba(26, 26, 24, 0.95); backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.header__inner {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 24px; max-width: var(--container); margin: 0 auto;
+}
+.header__logo {
+  font-family: var(--font-heading); font-size: 1.75rem; font-weight: 900;
+  color: white; letter-spacing: -0.02em;
+}
+.header__logo em {
+  font-style: italic; color: var(--color-accent-light); font-weight: 400;
+}
+.header__nav { display: flex; gap: 32px; }
+.header__nav a {
+  color: rgba(255,255,255,0.7); font-size: 0.875rem; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.08em; transition: color 0.2s;
+}
+.header__nav a:hover, .header__nav a.active { color: var(--color-accent-light); }
+.header__actions { display: flex; align-items: center; gap: 20px; }
+.header__actions a { color: rgba(255,255,255,0.8); font-size: 0.875rem; }
+.header__cart {
+  position: relative; background: var(--color-primary); color: white;
+  padding: 8px 16px; border-radius: 24px; font-weight: 600; font-size: 0.8rem;
+  display: flex; align-items: center; gap: 6px;
+}
+.header__cart-dot {
+  width: 8px; height: 8px; background: var(--color-accent-light);
+  border-radius: 50%; display: inline-block;
+}
+
+/* ---- ANNOUNCEMENT BAR ---- */
+.announcement {
+  background: var(--color-primary); color: white; text-align: center;
+  padding: 10px 24px; font-size: 0.8rem; letter-spacing: 0.05em;
+  margin-top: 32px;
+}
+.announcement strong { color: var(--color-accent-light); }
+
+/* ============================================
+   HERO — Full-screen video bg with overlay
+   ============================================ */
+.hero {
+  position: relative; height: 100vh; min-height: 700px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; color: white; text-align: center;
+}
+.hero__bg {
+  position: absolute; inset: 0; z-index: 0;
+  background: url('https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=1920&h=1080&fit=crop') center/cover;
+}
+.hero__overlay {
+  position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(135deg, rgba(30,61,42,0.85) 0%, rgba(26,26,24,0.7) 100%);
+}
+.hero__content { position: relative; z-index: 2; max-width: 800px; padding: 0 24px; }
+.hero__badge {
+  display: inline-block; background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px); padding: 8px 20px; border-radius: 24px;
+  font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.2);
+}
+.hero h1 {
+  font-size: 5rem; font-weight: 900; line-height: 1.05;
+  margin-bottom: 20px; letter-spacing: -0.02em;
+}
+.hero h1 em { font-style: italic; color: var(--color-accent-light); }
+.hero__subtitle {
+  font-size: 1.25rem; color: rgba(255,255,255,0.8); max-width: 560px;
+  margin: 0 auto 36px; line-height: 1.7;
+}
+.hero__buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+/* ---- BUTTONS ---- */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 32px; border-radius: var(--radius); font-weight: 600;
+  font-size: 0.9rem; border: 2px solid transparent; cursor: pointer;
+  transition: all 0.25s ease; font-family: var(--font-body);
+  letter-spacing: 0.02em;
+}
+.btn--primary {
+  background: var(--color-accent); color: var(--color-bg-dark);
+  border-color: var(--color-accent);
+}
+.btn--primary:hover { background: var(--color-accent-dark); border-color: var(--color-accent-dark); }
+.btn--outline {
+  background: transparent; color: white; border-color: rgba(255,255,255,0.4);
+}
+.btn--outline:hover { border-color: white; background: rgba(255,255,255,0.1); }
+.btn--dark {
+  background: var(--color-primary-dark); color: white; border-color: var(--color-primary-dark);
+}
+.btn--dark:hover { background: var(--color-primary); }
+.btn--green {
+  background: var(--color-primary); color: white; border-color: var(--color-primary);
+}
+.btn--green:hover { background: var(--color-primary-dark); }
+.btn--full { width: 100%; justify-content: center; }
+.btn svg { width: 18px; height: 18px; }
+
+/* Play icon for video */
+.hero__play {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: rgba(255,255,255,0.2); backdrop-filter: blur(4px);
+  border: 2px solid rgba(255,255,255,0.3);
+  display: flex; align-items: center; justify-content: center;
+  margin: 32px auto 0; cursor: pointer; transition: all 0.3s;
+}
+.hero__play:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
+.hero__play svg { width: 24px; height: 24px; fill: white; margin-left: 3px; }
+
+/* ============================================
+   MARQUEE / SCROLLING TEXT
+   ============================================ */
+.marquee {
+  background: var(--color-bg-dark); color: var(--color-text-muted);
+  padding: 16px 0; overflow: hidden; white-space: nowrap;
+  font-family: var(--font-heading); font-size: 1rem;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.marquee__inner { display: flex; gap: 48px; }
+.marquee__item { display: flex; align-items: center; gap: 48px; }
+.marquee__dot { width: 6px; height: 6px; background: var(--color-accent); border-radius: 50%; flex-shrink: 0; }
+
+/* ============================================
+   FEATURED COLLECTIONS — Dense editorial grid
+   ============================================ */
+.collections { padding: 80px 0; background: var(--color-bg); }
+.collections__header {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 40px;
+}
+.collections__header p { color: var(--color-text-secondary); max-width: 480px; }
+.collections__grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 8px; /* tight gap for dense feel */
+}
+.collection-card {
+  position: relative; overflow: hidden; border-radius: var(--radius);
+  aspect-ratio: 3/4; cursor: pointer; group: true;
+}
+.collection-card:first-child { grid-row: span 2; aspect-ratio: auto; }
+.collection-card img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.6s ease;
+}
+.collection-card:hover img { transform: scale(1.05); }
+.collection-card__overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(26,26,24,0.8) 0%, transparent 60%);
+}
+.collection-card__info {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 24px; color: white;
+}
+.collection-card__info h3 { font-size: 1.75rem; margin-bottom: 4px; }
+.collection-card__info p { font-size: 0.85rem; color: rgba(255,255,255,0.7); }
+.collection-card__tag {
+  position: absolute; top: 16px; left: 16px;
+  background: var(--color-accent); color: var(--color-bg-dark);
+  padding: 4px 12px; border-radius: 2px; font-size: 0.7rem;
+  font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+}
+
+/* ============================================
+   PRODUCT GRID — Lifestyle editorial cards
+   ============================================ */
+.products { padding: 80px 0; background: var(--color-bg-warm); }
+.products__header {
+  text-align: center; margin-bottom: 48px;
+}
+.products__header h2 { margin-bottom: 12px; }
+.products__header p { color: var(--color-text-secondary); font-size: 1.1rem; }
+.products__tabs {
+  display: flex; justify-content: center; gap: 8px; margin-top: 24px;
+}
+.products__tab {
+  padding: 8px 20px; border-radius: 24px; font-size: 0.85rem; font-weight: 500;
+  background: transparent; border: 1px solid var(--color-border); cursor: pointer;
+  transition: all 0.2s;
+}
+.products__tab--active {
+  background: var(--color-primary); color: white; border-color: var(--color-primary);
+}
+.products__grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+}
+.product-card { background: white; border-radius: var(--radius-lg); overflow: hidden; transition: box-shadow 0.3s; }
+.product-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+.product-card__image {
+  position: relative; aspect-ratio: 4/5; overflow: hidden;
+}
+.product-card__image img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.product-card:hover .product-card__image img { transform: scale(1.06); }
+.product-card__badge {
+  position: absolute; top: 12px; left: 12px;
+  background: var(--color-primary); color: white;
+  padding: 4px 10px; border-radius: 2px; font-size: 0.7rem;
+  font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.product-card__badge--sale { background: var(--color-error); }
+.product-card__quick {
+  position: absolute; bottom: 12px; left: 12px; right: 12px;
+  background: rgba(26,26,24,0.9); backdrop-filter: blur(8px);
+  color: white; text-align: center; padding: 10px; border-radius: var(--radius);
+  font-size: 0.8rem; font-weight: 600; opacity: 0; transform: translateY(8px);
+  transition: all 0.3s ease; cursor: pointer;
+}
+.product-card:hover .product-card__quick { opacity: 1; transform: translateY(0); }
+.product-card__info { padding: 16px; }
+.product-card__category {
+  font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--color-accent-dark); font-weight: 600; margin-bottom: 6px;
+}
+.product-card__title {
+  font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600;
+  margin-bottom: 8px; line-height: 1.3;
+}
+.product-card__price { display: flex; align-items: baseline; gap: 8px; }
+.product-card__price-current {
+  font-weight: 700; font-size: 1.1rem; color: var(--color-primary);
+}
+.product-card__price-compare {
+  font-size: 0.85rem; color: var(--color-text-muted);
+  text-decoration: line-through;
+}
+
+/* ============================================
+   EDITORIAL / LIFESTYLE BANNER
+   ============================================ */
+.editorial { padding: 0; }
+.editorial__grid {
+  display: grid; grid-template-columns: 1fr 1fr; min-height: 600px;
+}
+.editorial__image { overflow: hidden; }
+.editorial__image img { width: 100%; height: 100%; object-fit: cover; }
+.editorial__content {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 80px 64px; background: var(--color-primary-dark); color: white;
+}
+.editorial__content h2 {
+  font-size: 3rem; margin-bottom: 20px; line-height: 1.1;
+}
+.editorial__content h2 em { font-style: italic; color: var(--color-accent-light); }
+.editorial__content p {
+  color: rgba(255,255,255,0.75); font-size: 1.05rem; line-height: 1.7;
+  margin-bottom: 32px; max-width: 420px;
+}
+.editorial__stats { display: flex; gap: 40px; margin-top: 40px; }
+.editorial__stat-number {
+  font-family: var(--font-heading); font-size: 2.5rem; font-weight: 700;
+  color: var(--color-accent-light);
+}
+.editorial__stat-label {
+  font-size: 0.8rem; color: rgba(255,255,255,0.5); text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ============================================
+   INSTAGRAM / SOCIAL FEED
+   ============================================ */
+.social { padding: 80px 0; background: var(--color-bg); }
+.social__header { text-align: center; margin-bottom: 40px; }
+.social__header h2 { margin-bottom: 8px; }
+.social__header p { color: var(--color-text-secondary); }
+.social__handle {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--color-primary); font-weight: 600; margin-top: 12px;
+}
+.social__grid {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px;
+}
+.social__item {
+  aspect-ratio: 1; overflow: hidden; position: relative; cursor: pointer;
+}
+.social__item img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.social__item:hover img { transform: scale(1.08); }
+.social__item-overlay {
+  position: absolute; inset: 0; background: rgba(45,90,61,0.6);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.3s;
+}
+.social__item:hover .social__item-overlay { opacity: 1; }
+.social__item-overlay svg { width: 28px; height: 28px; fill: white; }
+
+/* ============================================
+   TESTIMONIALS
+   ============================================ */
+.testimonials { padding: 80px 0; background: var(--color-bg-alt); }
+.testimonials__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.testimonial-card {
+  background: white; padding: 32px; border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+.testimonial-card__stars { color: var(--color-accent); margin-bottom: 16px; font-size: 1.1rem; }
+.testimonial-card__text {
+  font-family: var(--font-heading); font-size: 1.1rem; font-style: italic;
+  line-height: 1.6; margin-bottom: 20px; color: var(--color-text);
+}
+.testimonial-card__author { display: flex; align-items: center; gap: 12px; }
+.testimonial-card__avatar {
+  width: 44px; height: 44px; border-radius: 50%; object-fit: cover;
+  background: var(--color-bg-alt);
+}
+.testimonial-card__name { font-weight: 600; font-size: 0.9rem; }
+.testimonial-card__role { font-size: 0.8rem; color: var(--color-text-muted); }
+
+/* ============================================
+   NEWSLETTER / CTA
+   ============================================ */
+.newsletter {
+  padding: 100px 0; background: var(--color-primary);
+  color: white; text-align: center;
+  background-image: url('https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=1920&h=600&fit=crop');
+  background-size: cover; background-position: center;
+  position: relative;
+}
+.newsletter::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(45,90,61,0.92), rgba(30,61,42,0.88));
+}
+.newsletter__content { position: relative; z-index: 1; }
+.newsletter h2 { font-size: 3rem; margin-bottom: 12px; }
+.newsletter h2 em { font-style: italic; color: var(--color-accent-light); }
+.newsletter p {
+  color: rgba(255,255,255,0.75); font-size: 1.1rem;
+  margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto;
+}
+.newsletter__form {
+  display: flex; gap: 12px; max-width: 480px; margin: 0 auto;
+}
+.newsletter__input {
+  flex: 1; padding: 14px 20px; border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.1);
+  color: white; font-size: 0.95rem; font-family: var(--font-body);
+  backdrop-filter: blur(4px);
+}
+.newsletter__input::placeholder { color: rgba(255,255,255,0.5); }
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.footer {
+  background: var(--color-bg-dark); color: var(--color-text-muted);
+  padding: 64px 0 0;
+}
+.footer__grid {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px;
+  margin-bottom: 48px;
+}
+.footer__brand h3 {
+  font-family: var(--font-heading); font-size: 1.5rem; color: white;
+  margin-bottom: 12px;
+}
+.footer__brand h3 em { font-style: italic; color: var(--color-accent); }
+.footer__brand p { font-size: 0.9rem; line-height: 1.7; margin-bottom: 20px; }
+.footer__social { display: flex; gap: 12px; }
+.footer__social-icon {
+  width: 36px; height: 36px; border-radius: 50%; display: flex;
+  align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.08); transition: background 0.2s;
+}
+.footer__social-icon:hover { background: var(--color-primary); }
+.footer__col h4 {
+  color: white; font-family: var(--font-heading); font-size: 1rem;
+  margin-bottom: 16px;
+}
+.footer__col ul { list-style: none; }
+.footer__col li { margin-bottom: 8px; }
+.footer__col a {
+  font-size: 0.875rem; color: var(--color-text-muted); transition: color 0.2s;
+}
+.footer__col a:hover { color: var(--color-accent-light); }
+.footer__bottom {
+  border-top: 1px solid rgba(255,255,255,0.08); padding: 24px 0;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.8rem;
+}
+.footer__payments { display: flex; gap: 8px; align-items: center; }
+.footer__payment {
+  width: 40px; height: 26px; background: rgba(255,255,255,0.1);
+  border-radius: 3px; display: flex; align-items: center; justify-content: center;
+  font-size: 0.55rem; color: rgba(255,255,255,0.5); font-weight: 600;
+}
+
+/* ============================================
+   PRODUCT DETAIL PAGE
+   ============================================ */
+.pdp { padding: 40px 0 80px; }
+.pdp__layout { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; }
+.pdp__gallery { display: grid; grid-template-columns: 80px 1fr; gap: 12px; }
+.pdp__thumbnails { display: flex; flex-direction: column; gap: 8px; }
+.pdp__thumb {
+  width: 80px; height: 80px; border-radius: var(--radius); overflow: hidden;
+  border: 2px solid transparent; cursor: pointer; opacity: 0.5;
+  transition: all 0.2s;
+}
+.pdp__thumb--active { border-color: var(--color-primary); opacity: 1; }
+.pdp__thumb img { width: 100%; height: 100%; object-fit: cover; }
+.pdp__main-image { border-radius: var(--radius-lg); overflow: hidden; }
+.pdp__main-image img { width: 100%; aspect-ratio: 4/5; object-fit: cover; }
+.pdp__info { padding-top: 16px; }
+.pdp__breadcrumb {
+  font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 16px;
+}
+.pdp__breadcrumb a { color: var(--color-primary); }
+.pdp__title {
+  font-family: var(--font-heading); font-size: 2.5rem; font-weight: 700;
+  margin-bottom: 12px; line-height: 1.15;
+}
+.pdp__rating { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.pdp__stars { color: var(--color-accent); font-size: 0.9rem; }
+.pdp__reviews { font-size: 0.85rem; color: var(--color-text-muted); }
+.pdp__price { margin-bottom: 20px; }
+.pdp__price-current {
+  font-size: 2rem; font-weight: 700; color: var(--color-primary);
+  font-family: var(--font-heading);
+}
+.pdp__price-compare {
+  font-size: 1.1rem; color: var(--color-text-muted);
+  text-decoration: line-through; margin-left: 12px;
+}
+.pdp__description {
+  color: var(--color-text-secondary); line-height: 1.7;
+  margin-bottom: 24px; font-size: 0.95rem;
+}
+.pdp__options { margin-bottom: 24px; }
+.pdp__option-label {
+  font-weight: 600; font-size: 0.85rem; margin-bottom: 8px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.pdp__swatches { display: flex; gap: 8px; margin-bottom: 16px; }
+.pdp__swatch {
+  width: 40px; height: 40px; border-radius: var(--radius);
+  border: 2px solid var(--color-border); cursor: pointer; transition: all 0.2s;
+}
+.pdp__swatch--active { border-color: var(--color-primary); box-shadow: 0 0 0 2px var(--color-primary); }
+.pdp__sizes { display: flex; gap: 8px; }
+.pdp__size {
+  padding: 10px 20px; border: 1px solid var(--color-border);
+  border-radius: var(--radius); font-size: 0.85rem; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+}
+.pdp__size--active {
+  background: var(--color-primary); color: white; border-color: var(--color-primary);
+}
+.pdp__actions { display: flex; gap: 12px; margin-bottom: 24px; }
+.pdp__quantity {
+  display: flex; align-items: center; border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+.pdp__qty-btn {
+  width: 44px; height: 48px; background: none; border: none;
+  font-size: 1.2rem; cursor: pointer; color: var(--color-text);
+}
+.pdp__qty-input {
+  width: 48px; height: 48px; text-align: center; border: none;
+  border-left: 1px solid var(--color-border); border-right: 1px solid var(--color-border);
+  font-size: 1rem; font-weight: 600;
+}
+.pdp__features { margin-top: 24px; }
+.pdp__feature {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; font-size: 0.9rem; color: var(--color-text-secondary);
+}
+.pdp__feature-icon {
+  width: 20px; height: 20px; color: var(--color-primary);
+}
+
+/* ============================================
+   CART PAGE
+   ============================================ */
+.cart-page { padding: 60px 0; }
+.cart-page h1 { font-size: 2.5rem; margin-bottom: 40px; }
+.cart-page__layout { display: grid; grid-template-columns: 2fr 1fr; gap: 48px; }
+.cart-item {
+  display: grid; grid-template-columns: 100px 1fr auto; gap: 20px;
+  padding: 24px 0; border-bottom: 1px solid var(--color-border);
+  align-items: center;
+}
+.cart-item__image { border-radius: var(--radius); overflow: hidden; }
+.cart-item__image img { width: 100px; height: 120px; object-fit: cover; }
+.cart-item__title { font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600; }
+.cart-item__variant { font-size: 0.8rem; color: var(--color-text-muted); margin-top: 4px; }
+.cart-item__qty {
+  display: inline-flex; align-items: center; border: 1px solid var(--color-border);
+  border-radius: var(--radius); margin-top: 8px;
+}
+.cart-item__qty button {
+  width: 32px; height: 32px; background: none; border: none; cursor: pointer;
+}
+.cart-item__qty input {
+  width: 36px; text-align: center; border: none;
+  border-left: 1px solid var(--color-border); border-right: 1px solid var(--color-border);
+}
+.cart-item__price { font-weight: 700; font-size: 1.1rem; }
+.cart-item__remove {
+  font-size: 0.8rem; color: var(--color-error); cursor: pointer;
+  text-decoration: underline; margin-top: 8px; display: block;
+}
+.cart-summary {
+  background: var(--color-bg-alt); border-radius: var(--radius-lg);
+  padding: 32px; position: sticky; top: 100px;
+}
+.cart-summary h3 { margin-bottom: 24px; }
+.cart-summary__row {
+  display: flex; justify-content: space-between; padding: 10px 0;
+  font-size: 0.95rem;
+}
+.cart-summary__row--total {
+  border-top: 2px solid var(--color-text); font-weight: 700;
+  font-size: 1.15rem; padding-top: 16px; margin-top: 8px;
+}
+.cart-summary .btn { margin-top: 24px; }
+
+/* ============================================
+   DESIGN SPEC ANNOTATIONS
+   ============================================ */
+.spec-section {
+  padding: 60px 24px; max-width: var(--container); margin: 0 auto;
+}
+.spec-section h2 {
+  font-size: 2rem; margin-bottom: 32px;
+  padding-bottom: 16px; border-bottom: 2px solid var(--color-primary);
+}
+.color-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 40px; }
+.color-swatch {
+  aspect-ratio: 1; border-radius: var(--radius-lg); display: flex;
+  flex-direction: column; justify-content: flex-end; padding: 12px;
+  font-size: 0.75rem; font-weight: 600;
+}
+.color-swatch span { opacity: 0.8; font-size: 0.65rem; margin-top: 2px; }
+.type-sample { margin-bottom: 24px; }
+.type-sample small { color: var(--color-text-muted); font-size: 0.8rem; display: block; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="design-label">
+  Design Mockup — <span>ArtVault Starter Bold Theme</span> — For Shopify OS 2.0
+</div>
+
+<!-- ============================================
+     DESIGN SPECS
+     ============================================ -->
+<div class="spec-section">
+  <h2>Design Tokens</h2>
+
+  <h3 style="margin-bottom: 16px;">Color Palette</h3>
+  <div class="color-grid">
+    <div class="color-swatch" style="background: #2D5A3D; color: white;">
+      Primary<span>#2D5A3D</span>
+    </div>
+    <div class="color-swatch" style="background: #3A7A52; color: white;">
+      Primary Light<span>#3A7A52</span>
+    </div>
+    <div class="color-swatch" style="background: #1E3D2A; color: white;">
+      Primary Dark<span>#1E3D2A</span>
+    </div>
+    <div class="color-swatch" style="background: #C8956C; color: #1A1A18;">
+      Accent (Wood)<span>#C8956C</span>
+    </div>
+    <div class="color-swatch" style="background: #E8C4A0; color: #1A1A18;">
+      Accent Light<span>#E8C4A0</span>
+    </div>
+    <div class="color-swatch" style="background: #A07048; color: white;">
+      Accent Dark<span>#A07048</span>
+    </div>
+    <div class="color-swatch" style="background: #FAFAF7; color: #1A1A18; border: 1px solid #E0DDD6;">
+      Background<span>#FAFAF7</span>
+    </div>
+    <div class="color-swatch" style="background: #F0EDE8; color: #1A1A18; border: 1px solid #E0DDD6;">
+      Background Alt<span>#F0EDE8</span>
+    </div>
+    <div class="color-swatch" style="background: #1A1A18; color: white;">
+      Dark<span>#1A1A18</span>
+    </div>
+    <div class="color-swatch" style="background: #F5F0EB; color: #1A1A18; border: 1px solid #E0DDD6;">
+      Warm<span>#F5F0EB</span>
+    </div>
+    <div class="color-swatch" style="background: #C44536; color: white;">
+      Error/Sale<span>#C44536</span>
+    </div>
+    <div class="color-swatch" style="background: #8B6F47; color: white;">
+      Wood<span>#8B6F47</span>
+    </div>
+  </div>
+
+  <h3 style="margin-bottom: 16px;">Typography</h3>
+  <div class="type-sample">
+    <h1 style="font-size: 5rem;">Art Meets <em>Commerce</em></h1>
+    <small>H1 — Playfair Display 900, 5rem / 80px</small>
+  </div>
+  <div class="type-sample">
+    <h2>Curated Collections</h2>
+    <small>H2 — Playfair Display 700, 2.75rem / 44px</small>
+  </div>
+  <div class="type-sample">
+    <h3>Handcrafted Details</h3>
+    <small>H3 — Playfair Display 700, 1.5rem / 24px</small>
+  </div>
+  <div class="type-sample">
+    <p>Body text uses Inter for clean readability. Dense layouts need breathing room in the text, so we use 1.6-1.7 line-height with 0.95-1.05rem sizes.</p>
+    <small>Body — Inter 400, 1rem / 16px, line-height 1.6</small>
+  </div>
+  <div class="type-sample">
+    <p style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; color: var(--color-accent-dark);">Category Label</p>
+    <small>Label — Inter 600, 0.8rem, uppercase, letter-spacing 0.08em</small>
+  </div>
+</div>
+
+<!-- ============================================
+     PAGE: HOME
+     ============================================ -->
+<div class="page-label">Page: Home</div>
+
+<!-- Announcement Bar -->
+<div class="announcement">
+  Free shipping on all orders over <strong>$99</strong> &nbsp;&bull;&nbsp; New collection just dropped &nbsp;&bull;&nbsp; <strong>15% off</strong> your first order
+</div>
+
+<!-- Header -->
+<header class="header" style="top: 0;">
+  <div class="header__inner">
+    <a class="header__logo" href="#">Art<em>Vault</em></a>
+    <nav class="header__nav">
+      <a href="#" class="active">Home</a>
+      <a href="#">Shop</a>
+      <a href="#">Collections</a>
+      <a href="#">Artists</a>
+      <a href="#">About</a>
+    </nav>
+    <div class="header__actions">
+      <a href="#">Search</a>
+      <a href="#">Account</a>
+      <div class="header__cart">
+        <span class="header__cart-dot"></span>
+        Cart (3)
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero__bg"></div>
+  <div class="hero__overlay"></div>
+  <div class="hero__content">
+    <div class="hero__badge">New Season 2026</div>
+    <h1>Where Art<br>Meets <em>Life</em></h1>
+    <p class="hero__subtitle">Discover handcrafted pieces from independent artists worldwide. Every purchase supports creative communities.</p>
+    <div class="hero__buttons">
+      <a href="#" class="btn btn--primary">Explore Collection <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+      <a href="#" class="btn btn--outline">Watch Story</a>
+    </div>
+    <div class="hero__play">
+      <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+    </div>
+  </div>
+</section>
+
+<!-- Marquee -->
+<div class="marquee">
+  <div class="marquee__inner">
+    <div class="marquee__item"><span class="marquee__dot"></span> Handcrafted</div>
+    <div class="marquee__item"><span class="marquee__dot"></span> Sustainable</div>
+    <div class="marquee__item"><span class="marquee__dot"></span> Artist-Made</div>
+    <div class="marquee__item"><span class="marquee__dot"></span> Limited Edition</div>
+    <div class="marquee__item"><span class="marquee__dot"></span> Ethically Sourced</div>
+    <div class="marquee__item"><span class="marquee__dot"></span> Free Shipping</div>
+    <div class="marquee__item"><span class="marquee__dot"></span> Handcrafted</div>
+    <div class="marquee__item"><span class="marquee__dot"></span> Sustainable</div>
+  </div>
+</div>
+
+<!-- Featured Collections -->
+<section class="collections">
+  <div class="container">
+    <div class="collections__header">
+      <div>
+        <h2>Curated <em>Collections</em></h2>
+        <p>Explore our handpicked selections, each telling a unique story through art and craftsmanship.</p>
+      </div>
+      <a href="#" class="btn btn--dark">View All</a>
+    </div>
+    <div class="collections__grid">
+      <div class="collection-card">
+        <img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=600&h=900&fit=crop" alt="Paintings">
+        <div class="collection-card__overlay"></div>
+        <div class="collection-card__tag">Featured</div>
+        <div class="collection-card__info">
+          <h3>Original Paintings</h3>
+          <p>48 pieces</p>
+        </div>
+      </div>
+      <div class="collection-card">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&h=400&fit=crop" alt="Sculptures">
+        <div class="collection-card__overlay"></div>
+        <div class="collection-card__info">
+          <h3>Sculptures</h3>
+          <p>24 pieces</p>
+        </div>
+      </div>
+      <div class="collection-card">
+        <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&h=400&fit=crop" alt="Prints">
+        <div class="collection-card__overlay"></div>
+        <div class="collection-card__info">
+          <h3>Limited Prints</h3>
+          <p>96 pieces</p>
+        </div>
+      </div>
+      <div class="collection-card">
+        <img src="https://images.unsplash.com/photo-1582738411706-bfc8e691d1c2?w=600&h=400&fit=crop" alt="Ceramics">
+        <div class="collection-card__overlay"></div>
+        <div class="collection-card__info">
+          <h3>Ceramics</h3>
+          <p>36 pieces</p>
+        </div>
+      </div>
+      <div class="collection-card">
+        <img src="https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=600&h=400&fit=crop" alt="Photography">
+        <div class="collection-card__overlay"></div>
+        <div class="collection-card__info">
+          <h3>Photography</h3>
+          <p>72 pieces</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Product Grid -->
+<section class="products">
+  <div class="container">
+    <div class="products__header">
+      <h2>New <em>Arrivals</em></h2>
+      <p>Fresh from the studios of our featured artists</p>
+      <div class="products__tabs">
+        <div class="products__tab products__tab--active">All</div>
+        <div class="products__tab">Paintings</div>
+        <div class="products__tab">Prints</div>
+        <div class="products__tab">Sculptures</div>
+        <div class="products__tab">Ceramics</div>
+      </div>
+    </div>
+    <div class="products__grid">
+      <div class="product-card">
+        <div class="product-card__image">
+          <img src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=500&h=625&fit=crop" alt="Product">
+          <span class="product-card__badge">New</span>
+          <div class="product-card__quick">Quick View</div>
+        </div>
+        <div class="product-card__info">
+          <div class="product-card__category">Original Painting</div>
+          <div class="product-card__title">Sunset Over the Valley</div>
+          <div class="product-card__price">
+            <span class="product-card__price-current">$420.00</span>
+          </div>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-card__image">
+          <img src="https://images.unsplash.com/photo-1549490349-8643362247b5?w=500&h=625&fit=crop" alt="Product">
+          <span class="product-card__badge product-card__badge--sale">-30%</span>
+          <div class="product-card__quick">Quick View</div>
+        </div>
+        <div class="product-card__info">
+          <div class="product-card__category">Limited Print</div>
+          <div class="product-card__title">Abstract Waves No. 7</div>
+          <div class="product-card__price">
+            <span class="product-card__price-current">$89.00</span>
+            <span class="product-card__price-compare">$127.00</span>
+          </div>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-card__image">
+          <img src="https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=500&h=625&fit=crop" alt="Product">
+          <div class="product-card__quick">Quick View</div>
+        </div>
+        <div class="product-card__info">
+          <div class="product-card__category">Ceramic</div>
+          <div class="product-card__title">Handthrown Vase — Earth</div>
+          <div class="product-card__price">
+            <span class="product-card__price-current">$165.00</span>
+          </div>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-card__image">
+          <img src="https://images.unsplash.com/photo-1582738411706-bfc8e691d1c2?w=500&h=625&fit=crop" alt="Product">
+          <span class="product-card__badge">Bestseller</span>
+          <div class="product-card__quick">Quick View</div>
+        </div>
+        <div class="product-card__info">
+          <div class="product-card__category">Sculpture</div>
+          <div class="product-card__title">The Thinker — Bronze Mini</div>
+          <div class="product-card__price">
+            <span class="product-card__price-current">$340.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Editorial Banner -->
+<section class="editorial">
+  <div class="editorial__grid">
+    <div class="editorial__image">
+      <img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=900&h=700&fit=crop" alt="Artist at work">
+    </div>
+    <div class="editorial__content">
+      <h2>Every Piece<br>Tells a <em>Story</em></h2>
+      <p>We partner directly with independent artists and small studios. When you buy from ArtVault, you're investing in creativity and supporting the makers behind each piece.</p>
+      <a href="#" class="btn btn--primary">Meet Our Artists</a>
+      <div class="editorial__stats">
+        <div>
+          <div class="editorial__stat-number">200+</div>
+          <div class="editorial__stat-label">Artists</div>
+        </div>
+        <div>
+          <div class="editorial__stat-number">12k</div>
+          <div class="editorial__stat-label">Pieces Sold</div>
+        </div>
+        <div>
+          <div class="editorial__stat-number">48</div>
+          <div class="editorial__stat-label">Countries</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Instagram / Social Feed -->
+<section class="social">
+  <div class="container">
+    <div class="social__header">
+      <h2>Follow the <em>Movement</em></h2>
+      <p>See how our community styles their spaces</p>
+      <div class="social__handle">@artvault</div>
+    </div>
+  </div>
+  <div class="social__grid">
+    <div class="social__item">
+      <img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop" alt="">
+      <div class="social__item-overlay"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="white" stroke-width="2"/><circle cx="12" cy="12" r="5" fill="none" stroke="white" stroke-width="2"/></svg></div>
+    </div>
+    <div class="social__item">
+      <img src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=400&h=400&fit=crop" alt="">
+      <div class="social__item-overlay"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="white" stroke-width="2"/><circle cx="12" cy="12" r="5" fill="none" stroke="white" stroke-width="2"/></svg></div>
+    </div>
+    <div class="social__item">
+      <img src="https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400&h=400&fit=crop" alt="">
+      <div class="social__item-overlay"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="white" stroke-width="2"/><circle cx="12" cy="12" r="5" fill="none" stroke="white" stroke-width="2"/></svg></div>
+    </div>
+    <div class="social__item">
+      <img src="https://images.unsplash.com/photo-1582738411706-bfc8e691d1c2?w=400&h=400&fit=crop" alt="">
+      <div class="social__item-overlay"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="white" stroke-width="2"/><circle cx="12" cy="12" r="5" fill="none" stroke="white" stroke-width="2"/></svg></div>
+    </div>
+    <div class="social__item">
+      <img src="https://images.unsplash.com/photo-1549490349-8643362247b5?w=500&h=500&fit=crop" alt="">
+      <div class="social__item-overlay"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="white" stroke-width="2"/><circle cx="12" cy="12" r="5" fill="none" stroke="white" stroke-width="2"/></svg></div>
+    </div>
+    <div class="social__item">
+      <img src="https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=400&fit=crop" alt="">
+      <div class="social__item-overlay"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="white" stroke-width="2"/><circle cx="12" cy="12" r="5" fill="none" stroke="white" stroke-width="2"/></svg></div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials">
+  <div class="container">
+    <div style="text-align: center; margin-bottom: 48px;">
+      <h2>What People <em>Say</em></h2>
+    </div>
+    <div class="testimonials__grid">
+      <div class="testimonial-card">
+        <div class="testimonial-card__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testimonial-card__text">"The quality is outstanding. Every piece I've ordered has exceeded my expectations. ArtVault truly curates the best."</p>
+        <div class="testimonial-card__author">
+          <div class="testimonial-card__avatar" style="background: var(--color-primary);"></div>
+          <div>
+            <div class="testimonial-card__name">Sarah M.</div>
+            <div class="testimonial-card__role">Interior Designer</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-card__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testimonial-card__text">"Supporting independent artists while getting museum-quality pieces for my home? It's a win-win. Love this platform."</p>
+        <div class="testimonial-card__author">
+          <div class="testimonial-card__avatar" style="background: var(--color-accent);"></div>
+          <div>
+            <div class="testimonial-card__name">James K.</div>
+            <div class="testimonial-card__role">Art Collector</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-card__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testimonial-card__text">"The packaging was beautiful and the piece arrived perfectly. The artist even included a handwritten note. Magical experience."</p>
+        <div class="testimonial-card__author">
+          <div class="testimonial-card__avatar" style="background: var(--color-wood);"></div>
+          <div>
+            <div class="testimonial-card__name">Elena R.</div>
+            <div class="testimonial-card__role">Creative Director</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Newsletter -->
+<section class="newsletter">
+  <div class="newsletter__content container">
+    <h2>Join the <em>Creative</em> Circle</h2>
+    <p>Get early access to new collections, artist stories, and exclusive offers.</p>
+    <div class="newsletter__form">
+      <input class="newsletter__input" type="email" placeholder="Your email address">
+      <button class="btn btn--primary">Subscribe</button>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <h3>Art<em>Vault</em></h3>
+        <p>Connecting art lovers with independent creators since 2020. Every purchase supports the creative community.</p>
+        <div class="footer__social">
+          <div class="footer__social-icon">ig</div>
+          <div class="footer__social-icon">tw</div>
+          <div class="footer__social-icon">fb</div>
+          <div class="footer__social-icon">pin</div>
+        </div>
+      </div>
+      <div class="footer__col">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#">All Products</a></li>
+          <li><a href="#">Paintings</a></li>
+          <li><a href="#">Prints</a></li>
+          <li><a href="#">Sculptures</a></li>
+          <li><a href="#">Ceramics</a></li>
+          <li><a href="#">Photography</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Our Artists</a></li>
+          <li><a href="#">Sustainability</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Shipping</a></li>
+          <li><a href="#">Returns</a></li>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>&copy; 2026 ArtVault. All rights reserved.</span>
+      <div class="footer__payments">
+        <div class="footer__payment">VISA</div>
+        <div class="footer__payment">MC</div>
+        <div class="footer__payment">AMEX</div>
+        <div class="footer__payment">PP</div>
+        <div class="footer__payment">KLRN</div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================
+     PAGE: PRODUCT DETAIL
+     ============================================ -->
+<div class="page-label">Page: Product Detail</div>
+
+<header class="header" style="position: relative; top: 0;">
+  <div class="header__inner">
+    <a class="header__logo" href="#">Art<em>Vault</em></a>
+    <nav class="header__nav">
+      <a href="#">Home</a>
+      <a href="#" class="active">Shop</a>
+      <a href="#">Collections</a>
+      <a href="#">Artists</a>
+      <a href="#">About</a>
+    </nav>
+    <div class="header__actions">
+      <a href="#">Search</a>
+      <a href="#">Account</a>
+      <div class="header__cart"><span class="header__cart-dot"></span> Cart (3)</div>
+    </div>
+  </div>
+</header>
+
+<section class="pdp">
+  <div class="container">
+    <div class="pdp__layout">
+      <div class="pdp__gallery">
+        <div class="pdp__thumbnails">
+          <div class="pdp__thumb pdp__thumb--active">
+            <img src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=100&h=100&fit=crop" alt="">
+          </div>
+          <div class="pdp__thumb">
+            <img src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=100&h=100&fit=crop&sat=-100" alt="">
+          </div>
+          <div class="pdp__thumb">
+            <img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=100&h=100&fit=crop" alt="">
+          </div>
+        </div>
+        <div class="pdp__main-image">
+          <img src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=800&h=1000&fit=crop" alt="Sunset Over the Valley">
+        </div>
+      </div>
+      <div class="pdp__info">
+        <div class="pdp__breadcrumb">
+          <a href="#">Home</a> / <a href="#">Paintings</a> / Sunset Over the Valley
+        </div>
+        <h1 class="pdp__title">Sunset Over<br>the Valley</h1>
+        <div class="pdp__rating">
+          <span class="pdp__stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <span class="pdp__reviews">4.9 (28 reviews)</span>
+        </div>
+        <div class="pdp__price">
+          <span class="pdp__price-current">$420.00</span>
+        </div>
+        <p class="pdp__description">Original oil on canvas painting by Maria Santos. This piece captures the golden hour light over a Mediterranean valley, with rich warm tones and expressive brushwork. Certificate of authenticity included.</p>
+
+        <div class="pdp__options">
+          <div class="pdp__option-label">Size</div>
+          <div class="pdp__sizes">
+            <div class="pdp__size">30x40 cm</div>
+            <div class="pdp__size pdp__size--active">50x70 cm</div>
+            <div class="pdp__size">70x100 cm</div>
+          </div>
+        </div>
+        <div class="pdp__options">
+          <div class="pdp__option-label">Frame</div>
+          <div class="pdp__swatches">
+            <div class="pdp__swatch pdp__swatch--active" style="background: #1A1A18;"></div>
+            <div class="pdp__swatch" style="background: #8B6F47;"></div>
+            <div class="pdp__swatch" style="background: white;"></div>
+            <div class="pdp__swatch" style="background: #C8956C;"></div>
+          </div>
+        </div>
+
+        <div class="pdp__actions">
+          <div class="pdp__quantity">
+            <button class="pdp__qty-btn">-</button>
+            <input class="pdp__qty-input" value="1">
+            <button class="pdp__qty-btn">+</button>
+          </div>
+          <button class="btn btn--green" style="flex: 1;">Add to Cart</button>
+        </div>
+
+        <div class="pdp__features">
+          <div class="pdp__feature">
+            <span class="pdp__feature-icon">&#10003;</span> Free shipping on orders over $99
+          </div>
+          <div class="pdp__feature">
+            <span class="pdp__feature-icon">&#10003;</span> Certificate of authenticity
+          </div>
+          <div class="pdp__feature">
+            <span class="pdp__feature-icon">&#10003;</span> 30-day returns
+          </div>
+          <div class="pdp__feature">
+            <span class="pdp__feature-icon">&#10003;</span> Handcrafted by the artist
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     PAGE: CART
+     ============================================ -->
+<div class="page-label">Page: Cart</div>
+
+<header class="header" style="position: relative; top: 0;">
+  <div class="header__inner">
+    <a class="header__logo" href="#">Art<em>Vault</em></a>
+    <nav class="header__nav">
+      <a href="#">Home</a>
+      <a href="#">Shop</a>
+      <a href="#">Collections</a>
+      <a href="#">Artists</a>
+      <a href="#">About</a>
+    </nav>
+    <div class="header__actions">
+      <a href="#">Search</a>
+      <a href="#">Account</a>
+      <div class="header__cart"><span class="header__cart-dot"></span> Cart (3)</div>
+    </div>
+  </div>
+</header>
+
+<section class="cart-page">
+  <div class="container">
+    <h1>Your <em>Cart</em></h1>
+    <div class="cart-page__layout">
+      <div>
+        <div class="cart-item">
+          <div class="cart-item__image">
+            <img src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=200&h=240&fit=crop" alt="">
+          </div>
+          <div>
+            <div class="cart-item__title">Sunset Over the Valley</div>
+            <div class="cart-item__variant">50x70 cm / Black Frame</div>
+            <div class="cart-item__qty">
+              <button>-</button>
+              <input value="1">
+              <button>+</button>
+            </div>
+            <a class="cart-item__remove">Remove</a>
+          </div>
+          <div class="cart-item__price">$420.00</div>
+        </div>
+        <div class="cart-item">
+          <div class="cart-item__image">
+            <img src="https://images.unsplash.com/photo-1549490349-8643362247b5?w=200&h=240&fit=crop" alt="">
+          </div>
+          <div>
+            <div class="cart-item__title">Abstract Waves No. 7</div>
+            <div class="cart-item__variant">40x60 cm / Unframed</div>
+            <div class="cart-item__qty">
+              <button>-</button>
+              <input value="2">
+              <button>+</button>
+            </div>
+            <a class="cart-item__remove">Remove</a>
+          </div>
+          <div class="cart-item__price">$178.00</div>
+        </div>
+      </div>
+      <div class="cart-summary">
+        <h3>Order Summary</h3>
+        <div class="cart-summary__row">
+          <span>Subtotal</span><span>$598.00</span>
+        </div>
+        <div class="cart-summary__row">
+          <span>Shipping</span><span style="color: var(--color-primary); font-weight: 600;">Free</span>
+        </div>
+        <div class="cart-summary__row">
+          <span>Tax</span><span>Calculated at checkout</span>
+        </div>
+        <div class="cart-summary__row cart-summary__row--total">
+          <span>Total</span><span>$598.00</span>
+        </div>
+        <button class="btn btn--green btn--full">Checkout</button>
+        <p style="text-align: center; font-size: 0.8rem; color: var(--color-text-muted); margin-top: 12px;">Secure checkout powered by Shopify</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer" style="margin-top: 80px;">
+  <div class="container">
+    <div class="footer__bottom" style="border-top: none;">
+      <span>&copy; 2026 ArtVault. All rights reserved.</span>
+      <div class="footer__payments">
+        <div class="footer__payment">VISA</div>
+        <div class="footer__payment">MC</div>
+        <div class="footer__payment">AMEX</div>
+        <div class="footer__payment">PP</div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
