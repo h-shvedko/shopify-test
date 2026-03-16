@@ -40,7 +40,7 @@
   }
 {% endstylesheet %}
 
-{% javascript %}
+<script>
   (function () {
     var section = document.querySelector('.related-products[data-product-id]');
     if (!section) return;
@@ -111,7 +111,8 @@
 
     function formatMoney(cents) {
       var amount = (cents / 100).toFixed(2);
-      return '<span class="price">' + window.Shopify.currency.active + ' ' + amount + '</span>';
+      var currencySymbol = (window.Shopify && window.Shopify.currency && window.Shopify.currency.active) || '$';
+      return '<span class="price">' + currencySymbol + ' ' + amount + '</span>';
     }
 
     function escapeHtml(str) {
@@ -120,7 +121,7 @@
       return div.innerHTML;
     }
   })();
-{% endjavascript %}
+</script>
 
 {% schema %}
 {

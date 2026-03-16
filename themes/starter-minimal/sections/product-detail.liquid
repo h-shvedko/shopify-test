@@ -50,7 +50,8 @@
         {% endif %}
       {% endif %}
 
-      {% form 'product', product, data-product-form: '', data-added-message: 'products.added_to_cart' | t %}
+      {%- assign added_msg = 'products.added_to_cart' | t -%}
+      {% form 'product', product, data-product-form: '', data-added-message: added_msg %}
         <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
         <div class="product-detail__quantity">
           {% render 'quantity-selector', value: 1, name: 'quantity' %}
@@ -176,7 +177,7 @@
   }
 {% endstylesheet %}
 
-{% javascript %}
+<script>
   (function () {
     var form = document.querySelector('[data-product-form]');
     var toast = document.querySelector('[data-cart-toast]');
@@ -233,7 +234,7 @@
         .then(function (response) { return response.json(); })
         .then(function (cart) {
           updateCartBadge(cart.item_count);
-          document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart: cart } }));
+          document.dispatchEvent(new CustomEvent('cart:updated', { detail: { item_count: cart.item_count } }));
           showToast(form.dataset.addedMessage || 'Added to cart');
         })
         .catch(function (err) {
@@ -246,7 +247,7 @@
         });
     });
   })();
-{% endjavascript %}
+</script>
 
 {% schema %}
 {

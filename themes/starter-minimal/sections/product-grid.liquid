@@ -102,7 +102,7 @@
   }
 {% endstylesheet %}
 
-{% javascript %}
+<script>
   (function () {
     var select = document.querySelector('[data-sort-select]');
     if (!select) return;
@@ -113,7 +113,7 @@
       window.location.href = url.toString();
     });
   })();
-{% endjavascript %}
+</script>
 
 {% schema %}
 {

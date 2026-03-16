@@ -239,7 +239,7 @@
   }
 {% endstylesheet %}
 
-{% javascript %}
+<script>
   (function () {
     var cartContent = document.querySelector('[data-cart-content]');
     if (!cartContent) return;
@@ -267,7 +267,7 @@
           if (subtotalEl) subtotalEl.textContent = formatMoney(cart.total_price);
           if (totalEl) totalEl.textContent = formatMoney(cart.total_price);
           updateCartBadge(cart.item_count);
-          document.dispatchEvent(new CustomEvent('cart:updated', { detail: cart }));
+          document.dispatchEvent(new CustomEvent('cart:updated', { detail: { item_count: cart.item_count } }));
         });
     }
 
@@ -303,7 +303,7 @@
         });
     });
   })();
-{% endjavascript %}
+</script>
 
 {% schema %}
 {

@@ -394,7 +394,7 @@
   }
 {% endstylesheet %}
 
-{% javascript %}
+<script>
   (function () {
     'use strict';
 
@@ -439,22 +439,20 @@
     });
 
     // Update cart badge count when cart is updated via AJAX
-    document.addEventListener('cart:updated', function (e) {
-      var count = e.detail && typeof e.detail.count !== 'undefined'
-        ? e.detail.count
-        : 0;
-      var badges = document.querySelectorAll('[data-cart-count]');
-      badges.forEach(function (badge) {
-        badge.textContent = count;
-        if (count === 0) {
-          badge.classList.add('header__cart-count--empty');
-        } else {
+    document.addEventListener('cart:updated', function(e) {
+      var badge = document.querySelector('[data-cart-count]');
+      if (badge) {
+        badge.textContent = e.detail.item_count;
+        // Show/hide badge based on count
+        if (e.detail.item_count > 0) {
           badge.classList.remove('header__cart-count--empty');
+        } else {
+          badge.classList.add('header__cart-count--empty');
         }
-      });
+      }
     });
   })();
-{% endjavascript %}
+</script>
 
 {% schema %}
 {
