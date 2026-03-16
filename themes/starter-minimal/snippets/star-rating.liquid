@@ -1,0 +1,72 @@
+{% doc %}
+  Renders a star rating display with filled and empty SVG stars.
+
+  @param {number} rating - Rating value between 0 and 5. Required.
+  @param {number} count  - Optional number of reviews to display after the stars.
+
+  @example
+  {% render 'star-rating', rating: 4.5, count: 128 %}
+  {% render 'star-rating', rating: 3 %}
+{% enddoc %}
+
+<style>
+  .star-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .star-rating__count {
+    margin-left: 4px;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+  }
+
+  .star-rating__star--filled {
+    color: var(--color-primary, #d97706);
+  }
+
+  .star-rating__star--empty {
+    color: var(--color-border, #d1d5db);
+  }
+</style>
+
+<div
+  class="star-rating"
+  aria-label="{{ 'accessibility.star_rating' | t: rating: rating }}"
+  role="img"
+>
+  {% for i in (1..5) %}
+    {% if i <= rating %}
+      <svg
+        class="star-rating__star--filled"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+    {% else %}
+      <svg
+        class="star-rating__star--empty"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+    {% endif %}
+  {% endfor %}
+
+  {% if count %}
+    <span class="star-rating__count">
+      ({{ 'products.reviews_count' | t: count: count }})
+    </span>
+  {% endif %}
+</div>

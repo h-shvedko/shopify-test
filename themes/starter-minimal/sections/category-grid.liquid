@@ -1,0 +1,55 @@
+<section class="category-grid section-padding">
+  <div class="container">
+    {% if section.settings.heading != blank %}
+      <h2 class="category-grid__heading">{{ section.settings.heading | escape }}</h2>
+    {% endif %}
+
+    <div class="category-grid__grid">
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .category-grid__heading {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .category-grid__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (min-width: 1024px) {
+    .category-grid__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.category_grid.name",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.category_grid.settings.heading.label",
+      "default": "Shop by category"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Category grid"
+    }
+  ]
+}
+{% endschema %}

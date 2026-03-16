@@ -1,0 +1,35 @@
+{% doc %}
+  Renders a styled button or anchor element.
+
+  Parameters:
+  - label {string} required — Visible button text
+  - url {string} optional — If provided, renders an <a> tag; otherwise renders a <button>
+  - variant {string} optional — Visual style. One of: primary, secondary, outline.
+      Default: "primary"
+  - type {string} optional — HTML type attribute for <button> elements. Default: "button"
+  - full_width {boolean} optional — When true, the element spans full container width.
+      Default: false
+
+  Usage:
+    {% render 'button', label: 'Shop now', url: '/collections/all' %}
+    {% render 'button', label: 'Add to cart', variant: 'primary', type: 'submit' %}
+    {% render 'button', label: 'Learn more', variant: 'outline', url: '/pages/about' %}
+    {% render 'button', label: 'Continue', variant: 'secondary', full_width: true %}
+{% enddoc %}
+
+{%- liquid
+  assign btn_variant = variant | default: 'primary'
+  assign btn_type    = type    | default: 'button'
+
+  assign btn_class = 'btn btn--' | append: btn_variant
+  if full_width
+    assign btn_class = btn_class | append: ' btn--full-width'
+  endif
+-%}
+
+
+{%- if url != blank -%}
+  <a href="{{ url }}" class="{{ btn_class }}">{{ label }}</a>
+{%- else -%}
+  <button type="{{ btn_type }}" class="{{ btn_class }}">{{ label }}</button>
+{%- endif -%}

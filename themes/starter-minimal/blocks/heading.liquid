@@ -1,0 +1,47 @@
+{% doc %}
+  Renders a heading at a merchant-selectable level (h1–h4).
+  Base heading styles come from critical.css; no additional scoped styles needed.
+
+  Parameters (via block.settings):
+  - heading {string} required — Heading text to display
+  - size {string} required — Heading level: h1, h2, h3, or h4
+{% enddoc %}
+
+<div {{ block.shopify_attributes }}>
+  {% case block.settings.size %}
+    {% when 'h1' %}
+      <h1>{{ block.settings.heading | escape }}</h1>
+    {% when 'h2' %}
+      <h2>{{ block.settings.heading | escape }}</h2>
+    {% when 'h3' %}
+      <h3>{{ block.settings.heading | escape }}</h3>
+    {% when 'h4' %}
+      <h4>{{ block.settings.heading | escape }}</h4>
+  {% endcase %}
+</div>
+
+{% schema %}
+{
+  "name": "t:blocks.heading.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:blocks.heading.settings.heading.label",
+      "default": "Heading"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "t:blocks.heading.settings.size.label",
+      "default": "h2",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" }
+      ]
+    }
+  ]
+}
+{% endschema %}

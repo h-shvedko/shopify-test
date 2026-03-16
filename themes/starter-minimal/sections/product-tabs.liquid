@@ -1,0 +1,123 @@
+<section class="product-tabs section-padding">
+  <div class="container">
+    {% if section.settings.show_description %}
+      <details class="product-tabs__tab" open>
+        <summary class="product-tabs__summary">
+          {{ 'products.description' | t }}
+          {% render 'icon', name: 'chevron-down', size: 18 %}
+        </summary>
+        <div class="product-tabs__content">{{ product.description }}</div>
+      </details>
+    {% endif %}
+
+    {% if section.settings.show_shipping %}
+      <details class="product-tabs__tab">
+        <summary class="product-tabs__summary">
+          {{ 'products.shipping_returns' | t }}
+          {% render 'icon', name: 'chevron-down', size: 18 %}
+        </summary>
+        <div class="product-tabs__content">{{ section.settings.shipping_text }}</div>
+      </details>
+    {% endif %}
+
+    {% if section.settings.show_reviews %}
+      <details class="product-tabs__tab">
+        <summary class="product-tabs__summary">
+          {{ 'products.reviews' | t }}
+          {% render 'icon', name: 'chevron-down', size: 18 %}
+        </summary>
+        <div class="product-tabs__content">
+          <p>{{ 'products.reviews_count' | t: count: 0 }}</p>
+        </div>
+      </details>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .product-tabs__tab {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .product-tabs__tab:first-of-type {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .product-tabs__summary {
+    padding: 16px 0;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+
+  .product-tabs__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .product-tabs__summary::marker {
+    display: none;
+  }
+
+  .product-tabs__summary svg {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  .product-tabs__tab[open] .product-tabs__summary svg {
+    transform: rotate(180deg);
+  }
+
+  .product-tabs__content {
+    padding: 0 0 24px;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .product-tabs__content p:first-child {
+    margin-top: 0;
+  }
+
+  .product-tabs__content p:last-child {
+    margin-bottom: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.product_tabs.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "t:sections.product_tabs.settings.show_description.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shipping",
+      "label": "t:sections.product_tabs.settings.show_shipping.label",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "shipping_text",
+      "label": "t:sections.product_tabs.settings.shipping_text.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reviews",
+      "label": "t:sections.product_tabs.settings.show_reviews.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product tabs"
+    }
+  ]
+}
+{% endschema %}

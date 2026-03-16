@@ -1,0 +1,60 @@
+<section class="features-bar section-padding" style="background: var(--color-background-alt);">
+  <div class="container">
+    {% if section.settings.heading != blank %}
+      <h2 class="features-bar__heading">{{ section.settings.heading | escape }}</h2>
+    {% endif %}
+
+    <div class="features-bar__grid">
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .features-bar__heading {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .features-bar__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (min-width: 1024px) {
+    .features-bar__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.features_bar.name",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.features_bar.settings.heading.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Features bar",
+      "blocks": [
+        { "type": "feature_item" },
+        { "type": "feature_item" },
+        { "type": "feature_item" },
+        { "type": "feature_item" }
+      ]
+    }
+  ]
+}
+{% endschema %}

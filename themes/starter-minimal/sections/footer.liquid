@@ -1,0 +1,389 @@
+<footer class="footer" data-section-id="{{ section.id }}">
+  <div class="container">
+
+    {%- comment -%} Main 4-column grid {%- endcomment -%}
+    <div class="footer__grid">
+
+      {%- comment -%} Column 1: About {%- endcomment -%}
+      <div class="footer__col footer__col--about">
+        <h2 class="footer__heading">{{ 'footer.about_heading' | t }}</h2>
+        {% if section.settings.about_text != blank %}
+          <div class="footer__about-text">{{ section.settings.about_text }}</div>
+        {% endif %}
+      </div>
+
+      {%- comment -%} Column 2: Menu 1 {%- endcomment -%}
+      <div class="footer__col">
+        {% if section.settings.menu_1_heading != blank %}
+          <h2 class="footer__heading">{{ section.settings.menu_1_heading }}</h2>
+        {% endif %}
+        {% if section.settings.menu_1.links.size > 0 %}
+          <ul class="footer__links" role="list">
+            {% for link in section.settings.menu_1.links %}
+              <li>
+                <a href="{{ link.url }}">{{ link.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      {%- comment -%} Column 3: Menu 2 {%- endcomment -%}
+      <div class="footer__col">
+        {% if section.settings.menu_2_heading != blank %}
+          <h2 class="footer__heading">{{ section.settings.menu_2_heading }}</h2>
+        {% endif %}
+        {% if section.settings.menu_2.links.size > 0 %}
+          <ul class="footer__links" role="list">
+            {% for link in section.settings.menu_2.links %}
+              <li>
+                <a href="{{ link.url }}">{{ link.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      {%- comment -%} Column 4: Contact {%- endcomment -%}
+      <div class="footer__col">
+        <h2 class="footer__heading">{{ 'footer.contact' | t }}</h2>
+        {% if section.settings.phone != blank %}
+          <div class="footer__contact-item">
+            {% render 'icon', name: 'phone', size: 16 %}
+            <a href="tel:{{ section.settings.phone | remove: ' ' }}">{{ section.settings.phone }}</a>
+          </div>
+        {% endif %}
+        {% if section.settings.email != blank %}
+          <div class="footer__contact-item">
+            {% render 'icon', name: 'mail', size: 16 %}
+            <a href="mailto:{{ section.settings.email }}">{{ section.settings.email }}</a>
+          </div>
+        {% endif %}
+        {% if section.settings.address != blank %}
+          <div class="footer__contact-item">
+            {% render 'icon', name: 'map-pin', size: 16 %}
+            <address class="footer__address">{{ section.settings.address | newline_to_br }}</address>
+          </div>
+        {% endif %}
+      </div>
+
+    </div>
+
+    {%- comment -%} Newsletter row {%- endcomment -%}
+    {% if section.settings.show_newsletter %}
+      <div class="footer__newsletter">
+        <h2 class="footer__newsletter-heading">{{ 'footer.newsletter_heading' | t }}</h2>
+        <form
+          class="footer__newsletter-form"
+          action="{{ routes.root_url }}contact#contact_form"
+          method="post"
+          data-newsletter-form
+        >
+          <input type="hidden" name="form_type" value="customer">
+          <input type="hidden" name="utf8" value="✓">
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <label for="footer-newsletter-email-{{ section.id }}" class="visually-hidden">
+            {{ 'footer.newsletter_placeholder' | t }}
+          </label>
+          <input
+            class="footer__newsletter-input"
+            type="email"
+            id="footer-newsletter-email-{{ section.id }}"
+            name="contact[email]"
+            placeholder="{{ 'footer.newsletter_placeholder' | t }}"
+            autocomplete="email"
+            required
+            aria-required="true"
+          >
+          <button type="submit" class="footer__newsletter-btn">
+            {{ 'footer.subscribe' | t }}
+          </button>
+        </form>
+      </div>
+    {% endif %}
+
+  </div>
+
+  {%- comment -%} Bottom bar {%- endcomment -%}
+  <div class="footer__bottom">
+    <div class="container footer__bottom-inner">
+      <p class="footer__copyright">
+        {%- assign current_year = 'now' | date: '%Y' -%}
+        {{ 'footer.copyright' | t: year: current_year }}
+      </p>
+      {% render 'payment-icons' %}
+    </div>
+  </div>
+
+</footer>
+
+{% stylesheet %}
+  /* ---- Footer ---- */
+
+  .footer {
+    background-color: var(--color-footer-bg);
+    color: var(--color-footer-text);
+    padding-top: 60px;
+  }
+
+  /* Grid */
+
+  .footer__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding-bottom: 40px;
+  }
+
+  @media (min-width: 768px) {
+    .footer__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .footer__grid {
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+    }
+  }
+
+  /* Column */
+
+  .footer__col {}
+
+  /* Headings */
+
+  .footer__heading {
+    color: #ffffff;
+    font-family: var(--font-heading);
+    font-weight: var(--font-heading-weight);
+    font-size: 1.125rem;
+    margin: 0 0 16px;
+    line-height: 1.3;
+  }
+
+  /* Links */
+
+  .footer a {
+    color: var(--color-footer-text);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .footer a:hover {
+    color: #ffffff;
+    text-decoration: none;
+  }
+
+  .footer__links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .footer__links li {
+    line-height: 1.5;
+  }
+
+  /* About text */
+
+  .footer__about-text {
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: var(--color-footer-text);
+  }
+
+  /* Contact */
+
+  .footer__contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 0.9375rem;
+  }
+
+  .footer__contact-item .icon {
+    flex-shrink: 0;
+    margin-top: 3px;
+    color: var(--color-footer-text);
+  }
+
+  .footer__address {
+    font-style: normal;
+    line-height: 1.55;
+  }
+
+  /* Newsletter */
+
+  .footer__newsletter {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 40px 0;
+  }
+
+  .footer__newsletter-heading {
+    color: #ffffff;
+    font-family: var(--font-heading);
+    font-weight: var(--font-heading-weight);
+    font-size: 1.25rem;
+    margin: 0 0 20px;
+  }
+
+  .footer__newsletter-form {
+    display: flex;
+    gap: 8px;
+    max-width: 400px;
+    flex-wrap: wrap;
+  }
+
+  .footer__newsletter-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 12px 16px;
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    color: #ffffff;
+    font-size: 0.9375rem;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .footer__newsletter-input::placeholder {
+    color: var(--color-footer-text);
+  }
+
+  .footer__newsletter-input:focus {
+    border-color: var(--color-primary);
+  }
+
+  .footer__newsletter-btn {
+    padding: 12px 24px;
+    background-color: var(--color-primary);
+    color: var(--color-primary-contrast);
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.15s ease;
+  }
+
+  .footer__newsletter-btn:hover {
+    opacity: 0.9;
+  }
+
+  .footer__newsletter-btn:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* Bottom bar */
+
+  .footer__bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 24px 0;
+  }
+
+  .footer__bottom-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .footer__copyright {
+    font-size: 0.875rem;
+    color: var(--color-footer-text);
+    margin: 0;
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    'use strict';
+
+    var form = document.querySelector(
+      '.footer[data-section-id="{{ section.id }}"] [data-newsletter-form]'
+    );
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+      var btn = form.querySelector('button[type="submit"]');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = btn.textContent; // preserve text; server handles redirect
+      }
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.footer.name",
+  "tag": "div",
+  "class": "footer-section",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "about_text",
+      "label": "t:sections.footer.settings.about_text.label"
+    },
+    {
+      "type": "link_list",
+      "id": "menu_1",
+      "label": "t:sections.footer.settings.menu_1.label",
+      "default": "footer"
+    },
+    {
+      "type": "text",
+      "id": "menu_1_heading",
+      "label": "t:sections.footer.settings.menu_1_heading.label",
+      "default": "Customer service"
+    },
+    {
+      "type": "link_list",
+      "id": "menu_2",
+      "label": "t:sections.footer.settings.menu_2.label",
+      "default": "footer"
+    },
+    {
+      "type": "text",
+      "id": "menu_2_heading",
+      "label": "t:sections.footer.settings.menu_2_heading.label",
+      "default": "Information"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter",
+      "label": "t:sections.footer.settings.show_newsletter.label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "t:sections.footer.settings.phone.label"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "t:sections.footer.settings.email.label"
+    },
+    {
+      "type": "textarea",
+      "id": "address",
+      "label": "t:sections.footer.settings.address.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.footer.name"
+    }
+  ]
+}
+{% endschema %}

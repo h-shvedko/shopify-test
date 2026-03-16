@@ -1,0 +1,107 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero": {
+      "type": "hero-banner",
+      "settings": {
+        "heading": "Brew your perfect beer",
+        "subtitle": "Premium homebrew equipment for every brewer",
+        "button_label_1": "Shop now",
+        "button_url_1": "shopify://collections/all",
+        "button_label_2": "Learn more",
+        "button_url_2": "",
+        "height": "large",
+        "overlay_opacity": 40
+      }
+    },
+    "features": {
+      "type": "features-bar",
+      "blocks": {
+        "feature_1": {
+          "type": "feature_item",
+          "settings": {
+            "icon": "truck",
+            "heading": "Free shipping",
+            "description": "On orders over $99"
+          },
+          "blocks": {}
+        },
+        "feature_2": {
+          "type": "feature_item",
+          "settings": {
+            "icon": "shield",
+            "heading": "Secure payment",
+            "description": "100% secure checkout"
+          },
+          "blocks": {}
+        },
+        "feature_3": {
+          "type": "feature_item",
+          "settings": {
+            "icon": "star",
+            "heading": "Best quality",
+            "description": "Premium materials"
+          },
+          "blocks": {}
+        },
+        "feature_4": {
+          "type": "feature_item",
+          "settings": {
+            "icon": "check",
+            "heading": "Expert support",
+            "description": "Brewing advice included"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "feature_1",
+        "feature_2",
+        "feature_3",
+        "feature_4"
+      ],
+      "settings": {
+        "heading": ""
+      }
+    },
+    "categories": {
+      "type": "category-grid",
+      "settings": {
+        "heading": "Shop by category"
+      }
+    },
+    "featured": {
+      "type": "featured-products",
+      "settings": {
+        "heading": "Featured products",
+        "collection": "automated-collection",
+        "products_count": 4,
+        "show_view_all": true
+      }
+    },
+    "cta": {
+      "type": "cta-banner",
+      "settings": {
+        "heading": "Ready to start brewing?",
+        "subtitle": "",
+        "button_label": "Shop now",
+        "button_url": "shopify://collections/all"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "features",
+    "categories",
+    "featured",
+    "cta"
+  ]
+}

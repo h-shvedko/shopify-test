@@ -1,0 +1,46 @@
+{% doc %}
+  Renders a small badge/tag element.
+
+  @param {string} type - Badge variant. One of: sold_out, bestseller, default.
+  @param {string} label - Text content displayed inside the badge.
+
+  @example
+  {% render 'badge', type: 'sold_out', label: 'Sold out' %}
+  {% render 'badge', type: 'bestseller', label: 'Bestseller' %}
+  {% render 'badge', type: 'default', label: 'New' %}
+{% enddoc %}
+
+<style>
+  .badge {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .badge--sold-out {
+    background: var(--color-error);
+    color: #ffffff;
+  }
+
+  .badge--bestseller {
+    background: var(--color-primary);
+    color: var(--color-primary-contrast);
+  }
+
+  .badge--default {
+    background: var(--color-background-alt);
+    color: var(--color-text);
+  }
+</style>
+
+{% if type == 'sold_out' %}
+  <span class="badge badge--sold-out">{{ label }}</span>
+{% elsif type == 'bestseller' %}
+  <span class="badge badge--bestseller">{{ label }}</span>
+{% else %}
+  <span class="badge badge--default">{{ label }}</span>
+{% endif %}

@@ -1,0 +1,206 @@
+{%- liquid
+  case section.settings.height
+    when 'small'
+      assign hero_height = 400
+    when 'medium'
+      assign hero_height = 500
+    else
+      assign hero_height = 600
+  endcase
+-%}
+
+<section
+  class="hero-banner"
+  style="--hero-height: {{ hero_height }}px; --overlay-opacity: {{ section.settings.overlay_opacity }};"
+>
+  {% if section.settings.image %}
+    {{
+      section.settings.image
+      | image_url: width: 1920
+      | image_tag:
+        class: 'hero-banner__image',
+        loading: 'eager',
+        fetchpriority: 'high',
+        alt: section.settings.image.alt | escape
+    }}
+  {% else %}
+    <img src="{{ 'hero-brewing.jpg' | asset_url }}" alt="" class="hero-banner__image" loading="eager" fetchpriority="high">
+  {% endif %}
+
+  <div class="hero-banner__overlay" aria-hidden="true"></div>
+
+  <div class="container hero-banner__content">
+    {% if section.settings.heading != blank %}
+      <h1 class="hero-banner__heading">{{ section.settings.heading | escape }}</h1>
+    {% endif %}
+
+    {% if section.settings.subtitle != blank %}
+      <p class="hero-banner__subtitle">{{ section.settings.subtitle | escape }}</p>
+    {% endif %}
+
+    <div class="hero-banner__buttons">
+      {% if section.settings.button_label_1 != blank %}
+        {% render 'button',
+          label: section.settings.button_label_1,
+          url: section.settings.button_url_1,
+          variant: 'primary'
+        %}
+      {% endif %}
+      {% if section.settings.button_label_2 != blank %}
+        {% render 'button',
+          label: section.settings.button_label_2,
+          url: section.settings.button_url_2,
+          variant: 'outline'
+        %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .hero-banner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--hero-height, 600px);
+    overflow: hidden;
+    color: #ffffff;
+    text-align: center;
+  }
+
+  .hero-banner__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-banner__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, calc(var(--overlay-opacity, 40) / 100));
+  }
+
+  .hero-banner__content {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    padding: 40px 20px;
+  }
+
+  .hero-banner__heading {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 16px;
+    line-height: 1.15;
+  }
+
+  .hero-banner__subtitle {
+    font-size: 1.125rem;
+    opacity: 0.9;
+    margin: 0 0 32px;
+  }
+
+  .hero-banner__buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* On the dark hero background, the outline button should appear white */
+  .hero-banner .btn--outline {
+    color: #ffffff;
+    border-color: #ffffff;
+  }
+
+  .hero-banner .btn--outline:hover,
+  .hero-banner .btn--outline:focus-visible {
+    background-color: #ffffff;
+    color: var(--color-text, #111827);
+  }
+
+  @media (min-width: 1024px) {
+    .hero-banner__heading {
+      font-size: 3.5rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hero_banner.name",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.hero_banner.settings.image.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hero_banner.settings.heading.label",
+      "default": "Brew your perfect beer"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "t:sections.hero_banner.settings.subtitle.label",
+      "default": "Premium homebrew equipment for every brewer"
+    },
+    {
+      "type": "text",
+      "id": "button_label_1",
+      "label": "t:sections.hero_banner.settings.button_label_1.label",
+      "default": "Shop now"
+    },
+    {
+      "type": "url",
+      "id": "button_url_1",
+      "label": "t:sections.hero_banner.settings.button_url_1.label",
+      "default": "/collections/all"
+    },
+    {
+      "type": "text",
+      "id": "button_label_2",
+      "label": "t:sections.hero_banner.settings.button_label_2.label",
+      "default": "Learn more"
+    },
+    {
+      "type": "url",
+      "id": "button_url_2",
+      "label": "t:sections.hero_banner.settings.button_url_2.label"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "t:sections.hero_banner.settings.height.label",
+      "default": "large",
+      "options": [
+        { "value": "small", "label": "Small (400px)" },
+        { "value": "medium", "label": "Medium (500px)" },
+        { "value": "large", "label": "Large (600px)" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "t:sections.hero_banner.settings.overlay_opacity.label",
+      "default": 40,
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "unit": "%"
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Hero banner"
+    }
+  ]
+}
+{% endschema %}

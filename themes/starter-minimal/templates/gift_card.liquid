@@ -1,0 +1,39 @@
+{% layout none %}
+<!DOCTYPE html>
+<html lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ 'general.gift_card_title' | t }} - {{ shop.name }}</title>
+  {{ content_for_header }}
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 400px;
+      margin: 40px auto;
+      padding: 0 20px;
+      text-align: center;
+      color: #111827;
+    }
+    .gift-card__image { max-width: 100%; height: auto; border-radius: 10px; margin-bottom: 24px; }
+    .gift-card__code { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.1em; padding: 16px; border: 2px dashed #e5e7eb; border-radius: 10px; margin: 24px 0; }
+    .gift-card__amount { font-size: 2rem; font-weight: 700; color: #d97706; }
+    .gift-card__shop { margin-top: 24px; color: #6b7280; }
+  </style>
+</head>
+<body>
+  <h1>{{ shop.name }}</h1>
+  {% if gift_card.image %}
+    <img class="gift-card__image" src="{{ gift_card.image | image_url: width: 400 }}" alt="{{ 'general.gift_card_title' | t }}">
+  {% endif %}
+  <p class="gift-card__amount">{{ gift_card.balance | money }}</p>
+  <div class="gift-card__code" id="gift-card-code">{{ gift_card.code | format_code }}</div>
+  {% if gift_card.pass_url %}
+    <a href="{{ gift_card.pass_url }}">{{ 'general.add_to_apple_wallet' | t }}</a>
+  {% endif %}
+  <p class="gift-card__shop">{{ shop.name }}</p>
+  {% if gift_card.expired %}
+    <p style="color: #dc2626;">{{ 'general.gift_card_expired' | t }}</p>
+  {% endif %}
+</body>
+</html>

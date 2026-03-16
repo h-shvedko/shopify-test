@@ -1,0 +1,160 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "BrewMaster Minimal",
+    "theme_version": "1.0.0",
+    "theme_author": "BrewMaster",
+    "theme_documentation_url": "https://github.com/h-shvedko/shopify-test",
+    "theme_support_url": "https://github.com/h-shvedko/shopify-test/issues"
+  },
+  {
+    "name": "t:settings.colors.name",
+    "settings": [
+      {
+        "id": "color_primary",
+        "type": "color",
+        "label": "t:settings.colors.color_primary.label",
+        "default": "#d97706"
+      },
+      {
+        "id": "color_primary_contrast",
+        "type": "color",
+        "label": "t:settings.colors.color_primary_contrast.label",
+        "default": "#ffffff"
+      },
+      {
+        "id": "color_background",
+        "type": "color",
+        "label": "t:settings.colors.color_background.label",
+        "default": "#ffffff"
+      },
+      {
+        "id": "color_background_alt",
+        "type": "color",
+        "label": "t:settings.colors.color_background_alt.label",
+        "default": "#f9fafb"
+      },
+      {
+        "id": "color_text",
+        "type": "color",
+        "label": "t:settings.colors.color_text.label",
+        "default": "#111827"
+      },
+      {
+        "id": "color_text_secondary",
+        "type": "color",
+        "label": "t:settings.colors.color_text_secondary.label",
+        "default": "#6b7280"
+      },
+      {
+        "id": "color_footer_bg",
+        "type": "color",
+        "label": "t:settings.colors.color_footer_bg.label",
+        "default": "#111827"
+      },
+      {
+        "id": "color_footer_text",
+        "type": "color",
+        "label": "t:settings.colors.color_footer_text.label",
+        "default": "#d1d5db"
+      },
+      {
+        "id": "color_border",
+        "type": "color",
+        "label": "t:settings.colors.color_border.label",
+        "default": "#e5e7eb"
+      },
+      {
+        "id": "color_error",
+        "type": "color",
+        "label": "t:settings.colors.color_error.label",
+        "default": "#dc2626"
+      },
+      {
+        "id": "color_success",
+        "type": "color",
+        "label": "t:settings.colors.color_success.label",
+        "default": "#16a34a"
+      }
+    ]
+  },
+  {
+    "name": "t:settings.typography.name",
+    "settings": [
+      {
+        "id": "font_heading",
+        "type": "font_picker",
+        "label": "t:settings.typography.font_heading.label",
+        "default": "helvetica_n7"
+      },
+      {
+        "id": "font_body",
+        "type": "font_picker",
+        "label": "t:settings.typography.font_body.label",
+        "default": "helvetica_n4"
+      },
+      {
+        "id": "font_scale",
+        "type": "range",
+        "label": "t:settings.typography.font_scale.label",
+        "min": 80,
+        "max": 130,
+        "step": 5,
+        "unit": "%",
+        "default": 100
+      }
+    ]
+  },
+  {
+    "name": "t:settings.layout.name",
+    "settings": [
+      {
+        "id": "page_width",
+        "type": "range",
+        "label": "t:settings.layout.page_width.label",
+        "min": 1000,
+        "max": 1600,
+        "step": 40,
+        "unit": "px",
+        "default": 1280
+      },
+      {
+        "id": "border_radius",
+        "type": "range",
+        "label": "t:settings.layout.border_radius.label",
+        "min": 0,
+        "max": 24,
+        "step": 2,
+        "unit": "px",
+        "default": 10
+      },
+      {
+        "id": "spacing_scale",
+        "type": "range",
+        "label": "t:settings.layout.spacing_scale.label",
+        "min": 80,
+        "max": 130,
+        "step": 10,
+        "unit": "%",
+        "default": 100
+      }
+    ]
+  },
+  {
+    "name": "t:settings.cart.name",
+    "settings": [
+      {
+        "id": "free_shipping_threshold",
+        "type": "number",
+        "label": "t:settings.cart.free_shipping_threshold.label",
+        "default": 99
+      },
+      {
+        "id": "show_free_shipping_bar",
+        "type": "checkbox",
+        "label": "t:settings.cart.show_free_shipping_bar.label",
+        "default": true
+      }
+    ]
+  }
+]

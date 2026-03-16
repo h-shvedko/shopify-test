@@ -1,0 +1,78 @@
+{% doc %}
+  Renders an image block with optional link wrapping. Displays a placeholder
+  when no image has been selected.
+
+  Parameters (via block.settings):
+  - image {image} optional — Image to display; shows placeholder when blank
+  - url {url} optional — URL to wrap the image in a link
+  - alt {string} optional — Alt text for the image; falls back to image.alt
+{% enddoc %}
+
+{%- liquid
+  assign img_alt = block.settings.alt
+  if img_alt == blank
+    assign img_alt = block.settings.image.alt | default: ''
+  endif
+-%}
+
+<div class="image-block" {{ block.shopify_attributes }}>
+  {% if block.settings.url != blank %}
+    <a href="{{ block.settings.url }}">
+  {% endif %}
+
+  {% if block.settings.image != blank %}
+    <img
+      src="{{ block.settings.image | image_url: width: 1200 }}"
+      alt="{{ img_alt | escape }}"
+      width="{{ block.settings.image.width }}"
+      height="{{ block.settings.image.height }}"
+      loading="lazy"
+    >
+  {% else %}
+    {{ 'image' | placeholder_svg_tag: 'image-block__placeholder' }}
+  {% endif %}
+
+  {% if block.settings.url != blank %}
+    </a>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .image-block img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+    display: block;
+  }
+
+  .image-block .image-block__placeholder {
+    width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+    display: block;
+    background-color: var(--color-background-alt);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:blocks.image.name",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:blocks.image.settings.image.label"
+    },
+    {
+      "type": "url",
+      "id": "url",
+      "label": "t:blocks.image.settings.url.label"
+    },
+    {
+      "type": "text",
+      "id": "alt",
+      "label": "t:blocks.image.settings.alt.label"
+    }
+  ]
+}
+{% endschema %}
