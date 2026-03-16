@@ -111,8 +111,9 @@
 
     function formatMoney(cents) {
       var amount = (cents / 100).toFixed(2);
-      var currencySymbol = (window.Shopify && window.Shopify.currency && window.Shopify.currency.active) || '$';
-      return '<span class="price">' + currencySymbol + ' ' + amount + '</span>';
+      var format = (window.Shopify && window.Shopify.money_format) || '${{amount}}';
+      var formatted = format.replace('{{amount}}', amount).replace('{{amount_with_comma_separator}}', amount.replace('.', ','));
+      return '<span class="price">' + formatted + '</span>';
     }
 
     function escapeHtml(str) {
