@@ -1,0 +1,45 @@
+{% doc %}
+  Renders the price display for a product, handling sale prices, price ranges,
+  and sold-out states. Sale price is highlighted in var(--color-primary) (cyan).
+
+  Parameters:
+  - product {product} required — Shopify product object.
+
+  Usage:
+    {% render 'price', product: product %}
+{% enddoc %}
+
+<style>
+  .price {
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--color-text);
+  }
+
+  .price--sale {
+    color: var(--color-primary);
+  }
+
+  .price--compare {
+    text-decoration: line-through;
+    color: var(--color-text-muted);
+    font-weight: 400;
+    font-size: 0.875rem;
+    margin-left: 8px;
+  }
+</style>
+
+{%- if product.available -%}
+  {%- if product.price_varies -%}
+    <span class="price">
+      {{- 'products.from_price' | t: price: product.price_min | money -}}
+    </span>
+  {%- elsif product.compare_at_price > product.price -%}
+    <span class="price price--sale">{{ product.price | money }}</span>
+    <span class="price price--compare">{{ product.compare_at_price | money }}</span>
+  {%- else -%}
+    <span class="price">{{ product.price | money }}</span>
+  {%- endif -%}
+{%- else -%}
+  <span class="price">{{ 'products.sold_out' | t }}</span>
+{%- endif -%}

@@ -1,0 +1,134 @@
+<section class="metrics-bar" id="MetricsBar-{{ section.id }}" aria-label="{{ 'metrics.heading' | t }}">
+  <div class="container">
+    <div class="metrics-bar__grid">
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+.metrics-bar {
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding: 48px 0;
+  background: var(--color-bg-alt);
+}
+
+.metrics-bar__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px 24px;
+}
+
+@media (min-width: 768px) {
+  .metrics-bar__grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+
+  /* Dividers between items */
+  .metrics-bar__grid > *:not(:last-child) {
+    border-right: 1px solid var(--color-border);
+  }
+}
+{% endstylesheet %}
+
+<script>
+(function () {
+  /**
+   * Animated counter — counts up from 0 to the numeric portion of the value.
+   * Suffix characters (k, +, %, etc.) are preserved.
+   */
+  function animateCounter(el) {
+    var rawValue = el.getAttribute('data-metric-value') || el.textContent.trim();
+    var match = rawValue.match(/^([\d.]+)(.*)$/);
+    if (!match) return;
+
+    var target  = parseFloat(match[1]);
+    var suffix  = match[2] || '';
+    var isFloat = rawValue.indexOf('.') !== -1;
+    var duration = 1200;
+    var start    = null;
+
+    function step(timestamp) {
+      if (!start) start = timestamp;
+      var progress = Math.min((timestamp - start) / duration, 1);
+      // Ease-out cubic
+      var eased = 1 - Math.pow(1 - progress, 3);
+      var current = target * eased;
+      el.textContent = (isFloat ? current.toFixed(1) : Math.floor(current)) + suffix;
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        el.textContent = rawValue;
+      }
+    }
+
+    requestAnimationFrame(step);
+  }
+
+  // Trigger animation when the section scrolls into view
+  var section = document.getElementById('MetricsBar-{{ section.id }}');
+  if (!section) return;
+
+  var observed = false;
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting && !observed) {
+        observed = true;
+        section.querySelectorAll('[data-metric-value]').forEach(animateCounter);
+        observer.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+
+  observer.observe(section);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.metrics_bar.name",
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.metrics_bar.name",
+      "blocks": [
+        {
+          "type": "metric_item",
+          "settings": {
+            "number": "50k+",
+            "label": "Students"
+          }
+        },
+        {
+          "type": "metric_item",
+          "settings": {
+            "number": "200+",
+            "label": "Hours of content"
+          }
+        },
+        {
+          "type": "metric_item",
+          "settings": {
+            "number": "4.9",
+            "label": "Rating"
+          }
+        },
+        {
+          "type": "metric_item",
+          "settings": {
+            "number": "95%",
+            "label": "Completion rate"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

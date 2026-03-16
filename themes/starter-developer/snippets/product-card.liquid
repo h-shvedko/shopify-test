@@ -1,0 +1,352 @@
+{% doc %}
+  Renders a CodeCraft Academy course card with a 16:9 image, badge overlay,
+  level tag, category label, Space Grotesk title, description excerpt,
+  meta row with modules/hours/rating, and a footer with price + view details link.
+
+  Parameters:
+  - product {product} required — Shopify product object. Tags are used to determine
+      badge type ('new', 'popular', 'bestseller', 'sale') and course level
+      ('beginner', 'intermediate', 'advanced'). Product type is used as the
+      category label.
+  - show_expand {boolean} optional — Show the "View details" link in the card footer.
+      Default: true.
+
+  Usage:
+    {% render 'product-card', product: product %}
+    {% render 'product-card', product: product, show_expand: false %}
+{% enddoc %}
+
+{%- liquid
+  assign show_expand_link = true
+  if show_expand == false
+    assign show_expand_link = false
+  endif
+
+  assign course_level = ''
+  if product.tags contains 'beginner'
+    assign course_level = 'courses.level_beginner' | t
+  elsif product.tags contains 'intermediate'
+    assign course_level = 'courses.level_intermediate' | t
+  elsif product.tags contains 'advanced'
+    assign course_level = 'courses.level_advanced' | t
+  endif
+-%}
+
+<style>
+  .product-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 8px 30px rgba(6, 182, 212, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .product-card__image {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    position: relative;
+    background: var(--color-bg-elevated, #1E293B);
+  }
+
+  .product-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s;
+  }
+
+  .product-card:hover .product-card__image img {
+    transform: scale(1.04);
+  }
+
+  .product-card__image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-muted);
+  }
+
+  .product-card__badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1;
+  }
+
+  .product-card__level {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.65rem;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .product-card__body {
+    padding: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .product-card__category {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-primary);
+    font-weight: 600;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    margin: 0;
+  }
+
+  .product-card__title {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.35;
+    margin: 0;
+  }
+
+  .product-card__title a {
+    text-decoration: none;
+    color: var(--color-text);
+    transition: color 0.2s;
+  }
+
+  .product-card__title a:hover {
+    color: var(--color-primary);
+  }
+
+  .product-card__description {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    line-height: 1.55;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .product-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: auto;
+    padding-top: 4px;
+  }
+
+  .product-card__meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    white-space: nowrap;
+  }
+
+  .product-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-top: 1px solid var(--color-border);
+    gap: 12px;
+  }
+
+  .product-card__price {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .product-card__price--sale {
+    color: var(--color-primary);
+  }
+
+  .product-card__price-compare {
+    font-size: 0.8rem;
+    text-decoration: line-through;
+    color: var(--color-text-muted);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+
+  .product-card__expand {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    color: var(--color-primary);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    transition: gap 0.2s, opacity 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .product-card__expand:hover {
+    gap: 8px;
+    opacity: 0.8;
+  }
+
+  .product-card__expand:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+</style>
+
+<article class="product-card">
+  <div class="product-card__image">
+    {%- if product.featured_image -%}
+      <a href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+        <img
+          src="{{ product.featured_image | image_url: width: 720 }}"
+          alt="{{ product.featured_image.alt | escape }}"
+          width="720"
+          height="405"
+          loading="lazy"
+        >
+      </a>
+    {%- else -%}
+      <a href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+        <div class="product-card__image-placeholder">
+          {{ 'image' | placeholder_svg_tag }}
+        </div>
+      </a>
+    {%- endif -%}
+
+    <div class="product-card__badge">
+      {%- if product.available == false -%}
+        {%- assign badge_label = 'badges.sold_out' | t -%}
+        {% render 'badge', type: 'sold_out', label: badge_label %}
+      {%- elsif product.tags contains 'new' -%}
+        {%- assign badge_label = 'badges.new' | t -%}
+        {% render 'badge', type: 'new', label: badge_label %}
+      {%- elsif product.tags contains 'popular' -%}
+        {%- assign badge_label = 'badges.popular' | t -%}
+        {% render 'badge', type: 'popular', label: badge_label %}
+      {%- elsif product.tags contains 'bestseller' -%}
+        {%- assign badge_label = 'badges.bestseller' | t -%}
+        {% render 'badge', type: 'bestseller', label: badge_label %}
+      {%- elsif product.tags contains 'sale' -%}
+        {%- assign badge_label = 'badges.sale' | t -%}
+        {% render 'badge', type: 'sale', label: badge_label %}
+      {%- endif -%}
+    </div>
+
+    {%- if course_level != blank -%}
+      <span class="product-card__level">{{ course_level }}</span>
+    {%- endif -%}
+  </div>
+
+  <div class="product-card__body">
+    {%- if product.type != blank -%}
+      <p class="product-card__category">{{ product.type }}</p>
+    {%- endif -%}
+
+    <h3 class="product-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+
+    {%- if product.description != blank -%}
+      <p class="product-card__description">
+        {{ product.description | strip_html }}
+      </p>
+    {%- endif -%}
+
+    <div class="product-card__meta">
+      {%- assign modules_tag = '' -%}
+      {%- assign hours_tag = '' -%}
+      {%- for tag in product.tags -%}
+        {%- if tag contains 'modules:' -%}
+          {%- assign modules_tag = tag | remove: 'modules:' | strip -%}
+        {%- endif -%}
+        {%- if tag contains 'hours:' -%}
+          {%- assign hours_tag = tag | remove: 'hours:' | strip -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- if modules_tag != blank -%}
+        <span class="product-card__meta-item">
+          &#128218; {{ modules_tag }} {{ 'courses.modules_label' | t }}
+        </span>
+      {%- endif -%}
+
+      {%- if hours_tag != blank -%}
+        <span class="product-card__meta-item">
+          &#9201; {{ hours_tag }}h
+        </span>
+      {%- endif -%}
+
+      {%- if product.metafields.reviews.rating != blank -%}
+        <span class="product-card__meta-item">
+          {% render 'star-rating', rating: product.metafields.reviews.rating.value %}
+        </span>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="product-card__footer">
+    <div>
+      {%- if product.available -%}
+        {%- if product.price_varies -%}
+          <span class="product-card__price">
+            {{- 'products.from_price' | t: price: product.price_min | money -}}
+          </span>
+        {%- elsif product.compare_at_price > product.price -%}
+          <span class="product-card__price product-card__price--sale">
+            {{ product.price | money }}
+          </span>
+          <span class="product-card__price-compare">
+            {{ product.compare_at_price | money }}
+          </span>
+        {%- else -%}
+          <span class="product-card__price">{{ product.price | money }}</span>
+        {%- endif -%}
+      {%- else -%}
+        <span class="product-card__price">{{ 'products.sold_out' | t }}</span>
+      {%- endif -%}
+    </div>
+
+    {%- if show_expand_link -%}
+      <a
+        href="{{ product.url }}"
+        class="product-card__expand"
+        aria-label="{{ 'products.quick_view' | t }} — {{ product.title }}"
+      >
+        {{ 'products.quick_view' | t }}
+        {% render 'icon', name: 'arrow-right', size: 14 %}
+      </a>
+    {%- endif -%}
+  </div>
+</article>

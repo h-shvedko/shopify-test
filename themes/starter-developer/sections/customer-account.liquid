@@ -1,0 +1,236 @@
+{%- liquid
+  assign account_title = 'customer.account_title' | t
+  assign order_history_label = 'customer.order_history' | t
+  assign no_orders_label = 'customer.no_orders' | t
+  assign order_number_label = 'customer.order_number' | t
+  assign order_date_label = 'customer.order_date' | t
+  assign order_total_label = 'customer.order_total' | t
+  assign order_status_label = 'customer.order_status' | t
+-%}
+
+{% stylesheet %}
+  .customer-account {
+    padding: 48px 0 80px;
+    background: var(--color-bg);
+  }
+
+  .customer-account__container {
+    max-width: var(--page-width, 1280px);
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .customer-account__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+
+  .customer-account__title {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0;
+  }
+
+  .customer-account__greeting {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    margin-top: 6px;
+  }
+
+  .customer-account__logout {
+    font-size: 0.78rem;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    color: var(--color-text-muted);
+    text-decoration: underline;
+    transition: color 0.2s;
+    white-space: nowrap;
+  }
+
+  .customer-account__logout:hover {
+    color: var(--color-error, #EF4444);
+  }
+
+  .customer-account__section-heading {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 16px;
+  }
+
+  .customer-orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  .customer-orders-table th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 0.7rem;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg-card);
+  }
+
+  .customer-orders-table th:first-child {
+    border-radius: 8px 0 0 0;
+  }
+
+  .customer-orders-table th:last-child {
+    border-radius: 0 8px 0 0;
+  }
+
+  .customer-orders-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    vertical-align: middle;
+  }
+
+  .customer-orders-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .customer-orders-table a {
+    color: var(--color-primary);
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 0.82rem;
+    text-decoration: none;
+  }
+
+  .customer-orders-table a:hover {
+    text-decoration: underline;
+  }
+
+  .customer-account__no-orders {
+    padding: 48px 20px;
+    text-align: center;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 0.85rem;
+    border: 1px dashed var(--color-border);
+    border-radius: 12px;
+  }
+
+  .customer-account__address {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 40px;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+  }
+
+  .customer-account__address-title {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 12px;
+  }
+
+  .customer-orders-wrap {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    overflow: hidden;
+    overflow-x: auto;
+  }
+
+  .customer-order-status {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: rgba(6, 182, 212, 0.1);
+    color: var(--color-primary);
+    border: 1px solid rgba(6, 182, 212, 0.2);
+  }
+{% endstylesheet %}
+
+<section class="customer-account" data-section-id="{{ section.id }}">
+  <div class="customer-account__container">
+
+    <div class="customer-account__header">
+      <div>
+        <h1 class="customer-account__title">{{ account_title }}</h1>
+        <p class="customer-account__greeting">{{ customer.first_name }} {{ customer.last_name }}</p>
+      </div>
+      <a href="{{ routes.account_logout_url }}" class="customer-account__logout">
+        {{ 'customer.logout' | t }}
+      </a>
+    </div>
+
+    <h2 class="customer-account__section-heading">{{ order_history_label }}</h2>
+
+    {%- if customer.orders.size > 0 -%}
+      <div class="customer-orders-wrap">
+        <table class="customer-orders-table">
+          <thead>
+            <tr>
+              <th>{{ order_number_label }}</th>
+              <th>{{ order_date_label }}</th>
+              <th>{{ order_status_label }}</th>
+              <th>{{ order_total_label }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {%- for order in customer.orders -%}
+              <tr>
+                <td>
+                  <a href="{{ order.customer_url }}">
+                    {{ 'customer.order_number' | t: number: order.name }}
+                  </a>
+                </td>
+                <td>{{ order.created_at | date: '%b %d, %Y' }}</td>
+                <td>
+                  <span class="customer-order-status">{{ order.financial_status }}</span>
+                </td>
+                <td>{{ order.total_price | money }}</td>
+              </tr>
+            {%- endfor -%}
+          </tbody>
+        </table>
+      </div>
+    {%- else -%}
+      <div class="customer-account__no-orders">
+        {{ no_orders_label }}
+      </div>
+    {%- endif -%}
+
+    {%- if customer.default_address -%}
+      <div class="customer-account__address">
+        <h2 class="customer-account__address-title">{{ 'customer.default_address' | t }}</h2>
+        {{ customer.default_address | format_address }}
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.customer_account.name",
+  "presets": [
+    { "name": "Customer account" }
+  ]
+}
+{% endschema %}

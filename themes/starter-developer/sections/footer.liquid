@@ -1,0 +1,299 @@
+<footer class="site-footer" role="contentinfo">
+  <div class="footer__main container">
+
+    {%- comment -%} Brand column {%- endcomment -%}
+    <div class="footer__brand">
+      <a href="{{ routes.root_url }}" class="footer__logo-link" aria-label="{{ shop.name }}">
+        <span class="footer__logo-mark" aria-hidden="true">CC</span>
+        <span class="footer__logo-name">
+          CodeCraft<span class="footer__logo-tld">.academy</span>
+        </span>
+      </a>
+      {%- if section.settings.about_text != blank -%}
+        <p class="footer__about">{{ section.settings.about_text }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Link column 1 {%- endcomment -%}
+    {%- if linklists[section.settings.menu_1].links.size > 0 -%}
+      <div class="footer__col">
+        <h3 class="footer__col-heading">
+          <span class="footer__col-prefix" aria-hidden="true">// </span>
+          {{- section.settings.menu_1_heading | upcase -}}
+        </h3>
+        <ul class="footer__links" role="list">
+          {%- for link in linklists[section.settings.menu_1].links -%}
+            <li>
+              <a href="{{ link.url }}" class="footer__link">{{ link.title }}</a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Link column 2 {%- endcomment -%}
+    {%- if linklists[section.settings.menu_2].links.size > 0 -%}
+      <div class="footer__col">
+        <h3 class="footer__col-heading">
+          <span class="footer__col-prefix" aria-hidden="true">// </span>
+          {{- section.settings.menu_2_heading | upcase -}}
+        </h3>
+        <ul class="footer__links" role="list">
+          {%- for link in linklists[section.settings.menu_2].links -%}
+            <li>
+              <a href="{{ link.url }}" class="footer__link">{{ link.title }}</a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Link column 3 {%- endcomment -%}
+    {%- if linklists[section.settings.menu_3].links.size > 0 -%}
+      <div class="footer__col">
+        <h3 class="footer__col-heading">
+          <span class="footer__col-prefix" aria-hidden="true">// </span>
+          {{- section.settings.menu_3_heading | upcase -}}
+        </h3>
+        <ul class="footer__links" role="list">
+          {%- for link in linklists[section.settings.menu_3].links -%}
+            <li>
+              <a href="{{ link.url }}" class="footer__link">{{ link.title }}</a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+
+  </div>
+
+  {%- comment -%} Bottom bar {%- endcomment -%}
+  <div class="footer__bottom">
+    <div class="footer__bottom-inner container">
+      {%- assign current_year = 'now' | date: '%Y' -%}
+      <p class="footer__copyright">
+        {{ 'footer.copyright' | t: year: current_year }}
+      </p>
+      <div class="footer__badges" aria-label="{{ 'footer.tech_stack' | t }}">
+        <span class="footer__badge">Shopify</span>
+        <span class="footer__badge">Liquid</span>
+        <span class="footer__badge">Vanilla JS</span>
+        <span class="footer__badge">CSS</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+{% stylesheet %}
+.site-footer {
+  background: var(--color-bg-alt);
+  border-top: 1px solid var(--color-border);
+  margin-top: auto;
+}
+
+.footer__main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  padding-top: 56px;
+  padding-bottom: 56px;
+}
+
+/* Brand column */
+.footer__logo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  margin-bottom: 16px;
+}
+
+.footer__logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--color-primary);
+  color: #0B1120;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.75rem;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.footer__logo-name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+}
+
+.footer__logo-tld {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.footer__about {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.7;
+  max-width: 320px;
+}
+
+/* Link columns */
+.footer__col-heading {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--color-text-secondary);
+  margin-bottom: 16px;
+}
+
+.footer__col-prefix {
+  color: var(--color-primary);
+}
+
+.footer__links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer__link {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.footer__link:hover {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+/* Bottom bar */
+.footer__bottom {
+  border-top: 1px solid var(--color-border);
+  padding: 20px 0;
+}
+
+.footer__bottom-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.footer__copyright {
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+}
+
+.footer__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.footer__badge {
+  display: inline-block;
+  padding: 3px 10px;
+  background: rgba(6, 182, 212, 0.08);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  border-radius: 20px;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: var(--color-primary);
+  letter-spacing: 0.02em;
+}
+
+@media (min-width: 640px) {
+  .footer__main {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .footer__brand {
+    grid-column: 1 / -1;
+  }
+
+  .footer__bottom-inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+@media (min-width: 1024px) {
+  .footer__main {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+  }
+
+  .footer__brand {
+    grid-column: auto;
+  }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.footer.name",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "about_text",
+      "label": "t:sections.footer.settings.about_text.label",
+      "default": "Master modern web development with hands-on courses taught by engineers who build real products."
+    },
+    {
+      "type": "header",
+      "content": "Menu columns"
+    },
+    {
+      "type": "link_list",
+      "id": "menu_1",
+      "label": "t:sections.footer.settings.menu_1.label",
+      "default": "main-menu"
+    },
+    {
+      "type": "text",
+      "id": "menu_1_heading",
+      "label": "t:sections.footer.settings.menu_1_heading.label",
+      "default": "Courses"
+    },
+    {
+      "type": "link_list",
+      "id": "menu_2",
+      "label": "t:sections.footer.settings.menu_2.label",
+      "default": "main-menu"
+    },
+    {
+      "type": "text",
+      "id": "menu_2_heading",
+      "label": "t:sections.footer.settings.menu_2_heading.label",
+      "default": "Resources"
+    },
+    {
+      "type": "link_list",
+      "id": "menu_3",
+      "label": "t:sections.footer.settings.menu_3.label",
+      "default": "main-menu"
+    },
+    {
+      "type": "text",
+      "id": "menu_3_heading",
+      "label": "t:sections.footer.settings.menu_3_heading.label",
+      "default": "Company"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.footer.name"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,140 @@
+{% stylesheet %}
+  .cta-banner {
+    background: var(--color-primary);
+    color: #0B1120;
+    text-align: center;
+  }
+
+  .cta-banner__inner {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .cta-banner__heading {
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0B1120;
+    line-height: 1.2;
+    margin: 0 0 12px;
+  }
+
+  .cta-banner__subtitle {
+    font-size: 0.875rem;
+    color: rgba(11, 17, 32, 0.75);
+    line-height: 1.7;
+    margin: 0 0 28px;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-banner__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    background: #0B1120;
+    color: var(--color-primary);
+    border: 2px solid #0B1120;
+    border-radius: var(--border-radius);
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  }
+
+  .cta-banner__btn:hover {
+    background: transparent;
+    color: #0B1120;
+    text-decoration: none;
+    box-shadow: 0 4px 16px rgba(11, 17, 32, 0.2);
+  }
+
+  .cta-banner__btn:focus-visible {
+    outline: 2px solid #0B1120;
+    outline-offset: 3px;
+  }
+
+  @media (min-width: 768px) {
+    .cta-banner__heading {
+      font-size: 2.25rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .cta-banner__heading {
+      font-size: 2.5rem;
+    }
+  }
+{% endstylesheet %}
+
+<section
+  class="cta-banner section-padding"
+  id="section-{{ section.id }}"
+>
+  <div class="container">
+    <div class="cta-banner__inner">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="cta-banner__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.subtitle != blank -%}
+        <p class="cta-banner__subtitle">{{ section.settings.subtitle }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.button_label != blank -%}
+        {%- assign btn_url = section.settings.button_url | default: '#' -%}
+        <a href="{{ btn_url }}" class="cta-banner__btn">
+          {{ section.settings.button_label }}
+        </a>
+      {%- endif -%}
+    </div>
+
+    {% content_for 'blocks' %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "CTA banner",
+  "tag": "section",
+  "class": "section-cta-banner",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Start building today"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Browse courses"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button URL"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "presets": [
+    {
+      "name": "CTA banner"
+    }
+  ]
+}
+{% endschema %}

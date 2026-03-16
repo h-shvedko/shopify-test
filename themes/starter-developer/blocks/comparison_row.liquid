@@ -1,0 +1,83 @@
+{% doc %}
+  Renders a single feature row inside the comparison table section.
+
+  Parameters (all sourced from block.settings):
+  - feature    {string} — The feature name displayed in the first column.
+  - tier_1     {string} — Value shown for tier 1 (left column). Leave blank to render a checkmark.
+  - tier_2     {string} — Value shown for tier 2 (featured/middle column). Leave blank to render a checkmark.
+  - tier_3     {string} — Value shown for tier 3 (right column). Leave blank to render a checkmark.
+  - tier_2_featured {boolean} — When true, the tier 2 cell receives the .plan-featured class. Default: true.
+
+  Usage:
+    Used exclusively as a block inside sections/comparison-table.liquid.
+    Add via the theme editor — block type: comparison_row.
+{% enddoc %}
+
+{%- liquid
+  assign is_featured = block.settings.tier_2_featured
+-%}
+
+<tr class="comparison-table__row" {{ block.shopify_attributes }}>
+  <td class="comparison-table__feature">{{ block.settings.feature }}</td>
+
+  <td class="comparison-table__cell">
+    {%- if block.settings.tier_1 != blank -%}
+      {{ block.settings.tier_1 }}
+    {%- else -%}
+      <span class="comparison-table__check" aria-label="{{ 'comparison.included' | t }}">&#10003;</span>
+    {%- endif -%}
+  </td>
+
+  <td class="comparison-table__cell{% if is_featured %} plan-featured{% endif %}">
+    {%- if block.settings.tier_2 != blank -%}
+      {{ block.settings.tier_2 }}
+    {%- else -%}
+      <span class="comparison-table__check" aria-label="{{ 'comparison.included' | t }}">&#10003;</span>
+    {%- endif -%}
+  </td>
+
+  <td class="comparison-table__cell">
+    {%- if block.settings.tier_3 != blank -%}
+      {{ block.settings.tier_3 }}
+    {%- else -%}
+      <span class="comparison-table__check" aria-label="{{ 'comparison.included' | t }}">&#10003;</span>
+    {%- endif -%}
+  </td>
+</tr>
+
+{% schema %}
+{
+  "name": "Comparison row",
+  "settings": [
+    {
+      "type": "text",
+      "id": "feature",
+      "label": "Feature name"
+    },
+    {
+      "type": "text",
+      "id": "tier_1",
+      "label": "Tier 1 value",
+      "info": "Leave blank to show a checkmark"
+    },
+    {
+      "type": "text",
+      "id": "tier_2",
+      "label": "Tier 2 value",
+      "info": "Leave blank to show a checkmark"
+    },
+    {
+      "type": "text",
+      "id": "tier_3",
+      "label": "Tier 3 value",
+      "info": "Leave blank to show a checkmark"
+    },
+    {
+      "type": "checkbox",
+      "id": "tier_2_featured",
+      "label": "Highlight tier 2 cell",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

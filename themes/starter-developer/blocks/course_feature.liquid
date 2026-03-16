@@ -1,0 +1,51 @@
+{% doc %}
+  Renders a single course feature checklist item for the product detail section.
+  Displays a cyan check icon alongside a feature text string.
+
+  Parameters: none — all values come from block.settings.
+
+  Usage:
+    {% content_for 'blocks' %}
+{% enddoc %}
+
+{% stylesheet %}
+  .course-feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+  }
+
+  .course-feature__icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--color-primary);
+  }
+
+  .course-feature__text {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+{% endstylesheet %}
+
+<div class="course-feature" {{ block.shopify_attributes }}>
+  <span class="course-feature__icon" aria-hidden="true">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  </span>
+  <span class="course-feature__text">{{ block.settings.text }}</span>
+</div>
+
+{% schema %}
+{
+  "name": "t:blocks.course_feature.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "t:blocks.course_feature.settings.text.label",
+      "default": "Feature"
+    }
+  ]
+}
+{% endschema %}

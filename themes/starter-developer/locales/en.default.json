@@ -1,0 +1,219 @@
+{
+  "general": {
+    "skip_to_content": "Skip to content",
+    "cart": "Cart",
+    "search": "Search",
+    "menu": "Menu",
+    "close": "Close",
+    "loading": "Loading",
+    "home": "Home",
+    "gift_card_title": "Gift card",
+    "gift_card_expired": "This gift card has expired",
+    "add_to_apple_wallet": "Add to Apple Wallet"
+  },
+  "header": {
+    "search_placeholder": "Search courses...",
+    "cart_count": "{{ count }} items",
+    "account": "Account",
+    "command_bar_placeholder": "Search courses, docs, commands..."
+  },
+  "hero": {
+    "default_badge": "New courses available",
+    "default_heading": "Learn to build & ship",
+    "default_subtitle": "Master modern web development with hands-on courses taught by engineers who build real products.",
+    "primary_button": "Browse courses",
+    "secondary_button": "View curriculum",
+    "play_demo": "Watch demo"
+  },
+  "metrics": {
+    "heading": "Trusted by developers worldwide",
+    "students_label": "Students enrolled",
+    "courses_label": "Courses published",
+    "completion_label": "Completion rate",
+    "rating_label": "Average rating"
+  },
+  "courses": {
+    "heading": "Featured courses",
+    "view_all": "View all courses",
+    "enroll": "Enroll now",
+    "start_free": "Start for free",
+    "preview": "Preview course",
+    "duration": "{{ hours }}h {{ minutes }}m",
+    "lessons_count": "{{ count }} lessons",
+    "students_count": "{{ count }} students",
+    "level_beginner": "Beginner",
+    "level_intermediate": "Intermediate",
+    "level_advanced": "Advanced",
+    "includes": "This course includes",
+    "certificate": "Certificate of completion",
+    "lifetime_access": "Lifetime access",
+    "projects": "Hands-on projects",
+    "community": "Community access",
+    "updated": "Last updated {{ date }}",
+    "bestseller": "Bestseller",
+    "new_label": "New",
+    "free_label": "Free",
+    "instructor": "Instructor",
+    "curriculum": "Curriculum",
+    "requirements": "Requirements",
+    "what_you_learn": "What you'll learn",
+    "no_courses": "No courses found",
+    "filter_all": "All courses",
+    "filter_free": "Free",
+    "filter_popular": "Popular",
+    "modules_label": "modules"
+  },
+  "products": {
+    "add_to_cart": "Add to cart",
+    "sold_out": "Sold out",
+    "quick_view": "View details",
+    "from_price": "From {{ price }}",
+    "reviews_count": "{{ count }} reviews",
+    "sort_by": "Sort by",
+    "sort_featured": "Featured",
+    "sort_best_selling": "Best selling",
+    "sort_price_asc": "Price, low to high",
+    "sort_price_desc": "Price, high to low",
+    "sort_newest": "Newest",
+    "sort_title_asc": "A-Z",
+    "sort_title_desc": "Z-A",
+    "showing_count": "Showing {{ count }} products",
+    "featured_heading": "Featured products",
+    "view_all": "View all",
+    "you_may_also_like": "You may also like",
+    "in_stock": "In stock",
+    "low_stock": "Only {{ count }} left",
+    "out_of_stock": "Out of stock",
+    "description": "Description",
+    "shipping_returns": "Shipping & returns",
+    "reviews": "Reviews",
+    "added_to_cart": "Added to cart",
+    "no_products": "No products found",
+    "tax_included": "Tax included",
+    "guarantee_note": "30-day money-back guarantee"
+  },
+  "cart": {
+    "title": "Your cart",
+    "empty": "Your cart is empty",
+    "continue_shopping": "Continue shopping",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "shipping_at_checkout": "Calculated at checkout",
+    "shipping_free": "Free",
+    "tax": "Tax",
+    "tax_included": "Tax included",
+    "total": "Total",
+    "checkout": "Checkout",
+    "secure_checkout": "Secure checkout powered by Shopify",
+    "order_summary": "Order summary",
+    "free_shipping_notice": "Free shipping on orders over {{ threshold }}",
+    "free_shipping_remaining": "Add {{ amount }} more for free shipping",
+    "free_shipping_achieved": "You qualify for free shipping!",
+    "remove": "Remove",
+    "quantity": "Quantity"
+  },
+  "comparison": {
+    "heading": "Choose your plan",
+    "subtitle": "Find the right plan to start your learning journey.",
+    "feature": "Feature",
+    "included": "Included",
+    "not_included": "Not included",
+    "most_popular": "Most popular",
+    "get_started": "Get started",
+    "contact_sales": "Contact sales"
+  },
+  "testimonials": {
+    "heading": "What our students say",
+    "subtitle": "Real results from real developers."
+  },
+  "newsletter": {
+    "heading": "Ready to level up?",
+    "subtitle": "Get weekly tips on web development, new course launches, and exclusive discounts.",
+    "placeholder": "Your email address",
+    "subscribe": "Subscribe",
+    "privacy_note": "No spam. Unsubscribe anytime."
+  },
+  "footer": {
+    "about_heading": "About CodeCraft",
+    "copyright": "© {{ year }} CodeCraft Academy. All rights reserved.",
+    "payment_methods": "Accepted payment methods",
+    "tech_stack": "Built with",
+    "newsletter_heading": "Stay in the loop",
+    "newsletter_placeholder": "Your email address",
+    "subscribe": "Subscribe"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search courses...",
+    "no_results": "No results for \"{{ query }}\"",
+    "results_count": "{{ count }} results for \"{{ query }}\""
+  },
+  "not_found": {
+    "title": "Page not found",
+    "message": "The page you're looking for doesn't exist.",
+    "back_to_home": "Back to home",
+    "suggestion": "Try browsing our courses instead."
+  },
+  "customer": {
+    "login_title": "Login",
+    "register_title": "Create account",
+    "account_title": "My account",
+    "email": "Email",
+    "password": "Password",
+    "first_name": "First name",
+    "last_name": "Last name",
+    "submit_login": "Sign in",
+    "submit_register": "Create account",
+    "order_history": "Order history",
+    "order_number": "Order {{ number }}",
+    "order_date": "Date",
+    "order_total": "Total",
+    "order_status": "Status",
+    "order_product": "Product",
+    "order_quantity": "Quantity",
+    "no_orders": "You haven't placed any orders yet.",
+    "forgot_password": "Forgot password?",
+    "create_account": "Create an account",
+    "already_have_account": "Already have an account? Sign in",
+    "logout": "Sign out",
+    "default_address": "Default address",
+    "back_to_account": "Back to account"
+  },
+  "accessibility": {
+    "increase_quantity": "Increase quantity",
+    "decrease_quantity": "Decrease quantity",
+    "open_menu": "Open menu",
+    "close_menu": "Close menu",
+    "star_rating": "{{ rating }} out of 5 stars",
+    "open_cart": "Open cart",
+    "remove_item": "Remove {{ title }} from cart",
+    "open_command_bar": "Open command bar",
+    "close_command_bar": "Close command bar"
+  },
+  "pagination": {
+    "label": "Pagination",
+    "previous": "Previous page",
+    "next": "Next page",
+    "page": "Page {{ number }}",
+    "current_page": "Page {{ number }}, current page"
+  },
+  "badges": {
+    "new": "New",
+    "sale": "Sale",
+    "featured": "Featured",
+    "bestseller": "Bestseller",
+    "sold_out": "Sold out",
+    "free": "Free",
+    "popular": "Popular"
+  },
+  "sections": {
+    "header": {
+      "nav_aria_label": "Main navigation",
+      "mobile_menu_aria_label": "Mobile menu",
+      "mobile_nav_aria_label": "Mobile navigation"
+    }
+  },
+  "hero_banner": {
+    "terminal_title_default": "~/codecraft-academy"
+  }
+}

@@ -1,0 +1,89 @@
+{% doc %}
+  Renders a small badge/tag element in CodeCraft Academy dark-themed style.
+
+  Parameters:
+  - type {string} required — Badge variant. One of: new, popular, bestseller, sale,
+      sold_out, default.
+  - label {string} required — Text content displayed inside the badge.
+
+  Usage:
+    {% assign badge_label = 'badges.new' | t %}
+    {% render 'badge', type: 'new', label: badge_label %}
+
+    {% assign badge_label = 'badges.popular' | t %}
+    {% render 'badge', type: 'popular', label: badge_label %}
+
+    {% assign badge_label = 'badges.bestseller' | t %}
+    {% render 'badge', type: 'bestseller', label: badge_label %}
+
+    {% assign badge_label = 'badges.sale' | t %}
+    {% render 'badge', type: 'sale', label: badge_label %}
+
+    {% assign badge_label = 'badges.sold_out' | t %}
+    {% render 'badge', type: 'sold_out', label: badge_label %}
+{% enddoc %}
+
+<style>
+  .badge {
+    display: inline-block;
+    padding: 3px 8px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-radius: 4px;
+    line-height: 1.4;
+  }
+
+  .badge--new {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10B981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+
+  .badge--popular {
+    background: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+
+  .badge--bestseller {
+    background: rgba(6, 182, 212, 0.15);
+    color: #22D3EE;
+    border: 1px solid rgba(6, 182, 212, 0.3);
+  }
+
+  .badge--sale {
+    background: rgba(239, 68, 68, 0.15);
+    color: #F87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
+  .badge--sold-out {
+    background: rgba(239, 68, 68, 0.1);
+    color: #F87171;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    opacity: 0.8;
+  }
+
+  .badge--default {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+</style>
+
+{%- if type == 'new' -%}
+  <span class="badge badge--new">{{ label }}</span>
+{%- elsif type == 'popular' -%}
+  <span class="badge badge--popular">{{ label }}</span>
+{%- elsif type == 'bestseller' -%}
+  <span class="badge badge--bestseller">{{ label }}</span>
+{%- elsif type == 'sale' -%}
+  <span class="badge badge--sale">{{ label }}</span>
+{%- elsif type == 'sold_out' -%}
+  <span class="badge badge--sold-out">{{ label }}</span>
+{%- else -%}
+  <span class="badge badge--default">{{ label }}</span>
+{%- endif -%}

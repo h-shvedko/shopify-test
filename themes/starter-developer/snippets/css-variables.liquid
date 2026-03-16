@@ -1,0 +1,49 @@
+{% doc %}
+  Renders all theme settings as CSS custom properties on :root.
+
+  Maps global settings_schema color, typography, layout, and spacing
+  settings to CSS variables consumed throughout the theme. Also renders
+  font_face declarations so custom fonts are loaded correctly.
+
+  No parameters — reads directly from the global `settings` object.
+
+  Usage:
+    {% render 'css-variables' %}
+{% enddoc %}
+
+<style>{{ settings.font_heading | font_face: font_display: 'swap' }} {{ settings.font_body | font_face: font_display: 'swap' }}</style>
+
+<style>
+  :root {
+    /* ---- Colors ---- */
+    --color-bg: {{ settings.color_bg }};
+    --color-bg-alt: {{ settings.color_bg_alt }};
+    --color-bg-card: {{ settings.color_bg_card }};
+    --color-surface: {{ settings.color_surface }};
+    --color-text: {{ settings.color_text }};
+    --color-text-secondary: {{ settings.color_text_secondary }};
+    --color-text-muted: {{ settings.color_text_muted }};
+    --color-primary: {{ settings.color_primary }};
+    --color-primary-dark: {{ settings.color_primary_dark }};
+    --color-primary-light: {{ settings.color_primary_light }};
+    --color-primary-glow: {{ settings.color_primary | color_modify: 'alpha', 0.15 }};
+    --color-accent: {{ settings.color_accent }};
+    --color-accent-2: {{ settings.color_accent_2 }};
+    --color-error: {{ settings.color_error }};
+    --color-success: {{ settings.color_accent }};
+    --color-border: {{ settings.color_border }};
+    --color-terminal-bg: {{ settings.color_terminal_bg }};
+
+    /* ---- Typography ---- */
+    --font-heading: {{ settings.font_heading.family | json }}, {{ settings.font_heading.fallback_families }};
+    --font-body: {{ settings.font_body.family | json }}, {{ settings.font_body.fallback_families }};
+    --font-heading-weight: {{ settings.font_heading.weight }};
+    --font-body-weight: {{ settings.font_body.weight }};
+    --font-scale: {{ settings.font_scale | divided_by: 100.0 }};
+
+    /* ---- Layout ---- */
+    --page-width: {{ settings.page_width }}px;
+    --border-radius: {{ settings.border_radius }}px;
+    --spacing-scale: {{ settings.spacing_scale | divided_by: 100.0 }};
+  }
+</style>

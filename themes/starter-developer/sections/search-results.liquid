@@ -1,0 +1,190 @@
+{%- liquid
+  assign search_title = 'search.title' | t
+  assign no_results_label = 'search.no_results' | t: query: search.terms
+  assign results_count_label = 'search.results_count' | t: count: search.results_count, query: search.terms
+  assign search_placeholder = 'search.placeholder' | t
+  assign no_products_label = 'products.no_products' | t
+-%}
+
+{% stylesheet %}
+  .search-results {
+    padding: 48px 0 80px;
+    background: var(--color-bg);
+  }
+
+  .search-results__container {
+    max-width: var(--page-width, 1280px);
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .search-results__header {
+    margin-bottom: 40px;
+  }
+
+  .search-results__title {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 20px;
+  }
+
+  .search-results__form {
+    display: flex;
+    gap: 0;
+    max-width: 560px;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .search-results__form:focus-within {
+    border-color: var(--color-primary);
+  }
+
+  .search-results__input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--color-text);
+    font-size: 0.9rem;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    padding: 14px 16px;
+    outline: none;
+  }
+
+  .search-results__input::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  .search-results__submit {
+    background: var(--color-primary);
+    border: none;
+    color: #0F172A;
+    padding: 0 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+  }
+
+  .search-results__submit:hover {
+    opacity: 0.85;
+  }
+
+  .search-results__submit:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+
+  .search-results__meta {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    margin-bottom: 28px;
+  }
+
+  .search-results__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  @media (min-width: 640px) {
+    .search-results__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .search-results__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .search-results__no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 0.9rem;
+    border: 1px dashed var(--color-border);
+    border-radius: 12px;
+  }
+{% endstylesheet %}
+
+{%- paginate search.results by section.settings.products_per_page -%}
+
+<section class="search-results" data-section-id="{{ section.id }}">
+  <div class="search-results__container">
+
+    <div class="search-results__header">
+      <h1 class="search-results__title">{{ search_title }}</h1>
+
+      <form action="{{ routes.search_url }}" method="get" class="search-results__form" role="search">
+        <input
+          type="hidden"
+          name="type"
+          value="product"
+        >
+        <input
+          type="search"
+          name="q"
+          class="search-results__input"
+          value="{{ search.terms | escape }}"
+          placeholder="{{ search_placeholder }}"
+          aria-label="{{ search_title }}"
+        >
+        <button type="submit" class="search-results__submit" aria-label="{{ search_title }}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </form>
+    </div>
+
+    {%- if search.performed -%}
+      {%- if search.results_count > 0 -%}
+        <p class="search-results__meta">{{ results_count_label }}</p>
+        <div class="search-results__grid">
+          {%- for item in search.results -%}
+            {%- if item.object_type == 'product' -%}
+              {% render 'product-card', product: item %}
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+        {% render 'pagination', paginate: paginate %}
+      {%- else -%}
+        <div class="search-results__no-results">
+          {{ no_results_label }}
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+
+  </div>
+</section>
+
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "t:sections.search_results.name",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "t:sections.search_results.settings.products_per_page.label",
+      "min": 6,
+      "max": 24,
+      "step": 6,
+      "default": 12
+    }
+  ],
+  "presets": [
+    { "name": "Search results" }
+  ]
+}
+{% endschema %}

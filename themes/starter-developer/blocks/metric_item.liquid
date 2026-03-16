@@ -1,0 +1,80 @@
+{% doc %}
+  Renders a single animated metric stat with a large number and a label.
+  Intended to be used inside the metrics-bar section.
+
+  Parameters (via block.settings):
+  - number {string} — The display value, e.g. "50k+" or "4.9". Default: "100+"
+  - label  {string} — Short descriptive label shown below the number. Default: "Metric"
+
+  Usage:
+    Inside a section that calls {% content_for 'blocks' %}
+    each block of type "metric_item" is rendered automatically.
+{% enddoc %}
+
+<div class="metric-item" data-metric>
+  <span
+    class="metric-item__number"
+    data-metric-value="{{ block.settings.number | escape }}"
+    aria-label="{{ block.settings.number }} {{ block.settings.label }}"
+  >
+    {{- block.settings.number -}}
+  </span>
+  <span class="metric-item__label" aria-hidden="true">
+    {{- block.settings.label -}}
+  </span>
+</div>
+
+{% stylesheet %}
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.metric-item__number {
+  font-family: var(--font-heading);
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+  transition: transform 0.2s;
+}
+
+.metric-item__label {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+@media (min-width: 768px) {
+  .metric-item__number {
+    font-size: 2.75rem;
+  }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:blocks.metric_item.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "number",
+      "label": "t:blocks.metric_item.settings.value.label",
+      "default": "100+"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "t:blocks.metric_item.settings.label.label",
+      "default": "Metric"
+    }
+  ]
+}
+{% endschema %}
