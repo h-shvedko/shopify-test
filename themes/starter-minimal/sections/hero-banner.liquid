@@ -23,6 +23,8 @@
         fetchpriority: 'high',
         alt: section.settings.image.alt | escape
     }}
+  {% else %}
+    <img src="{{ 'hero-brewing.jpg' | asset_url }}" alt="" class="hero-banner__image" loading="eager" fetchpriority="high">
   {% endif %}
 
   <div class="hero-banner__overlay" aria-hidden="true"></div>
