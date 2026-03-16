@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<title>CodeCraft Academy — Starter Developer Theme</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   CodeCraft Academy — Starter Developer Theme
+   Digital Courses / SaaS E-Commerce
+
+   Aesthetic: Retro terminal / hacker
+   Colors: Dark bg + Cyan (#06B6D4) accent
+   Typography: JetBrains Mono (monospace)
+   ============================================ */
+
+:root {
+  /* Light mode */
+  --color-bg: #F8FAFC;
+  --color-bg-alt: #F1F5F9;
+  --color-bg-card: #FFFFFF;
+  --color-bg-code: #1E293B;
+  --color-surface: #E2E8F0;
+  --color-text: #0F172A;
+  --color-text-secondary: #64748B;
+  --color-text-muted: #94A3B8;
+  --color-border: #E2E8F0;
+  --color-primary: #06B6D4;
+  --color-primary-dark: #0891B2;
+  --color-primary-light: #22D3EE;
+  --color-primary-glow: rgba(6, 182, 212, 0.15);
+  --color-accent: #10B981;
+  --color-accent-2: #F59E0B;
+  --color-error: #EF4444;
+  --color-success: #10B981;
+  --color-terminal-bg: #0F172A;
+  --color-terminal-text: #22D3EE;
+  --color-terminal-green: #4ADE80;
+  --color-terminal-amber: #FBBF24;
+  --color-terminal-red: #F87171;
+  --color-terminal-purple: #A78BFA;
+  --header-bg: rgba(248, 250, 252, 0.85);
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --card-shadow-hover: 0 8px 30px rgba(0,0,0,0.12);
+}
+
+[data-theme="dark"] {
+  --color-bg: #0B1120;
+  --color-bg-alt: #111827;
+  --color-bg-card: #1E293B;
+  --color-bg-code: #0F172A;
+  --color-surface: #334155;
+  --color-text: #F1F5F9;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted: #64748B;
+  --color-border: #1E293B;
+  --header-bg: rgba(11, 17, 32, 0.85);
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  --card-shadow-hover: 0 8px 30px rgba(6, 182, 212, 0.15);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.7;
+  transition: background 0.3s, color 0.3s;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--color-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code { font-family: inherit; }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+h1, h2, h3, h4 { font-family: 'Space Grotesk', 'JetBrains Mono', sans-serif; font-weight: 700; line-height: 1.2; }
+h1 { font-size: 3.5rem; }
+h2 { font-size: 2.25rem; }
+h3 { font-size: 1.375rem; }
+
+/* ---- DESIGN LABEL ---- */
+.design-label {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+  background: var(--color-primary); color: #0B1120; text-align: center;
+  padding: 8px; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
+  font-weight: 600;
+}
+
+.page-label {
+  background: var(--color-primary); color: #0B1120; padding: 40px 24px;
+  text-align: center; font-size: 1.25rem; letter-spacing: 0.08em;
+  font-weight: 700; text-transform: uppercase; border-top: 3px solid var(--color-terminal-green);
+}
+
+/* ============================================
+   COMMAND BAR HEADER
+   ============================================ */
+.header {
+  position: sticky; top: 32px; z-index: 100;
+  background: var(--header-bg); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--color-border);
+}
+.header__inner {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 24px; max-width: 1200px; margin: 0 auto; gap: 16px;
+}
+.header__logo {
+  font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 700;
+  color: var(--color-text); display: flex; align-items: center; gap: 8px;
+  white-space: nowrap;
+}
+.header__logo-icon {
+  width: 28px; height: 28px; background: var(--color-primary);
+  border-radius: 6px; display: flex; align-items: center; justify-content: center;
+  color: #0B1120; font-size: 0.8rem; font-weight: 700;
+}
+.header__logo span { color: var(--color-text-muted); font-weight: 400; }
+
+/* Command bar / search */
+.header__cmd {
+  flex: 1; max-width: 480px; position: relative;
+}
+.header__cmd-input {
+  width: 100%; padding: 8px 16px 8px 36px;
+  background: var(--color-bg-alt); border: 1px solid var(--color-border);
+  border-radius: 8px; color: var(--color-text); font-family: inherit;
+  font-size: 0.8rem; outline: none; transition: all 0.2s;
+}
+.header__cmd-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-glow);
+}
+.header__cmd-input::placeholder { color: var(--color-text-muted); }
+.header__cmd-icon {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--color-text-muted); font-size: 0.85rem;
+}
+.header__cmd-kbd {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: 4px; padding: 2px 6px; font-size: 0.65rem;
+  color: var(--color-text-muted); font-weight: 600;
+}
+
+.header__actions { display: flex; align-items: center; gap: 12px; }
+.header__action-btn {
+  background: none; border: 1px solid var(--color-border); border-radius: 8px;
+  color: var(--color-text-secondary); padding: 6px 12px; font-family: inherit;
+  font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 6px;
+  transition: all 0.2s;
+}
+.header__action-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.header__cart-btn {
+  background: var(--color-primary); color: #0B1120; border-color: var(--color-primary);
+  font-weight: 600;
+}
+.header__cart-btn:hover { background: var(--color-primary-dark); }
+.header__theme-toggle {
+  width: 36px; height: 36px; border-radius: 8px; display: flex;
+  align-items: center; justify-content: center; font-size: 1rem;
+  background: var(--color-bg-alt); border: 1px solid var(--color-border);
+  cursor: pointer; transition: all 0.2s;
+}
+.header__theme-toggle:hover { border-color: var(--color-primary); }
+
+/* ============================================
+   HERO — Terminal style
+   ============================================ */
+.hero {
+  padding: 100px 0 80px;
+  background: var(--color-bg);
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; top: 0; right: 0;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, var(--color-primary-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero__grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;
+}
+.hero__content { position: relative; z-index: 1; }
+.hero__badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--color-primary-glow); border: 1px solid rgba(6, 182, 212, 0.3);
+  padding: 6px 14px; border-radius: 20px; font-size: 0.7rem;
+  color: var(--color-primary-light); font-weight: 500;
+  margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.08em;
+}
+.hero__badge-dot {
+  width: 6px; height: 6px; background: var(--color-terminal-green);
+  border-radius: 50%; animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+.hero h1 { font-size: 3.5rem; line-height: 1.1; margin-bottom: 20px; }
+.hero h1 .gradient-text {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-terminal-green));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero__subtitle {
+  font-size: 0.95rem; color: var(--color-text-secondary); margin-bottom: 32px;
+  max-width: 480px; line-height: 1.7;
+}
+.hero__buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+
+/* Terminal window */
+.terminal {
+  background: var(--color-terminal-bg); border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08); overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.terminal__bar {
+  display: flex; align-items: center; gap: 8px; padding: 12px 16px;
+  background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.terminal__dot { width: 12px; height: 12px; border-radius: 50%; }
+.terminal__dot--red { background: #EF4444; }
+.terminal__dot--yellow { background: #FBBF24; }
+.terminal__dot--green { background: #22C55E; }
+.terminal__title {
+  flex: 1; text-align: center; color: rgba(255,255,255,0.3);
+  font-size: 0.7rem; font-weight: 500;
+}
+.terminal__body {
+  padding: 20px; font-size: 0.8rem; line-height: 1.8;
+  color: var(--color-terminal-text); min-height: 260px;
+}
+.terminal__line { margin-bottom: 4px; }
+.terminal__prompt { color: var(--color-terminal-green); }
+.terminal__cmd { color: #F1F5F9; }
+.terminal__comment { color: var(--color-text-muted); font-style: italic; }
+.terminal__string { color: var(--color-terminal-amber); }
+.terminal__keyword { color: var(--color-terminal-purple); }
+.terminal__cursor {
+  display: inline-block; width: 8px; height: 16px;
+  background: var(--color-primary); animation: blink 1s infinite;
+  vertical-align: middle; margin-left: 2px;
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ---- BUTTONS ---- */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px; border-radius: 8px; font-weight: 600;
+  font-size: 0.8rem; border: 1px solid transparent; cursor: pointer;
+  font-family: 'JetBrains Mono', monospace; letter-spacing: 0.02em;
+  transition: all 0.2s;
+}
+.btn--primary {
+  background: var(--color-primary); color: #0B1120; border-color: var(--color-primary);
+}
+.btn--primary:hover { background: var(--color-primary-dark); box-shadow: 0 0 20px var(--color-primary-glow); }
+.btn--outline {
+  background: transparent; color: var(--color-text); border-color: var(--color-border);
+}
+.btn--outline:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.btn--ghost { background: transparent; color: var(--color-text-secondary); border: none; }
+.btn--ghost:hover { color: var(--color-primary); }
+.btn--full { width: 100%; justify-content: center; }
+.btn svg { width: 16px; height: 16px; }
+
+/* ============================================
+   METRICS / STATS BAR
+   ============================================ */
+.metrics {
+  padding: 48px 0; background: var(--color-bg-alt);
+  border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);
+}
+.metrics__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; text-align: center; }
+.metric__number {
+  font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 700;
+  color: var(--color-primary); margin-bottom: 4px;
+}
+.metric__label { font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* ============================================
+   COURSE CARDS — Interactive expandable
+   ============================================ */
+.courses { padding: 80px 0; }
+.courses__header { margin-bottom: 48px; }
+.courses__header h2 { margin-bottom: 8px; }
+.courses__header p { color: var(--color-text-secondary); font-size: 0.9rem; }
+.courses__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+.course-card {
+  background: var(--color-bg-card); border: 1px solid var(--color-border);
+  border-radius: 12px; overflow: hidden; transition: all 0.3s;
+  position: relative;
+}
+.course-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-2px);
+}
+.course-card__image {
+  aspect-ratio: 16/9; overflow: hidden; position: relative;
+  background: var(--color-bg-code);
+}
+.course-card__image img { width: 100%; height: 100%; object-fit: cover; }
+.course-card__badge {
+  position: absolute; top: 12px; left: 12px;
+  background: var(--color-primary); color: #0B1120;
+  padding: 3px 10px; border-radius: 4px; font-size: 0.65rem;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.course-card__badge--new { background: var(--color-terminal-green); }
+.course-card__badge--popular { background: var(--color-accent-2); }
+.course-card__level {
+  position: absolute; top: 12px; right: 12px;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+  padding: 3px 10px; border-radius: 4px; font-size: 0.65rem;
+  color: white; font-weight: 500;
+}
+.course-card__info { padding: 20px; }
+.course-card__category {
+  font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--color-primary); font-weight: 600; margin-bottom: 8px;
+}
+.course-card__title {
+  font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; font-weight: 700;
+  margin-bottom: 8px; line-height: 1.3; color: var(--color-text);
+}
+.course-card__desc {
+  font-size: 0.8rem; color: var(--color-text-secondary); margin-bottom: 16px;
+  line-height: 1.6;
+}
+.course-card__meta {
+  display: flex; align-items: center; gap: 16px; font-size: 0.7rem;
+  color: var(--color-text-muted); margin-bottom: 16px;
+}
+.course-card__meta-item { display: flex; align-items: center; gap: 4px; }
+.course-card__footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 16px; border-top: 1px solid var(--color-border);
+}
+.course-card__price {
+  font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; font-weight: 700;
+  color: var(--color-text);
+}
+.course-card__price-compare {
+  font-size: 0.8rem; text-decoration: line-through; color: var(--color-text-muted);
+  margin-left: 8px; font-weight: 400;
+}
+.course-card__expand {
+  font-size: 0.75rem; color: var(--color-primary); font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; gap: 4px;
+}
+
+/* Expanded state */
+.course-card__details {
+  max-height: 0; overflow: hidden; transition: max-height 0.4s ease;
+}
+.course-card__details--open { max-height: 300px; }
+.course-card__details-inner {
+  padding: 0 20px 20px; font-size: 0.8rem;
+}
+.course-card__curriculum {
+  list-style: none; font-size: 0.75rem; color: var(--color-text-secondary);
+}
+.course-card__curriculum li {
+  padding: 6px 0; border-bottom: 1px solid var(--color-border);
+  display: flex; align-items: center; gap: 8px;
+}
+.course-card__curriculum li:last-child { border-bottom: none; }
+.course-card__check { color: var(--color-terminal-green); font-size: 0.8rem; }
+
+/* ============================================
+   COMPARISON TABLE
+   ============================================ */
+.comparison { padding: 80px 0; background: var(--color-bg-alt); }
+.comparison__header { text-align: center; margin-bottom: 48px; }
+.comparison__header p { color: var(--color-text-secondary); margin-top: 8px; }
+.comparison__table-wrap { overflow-x: auto; }
+.comparison__table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  font-size: 0.8rem;
+}
+.comparison__table th {
+  padding: 16px 20px; text-align: left; font-weight: 600;
+  background: var(--color-bg-card); border-bottom: 2px solid var(--color-primary);
+  position: sticky; top: 0; color: var(--color-text);
+}
+.comparison__table th:first-child { border-radius: 8px 0 0 0; }
+.comparison__table th:last-child { border-radius: 0 8px 0 0; }
+.comparison__table td {
+  padding: 14px 20px; border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+}
+.comparison__table tr:hover td { background: var(--color-primary-glow); }
+.comparison__table .plan-name {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+  color: var(--color-text); font-size: 0.9rem;
+}
+.comparison__table .plan-price {
+  font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem;
+  font-weight: 700; color: var(--color-primary);
+}
+.comparison__table .plan-price span { font-size: 0.7rem; color: var(--color-text-muted); font-weight: 400; }
+.comparison__check { color: var(--color-terminal-green); font-size: 1rem; }
+.comparison__cross { color: var(--color-text-muted); font-size: 1rem; }
+.comparison__table .plan-featured {
+  background: var(--color-primary-glow); border-left: 2px solid var(--color-primary);
+  border-right: 2px solid var(--color-primary);
+}
+.comparison__table th.plan-featured {
+  background: var(--color-primary); color: #0B1120;
+  border-bottom: 2px solid var(--color-primary);
+}
+
+/* ============================================
+   TESTIMONIALS — Code block style
+   ============================================ */
+.testimonials { padding: 80px 0; }
+.testimonials__header { text-align: center; margin-bottom: 48px; }
+.testimonials__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.testimonial-card {
+  background: var(--color-bg-card); border: 1px solid var(--color-border);
+  border-radius: 12px; padding: 24px; position: relative;
+}
+.testimonial-card::before {
+  content: '//'; position: absolute; top: 16px; right: 20px;
+  font-size: 2rem; color: var(--color-border); font-weight: 700;
+}
+.testimonial-card__stars { color: var(--color-accent-2); font-size: 0.85rem; margin-bottom: 12px; }
+.testimonial-card__text {
+  font-size: 0.85rem; line-height: 1.7; margin-bottom: 16px;
+  color: var(--color-text-secondary);
+}
+.testimonial-card__author { display: flex; align-items: center; gap: 12px; }
+.testimonial-card__avatar {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-terminal-green));
+  display: flex; align-items: center; justify-content: center;
+  color: #0B1120; font-size: 0.75rem; font-weight: 700;
+}
+.testimonial-card__name { font-weight: 600; font-size: 0.8rem; color: var(--color-text); }
+.testimonial-card__role { font-size: 0.7rem; color: var(--color-text-muted); }
+
+/* ============================================
+   CTA / NEWSLETTER
+   ============================================ */
+.cta {
+  padding: 80px 0;
+  background: var(--color-terminal-bg);
+  color: #F1F5F9;
+  position: relative; overflow: hidden;
+}
+.cta::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 20% 50%, rgba(6,182,212,0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(16,185,129,0.08) 0%, transparent 50%);
+}
+.cta__content { position: relative; z-index: 1; text-align: center; max-width: 600px; margin: 0 auto; }
+.cta h2 { color: #F1F5F9; margin-bottom: 12px; }
+.cta p { color: rgba(241,245,249,0.6); margin-bottom: 32px; font-size: 0.9rem; }
+.cta__form { display: flex; gap: 12px; max-width: 440px; margin: 0 auto; }
+.cta__input {
+  flex: 1; padding: 10px 16px; background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
+  color: #F1F5F9; font-family: inherit; font-size: 0.8rem;
+}
+.cta__input::placeholder { color: rgba(255,255,255,0.3); }
+.cta__input:focus { border-color: var(--color-primary); outline: none; box-shadow: 0 0 0 3px var(--color-primary-glow); }
+
+/* ============================================
+   FOOTER — Terminal style
+   ============================================ */
+.footer {
+  background: var(--color-terminal-bg); color: var(--color-text-muted);
+  padding: 48px 0 0; border-top: 1px solid rgba(255,255,255,0.06);
+}
+.footer__grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+.footer__brand-name {
+  font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 700;
+  color: #F1F5F9; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+}
+.footer__brand-name .logo-icon {
+  width: 24px; height: 24px; background: var(--color-primary); border-radius: 5px;
+  display: flex; align-items: center; justify-content: center; color: #0B1120;
+  font-size: 0.65rem; font-weight: 700;
+}
+.footer__brand p { font-size: 0.8rem; line-height: 1.6; margin-bottom: 16px; }
+.footer__col h4 {
+  color: #F1F5F9; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;
+}
+.footer__col ul { list-style: none; }
+.footer__col li { margin-bottom: 8px; }
+.footer__col a { color: var(--color-text-muted); font-size: 0.8rem; transition: color 0.2s; }
+.footer__col a:hover { color: var(--color-primary); text-decoration: none; }
+.footer__bottom {
+  border-top: 1px solid rgba(255,255,255,0.06); padding: 20px 0;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.7rem;
+}
+.footer__tech-stack {
+  display: flex; gap: 12px; align-items: center;
+}
+.footer__tech-badge {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  padding: 3px 10px; border-radius: 4px; font-size: 0.6rem; color: var(--color-text-muted);
+}
+
+/* ============================================
+   PRODUCT DETAIL
+   ============================================ */
+.pdp { padding: 60px 0; }
+.pdp__layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; }
+.pdp__preview {
+  background: var(--color-bg-code); border-radius: 12px;
+  border: 1px solid var(--color-border); overflow: hidden;
+}
+.pdp__preview-bar {
+  display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+  background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.pdp__preview-dot { width: 10px; height: 10px; border-radius: 50%; }
+.pdp__preview-content { padding: 32px; min-height: 400px; display: flex; align-items: center; justify-content: center; }
+.pdp__preview-content img { max-width: 100%; border-radius: 8px; }
+
+.pdp__info { padding-top: 8px; }
+.pdp__breadcrumb { font-size: 0.7rem; color: var(--color-text-muted); margin-bottom: 16px; }
+.pdp__breadcrumb a { color: var(--color-primary); }
+.pdp__category {
+  font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--color-primary); font-weight: 600; margin-bottom: 8px;
+}
+.pdp__title { font-size: 2rem; margin-bottom: 12px; }
+.pdp__rating { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.pdp__stars { color: var(--color-accent-2); font-size: 0.8rem; }
+.pdp__reviews { font-size: 0.75rem; color: var(--color-text-muted); }
+.pdp__price {
+  font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 700;
+  color: var(--color-primary); margin-bottom: 8px;
+}
+.pdp__price-sub { font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 20px; }
+.pdp__desc { font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.7; margin-bottom: 24px; }
+.pdp__includes { margin-bottom: 24px; }
+.pdp__includes h4 { font-size: 0.8rem; margin-bottom: 12px; }
+.pdp__includes-list { list-style: none; }
+.pdp__includes-list li {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; font-size: 0.8rem; color: var(--color-text-secondary);
+}
+.pdp__includes-check { color: var(--color-terminal-green); }
+.pdp__actions { display: flex; gap: 12px; margin-bottom: 20px; }
+.pdp__guarantee {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.7rem; color: var(--color-text-muted);
+}
+
+/* ============================================
+   CART
+   ============================================ */
+.cart-page { padding: 60px 0; }
+.cart-page h1 { margin-bottom: 32px; }
+.cart-page__layout { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; }
+.cart-item {
+  display: grid; grid-template-columns: 80px 1fr auto; gap: 16px;
+  padding: 20px 0; border-bottom: 1px solid var(--color-border);
+  align-items: center;
+}
+.cart-item__image {
+  width: 80px; height: 60px; border-radius: 8px; overflow: hidden;
+  background: var(--color-bg-code);
+}
+.cart-item__image img { width: 100%; height: 100%; object-fit: cover; }
+.cart-item__title { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.95rem; }
+.cart-item__variant { font-size: 0.7rem; color: var(--color-text-muted); margin-top: 2px; }
+.cart-item__price { font-weight: 700; font-size: 1rem; }
+.cart-item__remove { font-size: 0.7rem; color: var(--color-error); cursor: pointer; margin-top: 4px; }
+.cart-summary {
+  background: var(--color-bg-card); border: 1px solid var(--color-border);
+  border-radius: 12px; padding: 24px; position: sticky; top: 80px;
+}
+.cart-summary h3 { margin-bottom: 20px; font-size: 1rem; }
+.cart-summary__row {
+  display: flex; justify-content: space-between; padding: 8px 0;
+  font-size: 0.85rem; color: var(--color-text-secondary);
+}
+.cart-summary__row--total {
+  border-top: 2px solid var(--color-primary); padding-top: 16px; margin-top: 8px;
+  font-weight: 700; color: var(--color-text); font-size: 1rem;
+}
+.cart-summary .btn { margin-top: 20px; }
+.cart-summary__secure {
+  text-align: center; font-size: 0.7rem; color: var(--color-text-muted); margin-top: 12px;
+}
+
+/* ============================================
+   DESIGN SPEC
+   ============================================ */
+.spec-section { padding: 60px 24px; max-width: 1200px; margin: 0 auto; }
+.spec-section h2 {
+  font-size: 1.75rem; margin-bottom: 24px; padding-bottom: 12px;
+  border-bottom: 2px solid var(--color-primary);
+}
+.color-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 32px; }
+.color-swatch {
+  aspect-ratio: 1; border-radius: 8px; display: flex; flex-direction: column;
+  justify-content: flex-end; padding: 10px; font-size: 0.6rem; font-weight: 600;
+}
+.color-swatch span { opacity: 0.7; font-size: 0.55rem; margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="design-label">
+  Design Mockup — <span style="color: #22D3EE;">CodeCraft Academy</span> — Starter Developer Theme
+</div>
+
+<!-- ============================================
+     DESIGN TOKENS
+     ============================================ -->
+<div class="spec-section">
+  <h2>// Design Tokens</h2>
+  <h3 style="margin-bottom: 12px;">Color Palette (Dark Mode)</h3>
+  <div class="color-grid">
+    <div class="color-swatch" style="background: #0B1120; color: #F1F5F9;">Background<span>#0B1120</span></div>
+    <div class="color-swatch" style="background: #111827; color: #F1F5F9;">Bg Alt<span>#111827</span></div>
+    <div class="color-swatch" style="background: #1E293B; color: #F1F5F9;">Card<span>#1E293B</span></div>
+    <div class="color-swatch" style="background: #06B6D4; color: #0B1120;">Primary<span>#06B6D4</span></div>
+    <div class="color-swatch" style="background: #22D3EE; color: #0B1120;">Primary Lt<span>#22D3EE</span></div>
+    <div class="color-swatch" style="background: #10B981; color: #0B1120;">Accent<span>#10B981</span></div>
+    <div class="color-swatch" style="background: #F59E0B; color: #0B1120;">Accent 2<span>#F59E0B</span></div>
+    <div class="color-swatch" style="background: #EF4444; color: white;">Error<span>#EF4444</span></div>
+    <div class="color-swatch" style="background: #F1F5F9; color: #0B1120;">Text<span>#F1F5F9</span></div>
+    <div class="color-swatch" style="background: #94A3B8; color: #0B1120;">Secondary<span>#94A3B8</span></div>
+    <div class="color-swatch" style="background: #64748B; color: white;">Muted<span>#64748B</span></div>
+    <div class="color-swatch" style="background: #334155; color: #F1F5F9;">Surface<span>#334155</span></div>
+  </div>
+  <h3 style="margin-bottom: 8px;">Terminal Colors</h3>
+  <div style="display: flex; gap: 12px; margin-bottom: 32px;">
+    <div style="background: #0F172A; color: #22D3EE; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem;">cyan text</div>
+    <div style="background: #0F172A; color: #4ADE80; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem;">green text</div>
+    <div style="background: #0F172A; color: #FBBF24; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem;">amber text</div>
+    <div style="background: #0F172A; color: #F87171; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem;">red text</div>
+    <div style="background: #0F172A; color: #A78BFA; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem;">purple text</div>
+  </div>
+</div>
+
+<!-- ============================================
+     PAGE: HOME
+     ============================================ -->
+<div class="page-label">Page: Home (Dark Mode)</div>
+
+<!-- Header -->
+<header class="header" style="top: 0;">
+  <div class="header__inner">
+    <a class="header__logo" href="#">
+      <span class="header__logo-icon">CC</span>
+      CodeCraft<span>.academy</span>
+    </a>
+    <div class="header__cmd">
+      <span class="header__cmd-icon">⌕</span>
+      <input class="header__cmd-input" placeholder="Search courses, docs, tutorials..." type="text">
+      <span class="header__cmd-kbd">⌘K</span>
+    </div>
+    <div class="header__actions">
+      <button class="header__action-btn">Docs</button>
+      <button class="header__action-btn">Blog</button>
+      <button class="header__theme-toggle">🌙</button>
+      <button class="header__action-btn header__cart-btn">Cart (2)</button>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero__grid">
+      <div class="hero__content">
+        <div class="hero__badge">
+          <span class="hero__badge-dot"></span>
+          New courses available
+        </div>
+        <h1>Learn to<br><span class="gradient-text">Build & Ship</span></h1>
+        <p class="hero__subtitle">Master modern web development with hands-on courses taught by industry engineers. From React to Rust, we've got your stack covered.</p>
+        <div class="hero__buttons">
+          <a href="#" class="btn btn--primary">Browse Courses →</a>
+          <a href="#" class="btn btn--outline">View Curriculum</a>
+        </div>
+      </div>
+      <div class="terminal">
+        <div class="terminal__bar">
+          <span class="terminal__dot terminal__dot--red"></span>
+          <span class="terminal__dot terminal__dot--yellow"></span>
+          <span class="terminal__dot terminal__dot--green"></span>
+          <span class="terminal__title">~/codecraft-academy</span>
+        </div>
+        <div class="terminal__body">
+          <div class="terminal__line"><span class="terminal__prompt">$</span> <span class="terminal__cmd">codecraft enroll --course react-mastery</span></div>
+          <div class="terminal__line"><span class="terminal__comment"># Enrolling in React Mastery...</span></div>
+          <div class="terminal__line"><span class="terminal__prompt">✓</span> <span class="terminal__string">Access granted</span> — 12 modules, 48 lessons</div>
+          <div class="terminal__line"><span class="terminal__prompt">✓</span> <span class="terminal__string">Labs unlocked</span> — 24 hands-on projects</div>
+          <div class="terminal__line"><span class="terminal__prompt">✓</span> <span class="terminal__string">Community</span> — Discord access enabled</div>
+          <div class="terminal__line">&nbsp;</div>
+          <div class="terminal__line"><span class="terminal__prompt">$</span> <span class="terminal__keyword">ready</span> <span class="terminal__cmd">to learn?</span><span class="terminal__cursor"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Metrics -->
+<section class="metrics">
+  <div class="container">
+    <div class="metrics__grid">
+      <div>
+        <div class="metric__number">50k+</div>
+        <div class="metric__label">Students enrolled</div>
+      </div>
+      <div>
+        <div class="metric__number">200+</div>
+        <div class="metric__label">Course hours</div>
+      </div>
+      <div>
+        <div class="metric__number">4.9</div>
+        <div class="metric__label">Average rating</div>
+      </div>
+      <div>
+        <div class="metric__number">95%</div>
+        <div class="metric__label">Completion rate</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Course Cards -->
+<section class="courses">
+  <div class="container">
+    <div class="courses__header">
+      <h2>// Featured <span class="gradient-text">Courses</span></h2>
+      <p>Hands-on, project-based learning for developers</p>
+    </div>
+    <div class="courses__grid">
+      <!-- Card 1 -->
+      <div class="course-card">
+        <div class="course-card__image">
+          <img src="https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=500&h=280&fit=crop" alt="React">
+          <span class="course-card__badge course-card__badge--popular">Bestseller</span>
+          <span class="course-card__level">Advanced</span>
+        </div>
+        <div class="course-card__info">
+          <div class="course-card__category">Frontend</div>
+          <div class="course-card__title">React Mastery: From Zero to Production</div>
+          <div class="course-card__desc">Build real-world apps with React 19, Server Components, and the latest patterns.</div>
+          <div class="course-card__meta">
+            <span class="course-card__meta-item">📚 12 modules</span>
+            <span class="course-card__meta-item">⏱ 40 hours</span>
+            <span class="course-card__meta-item">⭐ 4.9</span>
+          </div>
+          <div class="course-card__footer">
+            <div class="course-card__price">$79 <span class="course-card__price-compare">$149</span></div>
+            <div class="course-card__expand">View details ↓</div>
+          </div>
+        </div>
+        <div class="course-card__details course-card__details--open">
+          <div class="course-card__details-inner">
+            <ul class="course-card__curriculum">
+              <li><span class="course-card__check">✓</span> React fundamentals & hooks</li>
+              <li><span class="course-card__check">✓</span> Server Components & streaming</li>
+              <li><span class="course-card__check">✓</span> State management patterns</li>
+              <li><span class="course-card__check">✓</span> Testing & deployment</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="course-card">
+        <div class="course-card__image">
+          <img src="https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=500&h=280&fit=crop" alt="TypeScript">
+          <span class="course-card__badge course-card__badge--new">New</span>
+          <span class="course-card__level">Intermediate</span>
+        </div>
+        <div class="course-card__info">
+          <div class="course-card__category">Full Stack</div>
+          <div class="course-card__title">TypeScript: The Complete Developer's Guide</div>
+          <div class="course-card__desc">Master TypeScript with generics, decorators, and enterprise-grade patterns.</div>
+          <div class="course-card__meta">
+            <span class="course-card__meta-item">📚 10 modules</span>
+            <span class="course-card__meta-item">⏱ 32 hours</span>
+            <span class="course-card__meta-item">⭐ 4.8</span>
+          </div>
+          <div class="course-card__footer">
+            <div class="course-card__price">$69</div>
+            <div class="course-card__expand">View details ↓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="course-card">
+        <div class="course-card__image">
+          <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=500&h=280&fit=crop" alt="DevOps">
+          <span class="course-card__level">Advanced</span>
+        </div>
+        <div class="course-card__info">
+          <div class="course-card__category">DevOps</div>
+          <div class="course-card__title">Docker & Kubernetes in Production</div>
+          <div class="course-card__desc">Deploy and scale applications with container orchestration and CI/CD pipelines.</div>
+          <div class="course-card__meta">
+            <span class="course-card__meta-item">📚 8 modules</span>
+            <span class="course-card__meta-item">⏱ 28 hours</span>
+            <span class="course-card__meta-item">⭐ 4.7</span>
+          </div>
+          <div class="course-card__footer">
+            <div class="course-card__price">$89</div>
+            <div class="course-card__expand">View details ↓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Comparison Table -->
+<section class="comparison">
+  <div class="container">
+    <div class="comparison__header">
+      <h2>// Choose Your <span class="gradient-text">Plan</span></h2>
+      <p>All plans include lifetime access and community support</p>
+    </div>
+    <div class="comparison__table-wrap">
+      <table class="comparison__table">
+        <thead>
+          <tr>
+            <th style="width: 35%">Feature</th>
+            <th style="width: 20%">
+              <div class="plan-name">Starter</div>
+              <div class="plan-price">$0 <span>/free</span></div>
+            </th>
+            <th style="width: 25%" class="plan-featured">
+              <div class="plan-name" style="color: #0B1120;">Pro ★</div>
+              <div class="plan-price" style="color: #0B1120;">$29 <span style="color: rgba(11,17,32,0.5)">/mo</span></div>
+            </th>
+            <th style="width: 20%">
+              <div class="plan-name">Team</div>
+              <div class="plan-price">$99 <span>/mo</span></div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Course access</td>
+            <td>5 free courses</td>
+            <td class="plan-featured">All courses</td>
+            <td>All courses</td>
+          </tr>
+          <tr>
+            <td>Hands-on projects</td>
+            <td><span class="comparison__check">✓</span></td>
+            <td class="plan-featured"><span class="comparison__check">✓</span></td>
+            <td><span class="comparison__check">✓</span></td>
+          </tr>
+          <tr>
+            <td>Certificate of completion</td>
+            <td><span class="comparison__cross">—</span></td>
+            <td class="plan-featured"><span class="comparison__check">✓</span></td>
+            <td><span class="comparison__check">✓</span></td>
+          </tr>
+          <tr>
+            <td>Source code access</td>
+            <td><span class="comparison__cross">—</span></td>
+            <td class="plan-featured"><span class="comparison__check">✓</span></td>
+            <td><span class="comparison__check">✓</span></td>
+          </tr>
+          <tr>
+            <td>Discord community</td>
+            <td>Read only</td>
+            <td class="plan-featured">Full access</td>
+            <td>Full access + private channel</td>
+          </tr>
+          <tr>
+            <td>1-on-1 mentoring</td>
+            <td><span class="comparison__cross">—</span></td>
+            <td class="plan-featured"><span class="comparison__cross">—</span></td>
+            <td>2 sessions/mo</td>
+          </tr>
+          <tr>
+            <td>Team management</td>
+            <td><span class="comparison__cross">—</span></td>
+            <td class="plan-featured"><span class="comparison__cross">—</span></td>
+            <td>Up to 25 seats</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td><a href="#" class="btn btn--outline" style="width: 100%; justify-content: center;">Get Started</a></td>
+            <td class="plan-featured"><a href="#" class="btn btn--primary" style="width: 100%; justify-content: center;">Go Pro →</a></td>
+            <td><a href="#" class="btn btn--outline" style="width: 100%; justify-content: center;">Contact Sales</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials">
+  <div class="container">
+    <div class="testimonials__header">
+      <h2>// What Devs <span class="gradient-text">Say</span></h2>
+    </div>
+    <div class="testimonials__grid">
+      <div class="testimonial-card">
+        <div class="testimonial-card__stars">★★★★★</div>
+        <p class="testimonial-card__text">"The best React course I've ever taken. The project-based approach helped me land my first frontend role within 3 months."</p>
+        <div class="testimonial-card__author">
+          <div class="testimonial-card__avatar">SK</div>
+          <div>
+            <div class="testimonial-card__name">Sarah K.</div>
+            <div class="testimonial-card__role">Frontend Developer @ Stripe</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-card__stars">★★★★★</div>
+        <p class="testimonial-card__text">"Finally a Docker course that doesn't hand-wave the hard parts. Every concept is explained with real production examples."</p>
+        <div class="testimonial-card__author">
+          <div class="testimonial-card__avatar">MR</div>
+          <div>
+            <div class="testimonial-card__name">Marcus R.</div>
+            <div class="testimonial-card__role">DevOps Engineer @ Netflix</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-card__stars">★★★★★</div>
+        <p class="testimonial-card__text">"The TypeScript course transformed how I write code. The generics section alone is worth 10x the price."</p>
+        <div class="testimonial-card__author">
+          <div class="testimonial-card__avatar">JL</div>
+          <div>
+            <div class="testimonial-card__name">Jessica L.</div>
+            <div class="testimonial-card__role">Senior Engineer @ Vercel</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA / Newsletter -->
+<section class="cta">
+  <div class="container">
+    <div class="cta__content">
+      <h2>Ready to <span class="gradient-text">level up</span>?</h2>
+      <p>Get weekly coding tips, new course announcements, and exclusive discounts. No spam, unsubscribe anytime.</p>
+      <div class="cta__form">
+        <input class="cta__input" type="email" placeholder="dev@example.com">
+        <button class="btn btn--primary">Subscribe</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <div class="footer__brand-name">
+          <span class="logo-icon">CC</span> CodeCraft.academy
+        </div>
+        <p>Learn modern development with hands-on, project-based courses. Built by engineers, for engineers.</p>
+      </div>
+      <div class="footer__col">
+        <h4>// Courses</h4>
+        <ul>
+          <li><a href="#">All Courses</a></li>
+          <li><a href="#">Frontend</a></li>
+          <li><a href="#">Backend</a></li>
+          <li><a href="#">DevOps</a></li>
+          <li><a href="#">Full Stack</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>// Resources</h4>
+        <ul>
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Changelog</a></li>
+          <li><a href="#">Community</a></li>
+          <li><a href="#">GitHub</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>// Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 CodeCraft Academy. All rights reserved.</span>
+      <div class="footer__tech-stack">
+        <span class="footer__tech-badge">Shopify</span>
+        <span class="footer__tech-badge">Liquid</span>
+        <span class="footer__tech-badge">Vanilla JS</span>
+        <span class="footer__tech-badge">CSS</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================
+     PAGE: PRODUCT DETAIL
+     ============================================ -->
+<div class="page-label">Page: Course Detail</div>
+
+<header class="header" style="position: relative; top: 0;">
+  <div class="header__inner">
+    <a class="header__logo" href="#">
+      <span class="header__logo-icon">CC</span>
+      CodeCraft<span>.academy</span>
+    </a>
+    <div class="header__cmd">
+      <span class="header__cmd-icon">⌕</span>
+      <input class="header__cmd-input" placeholder="Search courses, docs, tutorials..." type="text">
+      <span class="header__cmd-kbd">⌘K</span>
+    </div>
+    <div class="header__actions">
+      <button class="header__action-btn">Docs</button>
+      <button class="header__theme-toggle">🌙</button>
+      <button class="header__action-btn header__cart-btn">Cart (2)</button>
+    </div>
+  </div>
+</header>
+
+<section class="pdp">
+  <div class="container">
+    <div class="pdp__layout">
+      <div class="pdp__preview">
+        <div class="pdp__preview-bar">
+          <span class="pdp__preview-dot" style="background: #EF4444;"></span>
+          <span class="pdp__preview-dot" style="background: #FBBF24;"></span>
+          <span class="pdp__preview-dot" style="background: #22C55E;"></span>
+          <span style="flex:1; text-align: center; color: rgba(255,255,255,0.3); font-size: 0.7rem;">Course Preview</span>
+        </div>
+        <div class="pdp__preview-content">
+          <img src="https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=500&fit=crop" alt="React Mastery Course">
+        </div>
+      </div>
+      <div class="pdp__info">
+        <div class="pdp__breadcrumb">
+          <a href="#">Home</a> / <a href="#">Courses</a> / React Mastery
+        </div>
+        <div class="pdp__category">FRONTEND • ADVANCED</div>
+        <h1 class="pdp__title">React Mastery: From Zero to Production</h1>
+        <div class="pdp__rating">
+          <span class="pdp__stars">★★★★★</span>
+          <span class="pdp__reviews">4.9 (2,847 reviews)</span>
+        </div>
+        <div class="pdp__price">$79 <span style="font-size: 0.9rem; color: var(--color-text-muted); text-decoration: line-through; font-weight: 400;">$149</span></div>
+        <div class="pdp__price-sub">One-time purchase • Lifetime access</div>
+        <p class="pdp__desc">Build real-world applications with React 19, including Server Components, Suspense, and modern state management. Taught by a senior engineer at Meta.</p>
+
+        <div class="pdp__includes">
+          <h4>What's included:</h4>
+          <ul class="pdp__includes-list">
+            <li><span class="pdp__includes-check">✓</span> 12 modules, 48 video lessons (40+ hours)</li>
+            <li><span class="pdp__includes-check">✓</span> 24 hands-on coding projects</li>
+            <li><span class="pdp__includes-check">✓</span> Full source code access on GitHub</li>
+            <li><span class="pdp__includes-check">✓</span> Certificate of completion</li>
+            <li><span class="pdp__includes-check">✓</span> Discord community access</li>
+          </ul>
+        </div>
+
+        <div class="pdp__actions">
+          <button class="btn btn--primary" style="flex: 1;">Enroll Now — $79</button>
+          <button class="btn btn--outline">Add to Cart</button>
+        </div>
+        <div class="pdp__guarantee">
+          🛡️ 30-day money-back guarantee
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     PAGE: CART
+     ============================================ -->
+<div class="page-label">Page: Cart</div>
+
+<header class="header" style="position: relative; top: 0;">
+  <div class="header__inner">
+    <a class="header__logo" href="#">
+      <span class="header__logo-icon">CC</span>
+      CodeCraft<span>.academy</span>
+    </a>
+    <div class="header__cmd">
+      <span class="header__cmd-icon">⌕</span>
+      <input class="header__cmd-input" placeholder="Search courses..." type="text">
+      <span class="header__cmd-kbd">⌘K</span>
+    </div>
+    <div class="header__actions">
+      <button class="header__theme-toggle">🌙</button>
+      <button class="header__action-btn header__cart-btn">Cart (2)</button>
+    </div>
+  </div>
+</header>
+
+<section class="cart-page">
+  <div class="container">
+    <h1>// Your <span class="gradient-text">Cart</span></h1>
+    <div class="cart-page__layout">
+      <div>
+        <div class="cart-item">
+          <div class="cart-item__image">
+            <img src="https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=200&h=150&fit=crop" alt="">
+          </div>
+          <div>
+            <div class="cart-item__title">React Mastery: Zero to Production</div>
+            <div class="cart-item__variant">Advanced • 40+ hours • Lifetime access</div>
+            <a class="cart-item__remove">Remove</a>
+          </div>
+          <div class="cart-item__price">$79.00</div>
+        </div>
+        <div class="cart-item">
+          <div class="cart-item__image">
+            <img src="https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=200&h=150&fit=crop" alt="">
+          </div>
+          <div>
+            <div class="cart-item__title">TypeScript: Complete Developer's Guide</div>
+            <div class="cart-item__variant">Intermediate • 32 hours • Lifetime access</div>
+            <a class="cart-item__remove">Remove</a>
+          </div>
+          <div class="cart-item__price">$69.00</div>
+        </div>
+      </div>
+      <div class="cart-summary">
+        <h3>Order Summary</h3>
+        <div class="cart-summary__row">
+          <span>Subtotal (2 courses)</span><span>$148.00</span>
+        </div>
+        <div class="cart-summary__row">
+          <span>Discount</span><span style="color: var(--color-terminal-green);">-$0.00</span>
+        </div>
+        <div class="cart-summary__row cart-summary__row--total">
+          <span>Total</span><span>$148.00</span>
+        </div>
+        <button class="btn btn--primary btn--full">Checkout →</button>
+        <div class="cart-summary__secure">🔒 Secure checkout powered by Shopify</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer" style="margin-top: 60px;">
+  <div class="container">
+    <div class="footer__bottom" style="border-top: none;">
+      <span>© 2026 CodeCraft Academy. All rights reserved.</span>
+      <div class="footer__tech-stack">
+        <span class="footer__tech-badge">Shopify</span>
+        <span class="footer__tech-badge">Liquid</span>
+        <span class="footer__tech-badge">Vanilla JS</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
