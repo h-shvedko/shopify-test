@@ -5,7 +5,10 @@
     "search": "Search",
     "menu": "Menu",
     "close": "Close",
-    "loading": "Loading"
+    "loading": "Loading",
+    "gift_card_title": "Gift card",
+    "gift_card_expired": "This gift card has expired",
+    "add_to_apple_wallet": "Add to Apple Wallet"
   },
   "header": {
     "search_placeholder": "Search products...",
