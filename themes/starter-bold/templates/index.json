@@ -1,0 +1,24 @@
+{
+  "sections": {
+    "hero": { "type": "hero-banner", "settings": {} },
+    "marquee": {
+      "type": "marquee",
+      "blocks": {
+        "m1": { "type": "marquee_item", "settings": { "text": "Handcrafted" } },
+        "m2": { "type": "marquee_item", "settings": { "text": "Sustainable" } },
+        "m3": { "type": "marquee_item", "settings": { "text": "Artist-Made" } },
+        "m4": { "type": "marquee_item", "settings": { "text": "Limited Edition" } },
+        "m5": { "type": "marquee_item", "settings": { "text": "Ethically Sourced" } },
+        "m6": { "type": "marquee_item", "settings": { "text": "Free Shipping" } }
+      },
+      "block_order": ["m1", "m2", "m3", "m4", "m5", "m6"]
+    },
+    "collections": { "type": "collections-editorial", "settings": {} },
+    "products": { "type": "featured-products", "settings": {} },
+    "editorial": { "type": "editorial-split", "settings": {} },
+    "social": { "type": "social-feed", "settings": {} },
+    "testimonials": { "type": "testimonials", "settings": {} },
+    "newsletter": { "type": "newsletter-cta", "settings": {} }
+  },
+  "order": ["hero", "marquee", "collections", "products", "editorial", "social", "testimonials", "newsletter"]
+}

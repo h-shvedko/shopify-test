@@ -1,0 +1,141 @@
+{% doc %}
+  Renders an editorial collection card with image, dark gradient overlay,
+  title, product count, and an optional tag badge.
+
+  Parameters (via block.settings):
+  - collection {collection} optional — The collection to link and display
+  - image {image} optional — Override image; falls back to collection.image
+  - tag_label {string} optional — Label shown in the top-left badge (e.g., "Featured")
+{% enddoc %}
+
+{%- liquid
+  assign card_image = block.settings.image
+  if card_image == blank
+    assign card_image = block.settings.collection.image
+  endif
+  assign card_collection = block.settings.collection
+-%}
+
+<a
+  class="collection-card"
+  href="{{ card_collection.url | default: '#' }}"
+  {{ block.shopify_attributes }}
+>
+  {% if card_image != blank %}
+    <img
+      src="{{ card_image | image_url: width: 800 }}"
+      alt="{{ card_image.alt | default: card_collection.title | escape }}"
+      width="{{ card_image.width }}"
+      height="{{ card_image.height }}"
+      loading="lazy"
+    >
+  {% else %}
+    {{ 'collection-1' | placeholder_svg_tag: 'collection-card__placeholder' }}
+  {% endif %}
+
+  <div class="collection-card__overlay" aria-hidden="true"></div>
+
+  {% if block.settings.tag_label != blank %}
+    <span class="collection-card__tag">{{ block.settings.tag_label | escape }}</span>
+  {% endif %}
+
+  <div class="collection-card__info">
+    {% if card_collection != blank %}
+      <p class="collection-card__title">{{ card_collection.title | escape }}</p>
+      <p class="collection-card__count">{{ card_collection.all_products_count }} {{ 'blocks.collection_card.products' | t }}</p>
+    {% else %}
+      <p class="collection-card__title">{{ 'blocks.collection_card.placeholder_title' | t }}</p>
+    {% endif %}
+  </div>
+</a>
+
+{% stylesheet %}
+  .collection-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    display: block;
+    aspect-ratio: 3 / 4;
+    text-decoration: none;
+  }
+
+  .collection-card img,
+  .collection-card .collection-card__placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+    display: block;
+  }
+
+  .collection-card:hover img,
+  .collection-card:hover .collection-card__placeholder {
+    transform: scale(1.05);
+  }
+
+  .collection-card__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(26, 26, 24, 0.8) 0%, transparent 60%);
+  }
+
+  .collection-card__tag {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: var(--color-accent);
+    color: var(--color-bg-dark);
+    padding: 4px 12px;
+    border-radius: 2px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .collection-card__info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 24px;
+    color: #fff;
+  }
+
+  .collection-card__title {
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+    margin: 0 0 4px;
+    line-height: 1.2;
+  }
+
+  .collection-card__count {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:blocks.collection_card.name",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:blocks.collection_card.settings.collection.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:blocks.collection_card.settings.image.label"
+    },
+    {
+      "type": "text",
+      "id": "tag_label",
+      "label": "t:blocks.collection_card.settings.tag_label.label"
+    }
+  ]
+}
+{% endschema %}

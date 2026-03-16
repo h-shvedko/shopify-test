@@ -1,0 +1,67 @@
+{% doc %}
+  Renders a circular social media icon link for ArtVault Starter Bold.
+  Displays a platform SVG icon inside a dark rounded container that transitions
+  to the primary green on hover.
+
+  Parameters:
+  - platform {string} required — Social platform identifier. One of:
+      instagram, facebook, twitter, pinterest
+  - url {string} optional — The href for the anchor tag. If blank, renders
+      a non-interactive span instead.
+
+  Pre-assign translated label before calling render:
+    {% assign follow_label = 'social.follow_us' | t %}
+    {% render 'social-icon', platform: 'instagram', url: settings.social_instagram_link, follow_label: follow_label %}
+
+  Usage:
+    {% render 'social-icon', platform: 'instagram', url: settings.social_instagram_link %}
+    {% render 'social-icon', platform: 'facebook', url: settings.social_facebook_link %}
+{% enddoc %}
+
+<style>
+  .social-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--color-bg-dark);
+    color: #ffffff;
+    text-decoration: none;
+    transition: background-color 0.25s, color 0.25s;
+    flex-shrink: 0;
+  }
+
+  .social-icon:hover,
+  .social-icon:focus-visible {
+    background: var(--color-primary);
+    color: #ffffff;
+    text-decoration: none;
+  }
+
+  .social-icon:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+</style>
+
+{%- liquid
+  assign platform_label = follow_label | default: platform
+-%}
+
+{%- if url != blank -%}
+  <a
+    href="{{ url }}"
+    class="social-icon social-icon--{{ platform }}"
+    aria-label="{{ platform_label }} — {{ platform | capitalize }}"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    {% render 'icon', name: platform, size: 16 %}
+  </a>
+{%- else -%}
+  <span class="social-icon social-icon--{{ platform }}" aria-hidden="true">
+    {% render 'icon', name: platform, size: 16 %}
+  </span>
+{%- endif -%}

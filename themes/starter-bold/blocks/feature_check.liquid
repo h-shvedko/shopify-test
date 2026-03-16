@@ -1,0 +1,43 @@
+{% doc %}
+  Renders a single checkmark + text row for use in product feature lists.
+
+  Parameters (via block.settings):
+  - text {string} required — The feature label to display next to the checkmark
+{% enddoc %}
+
+<div class="feature-check" {{ block.shopify_attributes }}>
+  <span class="feature-check__icon" aria-hidden="true">&#10003;</span>
+  <span>{{ block.settings.text | escape }}</span>
+</div>
+
+{% stylesheet %}
+  .feature-check {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+  }
+
+  .feature-check__icon {
+    color: var(--color-primary);
+    font-weight: 700;
+    width: 20px;
+    flex-shrink: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:blocks.feature_check.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "t:blocks.feature_check.settings.text.label",
+      "default": "Feature"
+    }
+  ]
+}
+{% endschema %}

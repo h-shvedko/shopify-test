@@ -1,0 +1,123 @@
+{% doc %}
+  Renders a review card with a star rating, italic quote text, and author info.
+
+  Parameters (via block.settings):
+  - text {string} required — The review quote text
+  - author_name {string} required — Reviewer's display name
+  - author_role {string} optional — Reviewer's role or descriptor (e.g., "Verified buyer")
+  - rating {number} required — Star rating from 1 to 5
+{% enddoc %}
+
+<div class="testimonial-card" {{ block.shopify_attributes }}>
+  <div class="testimonial-card__stars" aria-label="{{ 'accessibility.star_rating' | t: rating: block.settings.rating }}">
+    {%- for i in (1..5) -%}
+      {%- if i <= block.settings.rating -%}
+        <span aria-hidden="true">&#9733;</span>
+      {%- else -%}
+        <span aria-hidden="true" class="testimonial-card__star--empty">&#9733;</span>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+  <blockquote class="testimonial-card__text">
+    &#8220;{{ block.settings.text | escape }}&#8221;
+  </blockquote>
+
+  <div class="testimonial-card__author">
+    <div class="testimonial-card__avatar" aria-hidden="true"></div>
+    <div>
+      <p class="testimonial-card__name">{{ block.settings.author_name | escape }}</p>
+      {% if block.settings.author_role != blank %}
+        <p class="testimonial-card__role">{{ block.settings.author_role | escape }}</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .testimonial-card {
+    background: #fff;
+    padding: 32px;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-border);
+  }
+
+  .testimonial-card__stars {
+    color: var(--color-accent);
+    margin-bottom: 16px;
+    font-size: 1rem;
+  }
+
+  .testimonial-card__star--empty {
+    opacity: 0.3;
+  }
+
+  .testimonial-card__text {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-style: italic;
+    line-height: 1.6;
+    margin: 0 0 20px;
+    padding: 0;
+  }
+
+  .testimonial-card__author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .testimonial-card__avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--color-background-alt);
+    flex-shrink: 0;
+  }
+
+  .testimonial-card__name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  .testimonial-card__role {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:blocks.testimonial.name",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "t:blocks.testimonial.settings.text.label",
+      "default": "Amazing quality and service."
+    },
+    {
+      "type": "text",
+      "id": "author_name",
+      "label": "t:blocks.testimonial.settings.author_name.label",
+      "default": "Customer"
+    },
+    {
+      "type": "text",
+      "id": "author_role",
+      "label": "t:blocks.testimonial.settings.author_role.label"
+    },
+    {
+      "type": "range",
+      "id": "rating",
+      "label": "t:blocks.testimonial.settings.rating.label",
+      "default": 5,
+      "min": 1,
+      "max": 5,
+      "step": 1
+    }
+  ]
+}
+{% endschema %}

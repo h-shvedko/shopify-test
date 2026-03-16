@@ -1,0 +1,36 @@
+{% doc %}
+  Renders SVG icons for all payment methods enabled in the shop.
+  Uses shop.enabled_payment_types and the payment_type_svg_tag filter.
+  No parameters required — reads directly from the global shop object.
+
+  Usage:
+    {% render 'payment-icons' %}
+{% enddoc %}
+
+<style>
+  .payment-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .payment-icons svg {
+    height: 24px;
+    width: auto;
+    display: block;
+    opacity: 0.7;
+  }
+
+  .payment-icons svg:hover {
+    opacity: 1;
+  }
+</style>
+
+{%- if shop.enabled_payment_types.size > 0 -%}
+  <div class="payment-icons" aria-label="{{ 'footer.payment_methods' | t }}">
+    {%- for type in shop.enabled_payment_types -%}
+      {{ type | payment_type_svg_tag }}
+    {%- endfor -%}
+  </div>
+{%- endif -%}

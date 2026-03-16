@@ -1,0 +1,94 @@
+<div class="marquee" id="marquee-{{ section.id }}" style="--speed: {{ section.settings.speed }}s" aria-hidden="true">
+  <div class="marquee__belt" data-marquee-belt>
+    <div class="marquee__track" data-marquee-track>
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var marquee = document.getElementById('marquee-{{ section.id }}');
+    if (!marquee) return;
+    var belt = marquee.querySelector('[data-marquee-belt]');
+    var track = marquee.querySelector('[data-marquee-track]');
+    if (!belt || !track) return;
+    var clone = track.cloneNode(true);
+    clone.setAttribute('aria-hidden', 'true');
+    belt.appendChild(clone);
+  })();
+</script>
+
+{% stylesheet %}
+  .marquee {
+    background: var(--color-bg-dark, #1a1a18);
+    color: var(--color-text-muted, #9b9b8f);
+    padding: 16px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font-family: var(--font-heading, georgia, serif);
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .marquee__belt {
+    display: flex;
+    animation: marquee-scroll var(--speed, 30s) linear infinite;
+    width: max-content;
+  }
+
+  .marquee:hover .marquee__belt {
+    animation-play-state: paused;
+  }
+
+  .marquee__track {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  @keyframes marquee-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.marquee.name",
+  "settings": [
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "t:sections.marquee.settings.speed.label",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "default": 30,
+      "unit": "s"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Marquee strip",
+      "blocks": [
+        { "type": "marquee_item", "settings": { "text": "Handcrafted" } },
+        { "type": "marquee_item", "settings": { "text": "Sustainable" } },
+        { "type": "marquee_item", "settings": { "text": "Artist-made" } },
+        { "type": "marquee_item", "settings": { "text": "Limited edition" } },
+        { "type": "marquee_item", "settings": { "text": "Ethically sourced" } },
+        { "type": "marquee_item", "settings": { "text": "Free shipping" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
