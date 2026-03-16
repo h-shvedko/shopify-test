@@ -1,0 +1,127 @@
+{% stylesheet %}
+  .main-page {
+    padding: 64px 0 80px;
+    background: var(--color-bg);
+  }
+
+  .main-page__container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .main-page__title {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 32px;
+    line-height: 1.15;
+  }
+
+  .main-page__body {
+    color: var(--color-text-secondary);
+    line-height: 1.8;
+    font-size: 0.95rem;
+  }
+
+  .main-page__body h1,
+  .main-page__body h2,
+  .main-page__body h3,
+  .main-page__body h4 {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    color: var(--color-text);
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    line-height: 1.25;
+  }
+
+  .main-page__body p {
+    margin-bottom: 1.25em;
+  }
+
+  .main-page__body a {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .main-page__body ul,
+  .main-page__body ol {
+    padding-left: 1.5em;
+    margin-bottom: 1.25em;
+  }
+
+  .main-page__body li {
+    margin-bottom: 0.4em;
+  }
+
+  .main-page__body img {
+    border-radius: 8px;
+    margin: 1.5em 0;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .main-page__body blockquote {
+    border-left: 3px solid var(--color-primary);
+    padding-left: 1.25em;
+    margin: 1.5em 0;
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  .main-page__body pre,
+  .main-page__body code {
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    background: var(--color-bg-card);
+    border-radius: 6px;
+    font-size: 0.85em;
+    color: var(--color-primary);
+  }
+
+  .main-page__body pre {
+    padding: 16px 20px;
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    margin: 1.5em 0;
+  }
+
+  .main-page__body code {
+    padding: 2px 6px;
+  }
+
+  .main-page__body hr {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 2em 0;
+  }
+{% endstylesheet %}
+
+<main class="main-page" data-section-id="{{ section.id }}">
+  <div class="main-page__container">
+    {%- if section.settings.show_title -%}
+      <h1 class="main-page__title">{{ page.title }}</h1>
+    {%- endif -%}
+
+    <div class="main-page__body">
+      {{ page.content }}
+    </div>
+  </div>
+</main>
+
+{% schema %}
+{
+  "name": "t:sections.main_page.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "t:sections.main_page.settings.show_title.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    { "name": "Page content" }
+  ]
+}
+{% endschema %}

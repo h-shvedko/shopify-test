@@ -1,0 +1,567 @@
+{%- liquid
+  assign added_msg = 'products.added_to_cart' | t
+  assign add_to_cart_label = 'products.add_to_cart' | t
+  assign sold_out_label = 'products.sold_out' | t
+  assign enroll_label = 'courses.enroll' | t
+  assign in_stock_label = 'products.in_stock' | t
+  assign out_of_stock_label = 'products.out_of_stock' | t
+  assign description_label = 'products.description' | t
+  assign what_included_label = 'courses.includes' | t
+  assign guarantee_label = 'products.tax_included' | t
+-%}
+
+{% stylesheet %}
+  .product-detail {
+    padding: 48px 0 64px;
+    background: var(--color-bg);
+  }
+
+  .product-detail__container {
+    max-width: var(--page-width, 1280px);
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  @media (min-width: 1024px) {
+    .product-detail__container {
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: start;
+    }
+  }
+
+  /* ---- Left: terminal image frame ---- */
+  .product-detail__media .terminal {
+    background: var(--color-terminal-bg, #0F172A);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  }
+
+  .product-detail__media .terminal__bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .product-detail__media .terminal__dot {
+    display: block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .product-detail__media .terminal__dot--red   { background: #EF4444; }
+  .product-detail__media .terminal__dot--yellow { background: #FBBF24; }
+  .product-detail__media .terminal__dot--green  { background: #22C55E; }
+
+  .product-detail__media .terminal__title {
+    flex: 1;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.7rem;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    letter-spacing: 0.04em;
+    user-select: none;
+  }
+
+  .product-detail__image-wrap {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--color-bg-elevated, #1E293B);
+  }
+
+  .product-detail__image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .product-detail__image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-muted);
+    padding: 40px;
+  }
+
+  /* ---- Right: info panel ---- */
+  .product-detail__info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .product-detail__breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    flex-wrap: wrap;
+  }
+
+  .product-detail__breadcrumb a {
+    color: var(--color-text-muted);
+    transition: color 0.2s;
+  }
+
+  .product-detail__breadcrumb a:hover {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .product-detail__breadcrumb-sep {
+    color: var(--color-border);
+  }
+
+  .product-detail__category {
+    display: inline-block;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    color: var(--color-primary);
+    background: rgba(6, 182, 212, 0.1);
+    border: 1px solid rgba(6, 182, 212, 0.25);
+    padding: 3px 10px;
+    border-radius: 4px;
+  }
+
+  .product-detail__title {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--color-text);
+    margin: 0;
+  }
+
+  .product-detail__rating-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .product-detail__stock {
+    font-size: 0.75rem;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    padding: 3px 10px;
+    border-radius: 4px;
+  }
+
+  .product-detail__stock--in {
+    color: #22C55E;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.25);
+  }
+
+  .product-detail__stock--out {
+    color: var(--color-error, #EF4444);
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+  }
+
+  .product-detail__price {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+
+  .product-detail__price-compare {
+    font-size: 1rem;
+    font-weight: 400;
+    text-decoration: line-through;
+    color: var(--color-text-muted);
+    margin-left: 8px;
+  }
+
+  .product-detail__description {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    line-height: 1.75;
+  }
+
+  .product-detail__includes-heading {
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+
+  .product-detail__features {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .product-detail__actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .product-detail__btn-enroll {
+    flex: 1;
+    min-width: 140px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--color-primary);
+    color: #0F172A;
+    font-weight: 700;
+    font-size: 0.875rem;
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    padding: 14px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.2s;
+    white-space: nowrap;
+  }
+
+  .product-detail__btn-enroll:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+    text-decoration: none;
+    color: #0F172A;
+  }
+
+  .product-detail__btn-enroll:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  .product-detail__btn-cart {
+    flex: 1;
+    min-width: 140px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: transparent;
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 0.875rem;
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    padding: 14px 24px;
+    border-radius: 8px;
+    border: 1px solid var(--color-primary);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+  }
+
+  .product-detail__btn-cart:hover {
+    background: rgba(6, 182, 212, 0.08);
+  }
+
+  .product-detail__btn-cart:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  .product-detail__btn-cart[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .product-detail__guarantee {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  }
+
+  .product-detail__guarantee svg {
+    color: var(--color-primary);
+    flex-shrink: 0;
+  }
+
+  /* Toast notification */
+  .pd-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-primary);
+    color: var(--color-text);
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    transform: translateY(12px);
+    opacity: 0;
+    transition: opacity 0.25s, transform 0.25s;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  .pd-toast.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+{% endstylesheet %}
+
+<section class="product-detail" data-section-id="{{ section.id }}">
+  <div class="product-detail__container">
+
+    {%- comment -%} Left column: terminal image frame {%- endcomment -%}
+    <div class="product-detail__media">
+      <div class="terminal" role="region" aria-label="{{ product.title | escape }}">
+        <div class="terminal__bar" aria-hidden="true">
+          <span class="terminal__dot terminal__dot--red"></span>
+          <span class="terminal__dot terminal__dot--yellow"></span>
+          <span class="terminal__dot terminal__dot--green"></span>
+          <span class="terminal__title">{{ product.type | default: 'course' | downcase }}</span>
+        </div>
+        <div class="product-detail__image-wrap">
+          {%- if product.featured_image -%}
+            <img
+              src="{{ product.featured_image | image_url: width: 1200 }}"
+              alt="{{ product.featured_image.alt | escape | default: product.title }}"
+              width="1200"
+              height="675"
+              loading="eager"
+            >
+          {%- else -%}
+            <div class="product-detail__image-placeholder">
+              {{ 'product-1' | placeholder_svg_tag }}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+
+    {%- comment -%} Right column: info {%- endcomment -%}
+    <div class="product-detail__info">
+
+      {%- comment -%} Breadcrumb {%- endcomment -%}
+      <nav class="product-detail__breadcrumb" aria-label="Breadcrumb">
+        <a href="{{ routes.root_url }}">{{ 'general.home' | t }}</a>
+        <span class="product-detail__breadcrumb-sep" aria-hidden="true">/</span>
+        {%- if collection -%}
+          <a href="{{ collection.url }}">{{ collection.title }}</a>
+          <span class="product-detail__breadcrumb-sep" aria-hidden="true">/</span>
+        {%- endif -%}
+        <span aria-current="page">{{ product.title }}</span>
+      </nav>
+
+      {%- comment -%} Category label {%- endcomment -%}
+      {%- if product.type != blank -%}
+        <span class="product-detail__category">{{ product.type }}</span>
+      {%- endif -%}
+
+      {%- comment -%} Title {%- endcomment -%}
+      <h1 class="product-detail__title">{{ product.title }}</h1>
+
+      {%- comment -%} Rating + stock {%- endcomment -%}
+      <div class="product-detail__rating-row">
+        {%- if section.settings.show_rating -%}
+          {%- if product.metafields.reviews.rating != blank -%}
+            {%- assign rating_val = product.metafields.reviews.rating.value -%}
+            {%- assign review_count = product.metafields.reviews.rating_count.value -%}
+            {% render 'star-rating', rating: rating_val, count: review_count %}
+          {%- endif -%}
+        {%- endif -%}
+
+        {%- if section.settings.show_stock -%}
+          {%- if product.available -%}
+            <span class="product-detail__stock product-detail__stock--in">
+              {{ in_stock_label }}
+            </span>
+          {%- else -%}
+            <span class="product-detail__stock product-detail__stock--out">
+              {{ out_of_stock_label }}
+            </span>
+          {%- endif -%}
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Price {%- endcomment -%}
+      <div>
+        {%- if product.available -%}
+          {%- if product.price_varies -%}
+            <span class="product-detail__price">
+              {{- 'products.from_price' | t: price: product.price_min | money -}}
+            </span>
+          {%- elsif product.compare_at_price > product.price -%}
+            <span class="product-detail__price">{{ product.price | money }}</span>
+            <span class="product-detail__price-compare">{{ product.compare_at_price | money }}</span>
+          {%- else -%}
+            <span class="product-detail__price">{{ product.price | money }}</span>
+          {%- endif -%}
+        {%- else -%}
+          <span class="product-detail__price">{{ sold_out_label }}</span>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Description {%- endcomment -%}
+      {%- if section.settings.show_description -%}
+        {%- if product.description != blank -%}
+          <div class="product-detail__description">
+            {{ product.description }}
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- comment -%} What's included feature blocks {%- endcomment -%}
+      <div>
+        <p class="product-detail__includes-heading">{{ what_included_label }}</p>
+        <div class="product-detail__features">
+          {% content_for 'blocks' %}
+        </div>
+      </div>
+
+      {%- comment -%} Actions {%- endcomment -%}
+      <div class="product-detail__actions">
+        {%- assign first_variant = product.first_available_variant | default: product.variants.first -%}
+
+        <a
+          href="{{ product.url }}"
+          class="product-detail__btn-enroll"
+        >
+          {{ enroll_label }}
+        </a>
+
+        {%- if product.available -%}
+          <button
+            type="button"
+            class="product-detail__btn-cart"
+            data-add-to-cart
+            data-variant-id="{{ first_variant.id }}"
+            data-added-msg="{{ added_msg }}"
+          >
+            {{ add_to_cart_label }}
+          </button>
+        {%- else -%}
+          <button
+            type="button"
+            class="product-detail__btn-cart"
+            disabled
+          >
+            {{ sold_out_label }}
+          </button>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Guarantee note {%- endcomment -%}
+      <p class="product-detail__guarantee">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        {{ 'products.guarantee_note' | t }}
+      </p>
+
+    </div>
+  </div>
+</section>
+
+<div class="pd-toast" id="PdToast" role="status" aria-live="polite"></div>
+
+<script>
+  (function () {
+    var addBtn = document.querySelector('[data-add-to-cart]');
+    var toast = document.getElementById('PdToast');
+    if (!addBtn || !toast) return;
+
+    var toastTimer;
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('is-visible');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () {
+        toast.classList.remove('is-visible');
+      }, 3000);
+    }
+
+    function updateCartBadge(count) {
+      var badge = document.querySelector('[data-cart-count]');
+      if (badge) badge.textContent = count;
+    }
+
+    addBtn.addEventListener('click', function () {
+      var variantId = parseInt(this.dataset.variantId, 10);
+      var addedMsg = this.dataset.addedMsg;
+      if (!variantId) return;
+
+      addBtn.disabled = true;
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: variantId, quantity: 1 })
+      })
+        .then(function (res) { return res.json(); })
+        .then(function () {
+          return fetch('/cart.js');
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (cart) {
+          updateCartBadge(cart.item_count);
+          showToast(addedMsg);
+          document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart: cart } }));
+        })
+        .catch(function (err) {
+          console.error('Add to cart error:', err);
+        })
+        .finally(function () {
+          addBtn.disabled = false;
+        });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.product_detail.name",
+  "blocks": [
+    { "type": "@theme" }
+  ],
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "t:sections.product_detail.settings.show_rating.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stock",
+      "label": "t:sections.product_detail.settings.show_stock.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "t:sections.product_detail.settings.show_description.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    { "name": "Product detail" }
+  ]
+}
+{% endschema %}

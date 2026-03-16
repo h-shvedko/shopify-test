@@ -1,0 +1,184 @@
+{%- liquid
+  assign description_label = 'products.description' | t
+  assign shipping_label = 'products.shipping_returns' | t
+  assign reviews_label = 'products.reviews' | t
+-%}
+
+{% stylesheet %}
+  .product-tabs {
+    padding: 0 0 64px;
+    background: var(--color-bg);
+  }
+
+  .product-tabs__container {
+    max-width: var(--page-width, 1280px);
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .product-tabs__accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .product-tabs__item {
+    background: var(--color-bg-card);
+  }
+
+  .product-tabs__item + .product-tabs__item {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .product-tabs__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 24px;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text);
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .product-tabs__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .product-tabs__summary::marker {
+    display: none;
+  }
+
+  .product-tabs__summary:hover {
+    background: rgba(6, 182, 212, 0.05);
+    color: var(--color-primary);
+  }
+
+  .product-tabs__item[open] .product-tabs__summary {
+    color: var(--color-primary);
+    background: rgba(6, 182, 212, 0.05);
+  }
+
+  .product-tabs__chevron {
+    flex-shrink: 0;
+    transition: transform 0.25s;
+    color: var(--color-text-muted);
+  }
+
+  .product-tabs__item[open] .product-tabs__chevron {
+    transform: rotate(180deg);
+  }
+
+  .product-tabs__body {
+    padding: 0 24px 24px;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    line-height: 1.75;
+  }
+
+  .product-tabs__body a {
+    color: var(--color-primary);
+  }
+
+  .product-tabs__summary:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+{% endstylesheet %}
+
+<section class="product-tabs" data-section-id="{{ section.id }}">
+  <div class="product-tabs__container">
+    <div class="product-tabs__accordion">
+
+      {%- if section.settings.show_description -%}
+        {%- if product.description != blank -%}
+          <details class="product-tabs__item" open>
+            <summary class="product-tabs__summary">
+              {{ description_label }}
+              <svg class="product-tabs__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="product-tabs__body">
+              {{ product.description }}
+            </div>
+          </details>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- if section.settings.show_shipping -%}
+        {%- assign shipping_content = section.settings.shipping_text | default: '' -%}
+        {%- if shipping_content != blank -%}
+          <details class="product-tabs__item">
+            <summary class="product-tabs__summary">
+              {{ shipping_label }}
+              <svg class="product-tabs__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="product-tabs__body">
+              {{ shipping_content }}
+            </div>
+          </details>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- if section.settings.show_reviews -%}
+        <details class="product-tabs__item">
+          <summary class="product-tabs__summary">
+            {{ reviews_label }}
+            <svg class="product-tabs__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="product-tabs__body">
+            {%- if product.metafields.reviews.rating != blank -%}
+              {%- assign rating_val = product.metafields.reviews.rating.value -%}
+              {%- assign review_count = product.metafields.reviews.rating_count.value -%}
+              {% render 'star-rating', rating: rating_val, count: review_count %}
+            {%- else -%}
+              <p>{{ 'products.reviews_count' | t: count: 0 }}</p>
+            {%- endif -%}
+          </div>
+        </details>
+      {%- endif -%}
+
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.product_tabs.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "t:sections.product_tabs.settings.show_description.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shipping",
+      "label": "t:sections.product_tabs.settings.show_shipping.label",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "shipping_text",
+      "label": "t:sections.product_tabs.settings.shipping_text.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reviews",
+      "label": "t:sections.product_tabs.settings.show_reviews.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    { "name": "Product tabs" }
+  ]
+}
+{% endschema %}

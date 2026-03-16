@@ -1,0 +1,237 @@
+{%- liquid
+  assign order_product_label = 'customer.order_product' | t
+  assign order_quantity_label = 'customer.order_quantity' | t
+  assign order_total_label = 'customer.order_total' | t
+  assign subtotal_label = 'cart.subtotal' | t
+  assign shipping_label = 'cart.shipping' | t
+  assign back_label = 'customer.back_to_account' | t
+-%}
+
+{% stylesheet %}
+  .customer-order {
+    padding: 48px 0 80px;
+    background: var(--color-bg);
+  }
+
+  .customer-order__container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .customer-order__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    color: var(--color-text-muted);
+    text-decoration: none;
+    margin-bottom: 28px;
+    transition: color 0.2s;
+  }
+
+  .customer-order__back:hover {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .customer-order__title {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: clamp(1.4rem, 3vw, 1.75rem);
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 8px;
+  }
+
+  .customer-order__meta {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    margin-bottom: 32px;
+  }
+
+  .customer-order__items {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    overflow: hidden;
+    overflow-x: auto;
+    margin-bottom: 24px;
+  }
+
+  .customer-order-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  .customer-order-table th {
+    text-align: left;
+    padding: 14px 16px;
+    font-size: 0.7rem;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--color-border);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .customer-order-table td {
+    padding: 16px;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    vertical-align: middle;
+  }
+
+  .customer-order-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .customer-order-table__product-title {
+    font-weight: 600;
+    color: var(--color-text);
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+  }
+
+  .customer-order-table__variant {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    margin-top: 2px;
+  }
+
+  .customer-order__totals {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 360px;
+    margin-left: auto;
+  }
+
+  .customer-order__total-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    gap: 8px;
+  }
+
+  .customer-order__total-line--grand {
+    border-top: 1px solid var(--color-border);
+    padding-top: 12px;
+    font-weight: 700;
+    color: var(--color-text);
+    font-size: 1rem;
+  }
+
+  .customer-order__grand-total {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+
+  .customer-order-status {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: rgba(6, 182, 212, 0.1);
+    color: var(--color-primary);
+    border: 1px solid rgba(6, 182, 212, 0.2);
+    margin-left: 8px;
+  }
+{% endstylesheet %}
+
+<section class="customer-order" data-section-id="{{ section.id }}">
+  <div class="customer-order__container">
+
+    <a href="{{ routes.account_url }}" class="customer-order__back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      {{ back_label }}
+    </a>
+
+    <h1 class="customer-order__title">
+      {{ 'customer.order_number' | t: number: order.name }}
+      <span class="customer-order-status">{{ order.financial_status }}</span>
+    </h1>
+
+    <p class="customer-order__meta">
+      {{ 'customer.order_date' | t }}: {{ order.created_at | date: '%B %d, %Y' }}
+    </p>
+
+    <div class="customer-order__items">
+      <table class="customer-order-table">
+        <thead>
+          <tr>
+            <th>{{ order_product_label }}</th>
+            <th>{{ order_quantity_label }}</th>
+            <th>{{ order_total_label }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%- for line_item in order.line_items -%}
+            <tr>
+              <td>
+                <p class="customer-order-table__product-title">{{ line_item.title }}</p>
+                {%- if line_item.variant.title != 'Default Title' -%}
+                  <p class="customer-order-table__variant">{{ line_item.variant.title }}</p>
+                {%- endif -%}
+              </td>
+              <td>{{ line_item.quantity }}</td>
+              <td>{{ line_item.final_line_price | money }}</td>
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="customer-order__totals">
+      <div class="customer-order__total-line">
+        <span>{{ subtotal_label }}</span>
+        <span>{{ order.subtotal_price | money }}</span>
+      </div>
+
+      {%- if order.shipping_price > 0 -%}
+        <div class="customer-order__total-line">
+          <span>{{ shipping_label }}</span>
+          <span>{{ order.shipping_price | money }}</span>
+        </div>
+      {%- endif -%}
+
+      {%- if order.tax_price > 0 -%}
+        <div class="customer-order__total-line">
+          <span>{{ 'cart.tax' | t }}</span>
+          <span>{{ order.tax_price | money }}</span>
+        </div>
+      {%- endif -%}
+
+      <div class="customer-order__total-line customer-order__total-line--grand">
+        <span>{{ 'cart.total' | t }}</span>
+        <span class="customer-order__grand-total">{{ order.total_price | money }}</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.customer_order.name",
+  "presets": [
+    { "name": "Customer order" }
+  ]
+}
+{% endschema %}

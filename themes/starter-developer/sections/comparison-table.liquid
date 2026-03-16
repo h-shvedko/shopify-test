@@ -1,0 +1,370 @@
+{% stylesheet %}
+  .comparison-table {
+    background: var(--color-bg-alt);
+  }
+
+  .comparison-table__header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .comparison-table__heading {
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 12px;
+  }
+
+  .comparison-table__subtitle {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .comparison-table__scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+  }
+
+  .comparison-table__table {
+    width: 100%;
+    min-width: 600px;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+    font-family: var(--font-body);
+  }
+
+  /* Sticky thead */
+  .comparison-table__table thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  .comparison-table__plan-header {
+    background: var(--color-bg-card);
+    padding: 24px 20px 20px;
+    text-align: center;
+    vertical-align: bottom;
+    border-bottom: 2px solid var(--color-border);
+  }
+
+  .comparison-table__plan-header.plan-featured {
+    background: rgba(6, 182, 212, 0.08);
+    border-bottom-color: var(--color-primary);
+    box-shadow: 0 0 24px rgba(6, 182, 212, 0.12);
+  }
+
+  .comparison-table__feature-header {
+    background: var(--color-bg-card);
+    padding: 24px 20px 20px;
+    text-align: left;
+    border-bottom: 2px solid var(--color-border);
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+  }
+
+  .comparison-table__popular-badge {
+    display: inline-block;
+    font-size: 0.6rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #0B1120;
+    background: var(--color-primary);
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+  }
+
+  .comparison-table__plan-name {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 4px;
+    display: block;
+  }
+
+  .comparison-table__plan-price {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  .comparison-table__plan-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 18px;
+    border-radius: var(--border-radius);
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    background: transparent;
+    white-space: nowrap;
+  }
+
+  .comparison-table__plan-btn:hover {
+    text-decoration: none;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    box-shadow: 0 0 16px rgba(6, 182, 212, 0.15);
+  }
+
+  .comparison-table__plan-btn--featured {
+    background: var(--color-primary);
+    color: #0B1120;
+    border-color: var(--color-primary);
+  }
+
+  .comparison-table__plan-btn--featured:hover {
+    background: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
+    color: #0B1120;
+  }
+
+  /* Body rows */
+  .comparison-table__row {
+    border-bottom: 1px solid var(--color-border);
+    transition: background 0.15s;
+  }
+
+  .comparison-table__row:last-child {
+    border-bottom: none;
+  }
+
+  .comparison-table__row:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .comparison-table__feature {
+    padding: 14px 20px;
+    color: var(--color-text-secondary);
+    font-size: 0.8125rem;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .comparison-table__cell {
+    padding: 14px 20px;
+    text-align: center;
+    color: var(--color-text);
+    font-size: 0.8125rem;
+  }
+
+  .comparison-table__cell.plan-featured {
+    background: rgba(6, 182, 212, 0.06);
+    color: var(--color-primary-light);
+    box-shadow: inset 0 0 0 1px rgba(6, 182, 212, 0.12);
+  }
+
+  .comparison-table__check {
+    color: var(--color-accent);
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .comparison-table__cell.plan-featured .comparison-table__check {
+    color: var(--color-primary);
+  }
+
+  @media (min-width: 768px) {
+    .comparison-table__heading {
+      font-size: 2.25rem;
+    }
+  }
+{% endstylesheet %}
+
+<section
+  class="comparison-table section-padding"
+  id="section-{{ section.id }}"
+>
+  <div class="container">
+    {%- if section.settings.heading != blank or section.settings.subtitle != blank -%}
+      <header class="comparison-table__header">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="comparison-table__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtitle != blank -%}
+          <p class="comparison-table__subtitle">{{ section.settings.subtitle }}</p>
+        {%- endif -%}
+      </header>
+    {%- endif -%}
+
+    <div class="comparison-table__scroll" role="region" aria-label="{{ section.settings.heading | escape }}">
+      <table class="comparison-table__table">
+        <thead>
+          <tr>
+            <th class="comparison-table__feature-header" scope="col">
+              {{ 'comparison.feature' | t }}
+            </th>
+
+            <th class="comparison-table__plan-header" scope="col">
+              <span class="comparison-table__plan-name">{{ section.settings.tier_1_name }}</span>
+              <span class="comparison-table__plan-price">{{ section.settings.tier_1_price }}</span>
+              {%- if section.settings.tier_1_url != blank -%}
+                <a href="{{ section.settings.tier_1_url }}" class="comparison-table__plan-btn">
+                  {{ section.settings.tier_1_btn_label | default: 'comparison.get_started' | t }}
+                </a>
+              {%- endif -%}
+            </th>
+
+            <th class="comparison-table__plan-header plan-featured" scope="col">
+              <span class="comparison-table__popular-badge">{{ 'comparison.most_popular' | t }}</span>
+              <span class="comparison-table__plan-name">{{ section.settings.tier_2_name }}</span>
+              <span class="comparison-table__plan-price">{{ section.settings.tier_2_price }}</span>
+              {%- if section.settings.tier_2_url != blank -%}
+                <a href="{{ section.settings.tier_2_url }}" class="comparison-table__plan-btn comparison-table__plan-btn--featured">
+                  {{ section.settings.tier_2_btn_label | default: 'comparison.get_started' | t }}
+                </a>
+              {%- endif -%}
+            </th>
+
+            <th class="comparison-table__plan-header" scope="col">
+              <span class="comparison-table__plan-name">{{ section.settings.tier_3_name }}</span>
+              <span class="comparison-table__plan-price">{{ section.settings.tier_3_price }}</span>
+              {%- if section.settings.tier_3_url != blank -%}
+                <a href="{{ section.settings.tier_3_url }}" class="comparison-table__plan-btn">
+                  {{ section.settings.tier_3_btn_label | default: 'comparison.contact_sales' | t }}
+                </a>
+              {%- endif -%}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {% content_for 'blocks' %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Comparison table",
+  "tag": "section",
+  "class": "section-comparison-table",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Choose your plan"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle"
+    },
+    {
+      "type": "header",
+      "content": "Tier 1"
+    },
+    {
+      "type": "text",
+      "id": "tier_1_name",
+      "label": "Plan name",
+      "default": "Starter"
+    },
+    {
+      "type": "text",
+      "id": "tier_1_price",
+      "label": "Price",
+      "default": "Free"
+    },
+    {
+      "type": "url",
+      "id": "tier_1_url",
+      "label": "Button URL"
+    },
+    {
+      "type": "text",
+      "id": "tier_1_btn_label",
+      "label": "Button label",
+      "default": "Get started"
+    },
+    {
+      "type": "header",
+      "content": "Tier 2 (featured)"
+    },
+    {
+      "type": "text",
+      "id": "tier_2_name",
+      "label": "Plan name",
+      "default": "Pro"
+    },
+    {
+      "type": "text",
+      "id": "tier_2_price",
+      "label": "Price",
+      "default": "$29/mo"
+    },
+    {
+      "type": "url",
+      "id": "tier_2_url",
+      "label": "Button URL"
+    },
+    {
+      "type": "text",
+      "id": "tier_2_btn_label",
+      "label": "Button label",
+      "default": "Get started"
+    },
+    {
+      "type": "header",
+      "content": "Tier 3"
+    },
+    {
+      "type": "text",
+      "id": "tier_3_name",
+      "label": "Plan name",
+      "default": "Enterprise"
+    },
+    {
+      "type": "text",
+      "id": "tier_3_price",
+      "label": "Price",
+      "default": "Custom"
+    },
+    {
+      "type": "url",
+      "id": "tier_3_url",
+      "label": "Button URL"
+    },
+    {
+      "type": "text",
+      "id": "tier_3_btn_label",
+      "label": "Button label",
+      "default": "Contact sales"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Comparison table"
+    }
+  ]
+}
+{% endschema %}

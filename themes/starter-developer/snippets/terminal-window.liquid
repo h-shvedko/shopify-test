@@ -1,0 +1,94 @@
+{% doc %}
+  Renders a decorative terminal window UI element with macOS-style traffic light dots,
+  a title bar, and a scrollable content area. Used to display code snippets,
+  CLI commands, or any preformatted developer-focused content.
+
+  Parameters:
+  - title {string} optional — Text shown in the terminal title bar. Default: "terminal"
+  - content {string} required — HTML or text content rendered inside the terminal body.
+      Supports <span> elements for syntax highlighting, <br> for line breaks, etc.
+
+  Usage:
+    {% capture terminal_content %}
+      <span style="color:#94A3B8">$</span> npm install @codecraft/cli<br>
+      <span style="color:#22C55E">✓</span> Installed successfully
+    {% endcapture %}
+    {% render 'terminal-window', title: 'bash', content: terminal_content %}
+
+    {% render 'terminal-window', content: 'Hello, world!' %}
+{% enddoc %}
+
+{%- assign terminal_title = title | default: 'terminal' -%}
+
+<style>
+  .terminal {
+    background: var(--color-terminal-bg, #0F172A);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  }
+
+  .terminal__bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .terminal__dot {
+    display: block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .terminal__dot--red {
+    background: #EF4444;
+  }
+
+  .terminal__dot--yellow {
+    background: #FBBF24;
+  }
+
+  .terminal__dot--green {
+    background: #22C55E;
+  }
+
+  .terminal__title {
+    flex: 1;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.7rem;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    letter-spacing: 0.04em;
+    user-select: none;
+  }
+
+  .terminal__body {
+    padding: 20px;
+    font-size: 0.8rem;
+    line-height: 1.8;
+    color: #22D3EE;
+    min-height: 200px;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+</style>
+
+<div class="terminal" role="region" aria-label="{{ terminal_title }}">
+  <div class="terminal__bar" aria-hidden="true">
+    <span class="terminal__dot terminal__dot--red"></span>
+    <span class="terminal__dot terminal__dot--yellow"></span>
+    <span class="terminal__dot terminal__dot--green"></span>
+    <span class="terminal__title">{{ terminal_title }}</span>
+  </div>
+  <div class="terminal__body">
+    {{ content }}
+  </div>
+</div>

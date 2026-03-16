@@ -1,0 +1,176 @@
+{%- liquid
+  assign nf_title = section.settings.heading | default: 'not_found.title' | t
+  assign nf_message = section.settings.message | default: 'not_found.message' | t
+  assign nf_button = section.settings.button_label | default: 'not_found.back_to_home' | t
+  assign nf_button_url = section.settings.button_url | default: routes.root_url
+  assign nf_suggestion = 'not_found.suggestion' | t
+-%}
+
+{% stylesheet %}
+  .not-found {
+    padding: 80px 20px 120px;
+    background: var(--color-bg);
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .not-found__inner {
+    max-width: 560px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .not-found__code {
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: clamp(5rem, 15vw, 9rem);
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--color-primary) 0%, #818CF8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .not-found__title {
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: clamp(1.4rem, 3vw, 1.75rem);
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 12px;
+  }
+
+  .not-found__message {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin-bottom: 8px;
+  }
+
+  .not-found__suggestion {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    margin-bottom: 36px;
+  }
+
+  .not-found__actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .not-found__btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--color-primary);
+    color: #0F172A;
+    font-weight: 700;
+    font-size: 0.875rem;
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .not-found__btn-primary:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+    text-decoration: none;
+    color: #0F172A;
+  }
+
+  .not-found__btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 0.875rem;
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: 1px solid var(--color-primary);
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .not-found__btn-secondary:hover {
+    background: rgba(6, 182, 212, 0.08);
+    text-decoration: none;
+  }
+
+  .not-found__terminal {
+    margin-top: 48px;
+    text-align: left;
+  }
+{% endstylesheet %}
+
+<section class="not-found" data-section-id="{{ section.id }}">
+  <div class="not-found__inner">
+    <span class="not-found__code" aria-hidden="true">404</span>
+    <h1 class="not-found__title">{{ nf_title }}</h1>
+    <p class="not-found__message">{{ nf_message }}</p>
+    <p class="not-found__suggestion">{{ nf_suggestion }}</p>
+
+    <div class="not-found__actions">
+      <a href="{{ nf_button_url }}" class="not-found__btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        {{ nf_button }}
+      </a>
+      <a href="{{ routes.all_products_collection_url }}" class="not-found__btn-secondary">
+        {{ 'courses.heading' | t }}
+      </a>
+    </div>
+
+    <div class="not-found__terminal">
+      {%- capture terminal_content -%}
+<span style="color:#94A3B8">$</span> curl {{ request.path }}
+<span style="color:#EF4444">Error 404:</span> Resource not found
+<span style="color:#94A3B8">$</span> _
+      {%- endcapture -%}
+      {% render 'terminal-window', title: 'bash', content: terminal_content %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.not_found.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.not_found.settings.heading.label",
+      "default": "Page not found"
+    },
+    {
+      "type": "text",
+      "id": "message",
+      "label": "t:sections.not_found.settings.message.label",
+      "default": "The page you're looking for doesn't exist."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.not_found.settings.button_label.label",
+      "default": "Back to home"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "t:sections.not_found.settings.button_url.label"
+    }
+  ],
+  "presets": [
+    { "name": "404 page" }
+  ]
+}
+{% endschema %}

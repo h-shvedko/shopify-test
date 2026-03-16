@@ -1,0 +1,20 @@
+{
+  "sections": {
+    "hero": { "type": "hero-banner", "settings": {} },
+    "metrics": {
+      "type": "metrics-bar",
+      "blocks": {
+        "m1": { "type": "metric_item", "settings": { "number": "50k+", "label": "Students enrolled" } },
+        "m2": { "type": "metric_item", "settings": { "number": "200+", "label": "Course hours" } },
+        "m3": { "type": "metric_item", "settings": { "number": "4.9", "label": "Average rating" } },
+        "m4": { "type": "metric_item", "settings": { "number": "95%", "label": "Completion rate" } }
+      },
+      "block_order": ["m1", "m2", "m3", "m4"]
+    },
+    "courses": { "type": "featured-courses", "settings": {} },
+    "comparison": { "type": "comparison-table", "settings": {} },
+    "testimonials": { "type": "testimonials", "settings": {} },
+    "newsletter": { "type": "newsletter-cta", "settings": {} }
+  },
+  "order": ["hero", "metrics", "courses", "comparison", "testimonials", "newsletter"]
+}

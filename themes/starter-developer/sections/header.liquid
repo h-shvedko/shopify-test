@@ -1,0 +1,510 @@
+<header class="site-header" id="SiteHeader" role="banner">
+  <div class="header__inner container">
+
+    {%- comment -%} Logo {%- endcomment -%}
+    <a href="{{ routes.root_url }}" class="header__logo-link" aria-label="{{ shop.name }}">
+      {%- if section.settings.logo != blank -%}
+        {{
+          section.settings.logo
+          | image_url: width: section.settings.logo_width
+          | image_tag:
+            width: section.settings.logo_width,
+            class: 'header__logo-img',
+            alt: shop.name
+        }}
+      {%- else -%}
+        <span class="header__logo-mark" aria-hidden="true">CC</span>
+        <span class="header__logo-name">
+          CodeCraft<span class="header__logo-tld">.academy</span>
+        </span>
+      {%- endif -%}
+    </a>
+
+    {%- comment -%} Command bar search {%- endcomment -%}
+    <div class="header__command-bar">
+      <button
+        class="header__search-trigger"
+        type="button"
+        aria-label="{{ 'accessibility.open_command_bar' | t }}"
+        data-command-trigger
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <span class="header__search-text">{{ 'header.command_bar_placeholder' | t }}</span>
+        <kbd class="header__kbd" aria-hidden="true">⌘K</kbd>
+      </button>
+    </div>
+
+    {%- comment -%} Desktop nav actions {%- endcomment -%}
+    <nav class="header__nav" aria-label="{{ 'sections.header.nav_aria_label' | t }}">
+      {%- for link in linklists[section.settings.menu].links -%}
+        <a
+          href="{{ link.url }}"
+          class="header__nav-link btn btn--outline{% if link.active %} is-active{% endif %}"
+        >
+          {{ link.title }}
+        </a>
+      {%- endfor -%}
+    </nav>
+
+    {%- comment -%} Action buttons {%- endcomment -%}
+    <div class="header__actions">
+
+      {%- comment -%} Dark mode toggle {%- endcomment -%}
+      <button
+        class="header__theme-toggle btn btn--ghost"
+        type="button"
+        aria-label="Toggle dark mode"
+        data-theme-toggle
+      >
+        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+        </svg>
+        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+
+      {%- comment -%} Cart pill {%- endcomment -%}
+      <a
+        href="{{ routes.cart_url }}"
+        class="header__cart btn btn--primary"
+        aria-label="{{ 'accessibility.open_cart' | t }}"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <span class="header__cart-count" data-cart-count>
+          {{- cart.item_count -}}
+        </span>
+      </a>
+
+      {%- comment -%} Hamburger (mobile only) {%- endcomment -%}
+      <button
+        class="header__hamburger btn btn--ghost"
+        type="button"
+        aria-label="{{ 'accessibility.open_menu' | t }}"
+        aria-expanded="false"
+        aria-controls="MobileMenuDialog"
+        data-menu-open
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+
+    </div>
+  </div>
+</header>
+
+{%- comment -%} Mobile menu dialog {%- endcomment -%}
+<dialog class="mobile-menu" id="MobileMenuDialog" aria-label="{{ 'sections.header.mobile_menu_aria_label' | t }}">
+  <div class="mobile-menu__inner">
+    <div class="mobile-menu__header">
+      <span class="header__logo-mark" aria-hidden="true">CC</span>
+      <span class="header__logo-name">
+        CodeCraft<span class="header__logo-tld">.academy</span>
+      </span>
+      <button
+        class="mobile-menu__close btn btn--ghost"
+        type="button"
+        aria-label="{{ 'accessibility.close_menu' | t }}"
+        data-menu-close
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="mobile-menu__nav" aria-label="{{ 'sections.header.mobile_nav_aria_label' | t }}">
+      {%- for link in linklists[section.settings.menu].links -%}
+        <a
+          href="{{ link.url }}"
+          class="mobile-menu__link{% if link.active %} is-active{% endif %}"
+        >
+          {{ link.title }}
+        </a>
+      {%- endfor -%}
+    </nav>
+
+    <a href="{{ routes.cart_url }}" class="mobile-menu__cart btn btn--primary btn--full">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+      </svg>
+      {{ 'general.cart' | t }}
+      <span data-cart-count-mobile>({{ cart.item_count }})</span>
+    </a>
+  </div>
+</dialog>
+
+{% stylesheet %}
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--header-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.header__inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 64px;
+}
+
+/* Logo */
+.header__logo-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.header__logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--color-primary);
+  color: #0B1120;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.75rem;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.header__logo-name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+}
+
+.header__logo-tld {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.header__logo-img {
+  height: auto;
+  display: block;
+}
+
+/* Command bar */
+.header__command-bar {
+  flex: 1;
+  max-width: 360px;
+  margin: 0 auto;
+  display: none;
+}
+
+.header__search-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  text-align: left;
+}
+
+.header__search-trigger:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-glow);
+  color: var(--color-text-secondary);
+}
+
+.header__search-text {
+  flex: 1;
+}
+
+.header__kbd {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 5px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+/* Desktop nav */
+.header__nav {
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.header__nav-link {
+  font-size: 0.8rem;
+  padding: 6px 14px;
+}
+
+.header__nav-link.is-active {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* Actions */
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.header__theme-toggle {
+  padding: 8px;
+  position: relative;
+}
+
+.icon-moon {
+  display: none;
+}
+
+[data-theme="light"] .icon-sun {
+  display: none;
+}
+
+[data-theme="light"] .icon-moon {
+  display: block;
+}
+
+.header__cart {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+}
+
+.header__cart-count {
+  font-weight: 700;
+}
+
+/* Hamburger: visible on mobile only */
+.header__hamburger {
+  display: flex;
+  padding: 8px;
+}
+
+/* Mobile menu dialog */
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  background: var(--color-bg);
+  border: none;
+  padding: 0;
+  z-index: 200;
+}
+
+.mobile-menu::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.mobile-menu__inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 24px;
+  gap: 8px;
+}
+
+.mobile-menu__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 16px;
+}
+
+.mobile-menu__close {
+  margin-left: auto;
+  padding: 8px;
+}
+
+.mobile-menu__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.mobile-menu__link {
+  display: block;
+  padding: 12px 16px;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  text-decoration: none;
+  border-radius: var(--border-radius);
+  border: 1px solid transparent;
+  transition: all 0.15s;
+}
+
+.mobile-menu__link:hover,
+.mobile-menu__link.is-active {
+  color: var(--color-primary);
+  background: var(--color-primary-glow);
+  border-color: rgba(6, 182, 212, 0.2);
+  text-decoration: none;
+}
+
+.mobile-menu__cart {
+  margin-top: auto;
+}
+
+/* Responsive breakpoints */
+@media (min-width: 768px) {
+  .header__command-bar {
+    display: block;
+  }
+}
+
+@media (min-width: 1024px) {
+  .header__nav {
+    display: flex;
+  }
+
+  .header__hamburger {
+    display: none;
+  }
+}
+{% endstylesheet %}
+
+<script>
+(function () {
+  const header = document.getElementById('SiteHeader');
+  if (!header) return;
+
+  // ── Mobile menu ──────────────────────────────────────────────
+  const dialog   = document.getElementById('MobileMenuDialog');
+  const openBtn  = header.querySelector('[data-menu-open]');
+  const closeBtn = dialog && dialog.querySelector('[data-menu-close]');
+
+  if (dialog && openBtn) {
+    openBtn.addEventListener('click', function () {
+      dialog.showModal();
+      openBtn.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    });
+  }
+
+  if (dialog && closeBtn) {
+    closeBtn.addEventListener('click', function () {
+      dialog.close();
+    });
+  }
+
+  if (dialog) {
+    dialog.addEventListener('close', function () {
+      if (openBtn) openBtn.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    });
+
+    // Close on backdrop click
+    dialog.addEventListener('click', function (e) {
+      if (e.target === dialog) dialog.close();
+    });
+  }
+
+  // ── Dark mode toggle ─────────────────────────────────────────
+  const themeToggle = header.querySelector('[data-theme-toggle]');
+  const html = document.documentElement;
+
+  function applyTheme(theme) {
+    html.setAttribute('data-theme', theme);
+    try { localStorage.setItem('cc-theme', theme); } catch (_) {}
+  }
+
+  // Restore saved preference
+  try {
+    const saved = localStorage.getItem('cc-theme');
+    if (saved === 'light' || saved === 'dark') applyTheme(saved);
+  } catch (_) {}
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', function () {
+      const current = html.getAttribute('data-theme');
+      applyTheme(current === 'light' ? 'dark' : 'light');
+    });
+  }
+
+  // ── Cart count sync ──────────────────────────────────────────
+  function updateCartCount(count) {
+    document.querySelectorAll('[data-cart-count]').forEach(function (el) {
+      el.textContent = count;
+    });
+    document.querySelectorAll('[data-cart-count-mobile]').forEach(function (el) {
+      el.textContent = '(' + count + ')';
+    });
+  }
+
+  document.addEventListener('cart:updated', function (e) {
+    if (e.detail && typeof e.detail.count === 'number') {
+      updateCartCount(e.detail.count);
+    }
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.header.name",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "t:sections.header.settings.logo.label"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "t:sections.header.settings.logo_width.label",
+      "min": 60,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 120
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "t:sections.header.settings.menu.label",
+      "default": "main-menu"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.header.name"
+    }
+  ]
+}
+{% endschema %}

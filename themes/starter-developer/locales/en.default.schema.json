@@ -1,0 +1,266 @@
+{
+  "settings": {
+    "colors": {
+      "name": "Colors",
+      "color_bg": { "label": "Background" },
+      "color_bg_alt": { "label": "Alternate background" },
+      "color_bg_card": { "label": "Card background" },
+      "color_surface": { "label": "Surface" },
+      "color_text": { "label": "Text" },
+      "color_text_secondary": { "label": "Secondary text" },
+      "color_text_muted": { "label": "Muted text" },
+      "color_primary": { "label": "Primary" },
+      "color_primary_dark": { "label": "Primary dark" },
+      "color_primary_light": { "label": "Primary light" },
+      "color_accent": { "label": "Accent" },
+      "color_accent_2": { "label": "Accent 2" },
+      "color_error": { "label": "Error" },
+      "color_border": { "label": "Border" },
+      "color_terminal_bg": { "label": "Terminal background" }
+    },
+    "typography": {
+      "name": "Typography",
+      "font_heading": { "label": "Heading font" },
+      "font_body": { "label": "Body font" },
+      "font_scale": { "label": "Font scale" }
+    },
+    "layout": {
+      "name": "Layout",
+      "page_width": { "label": "Page width" },
+      "border_radius": { "label": "Border radius" },
+      "spacing_scale": { "label": "Spacing scale" }
+    },
+    "cart": {
+      "name": "Cart",
+      "free_shipping_threshold": { "label": "Free shipping threshold" },
+      "show_free_shipping_bar": { "label": "Show free shipping progress bar" }
+    }
+  },
+  "sections": {
+    "header": {
+      "name": "Header",
+      "settings": {
+        "logo": { "label": "Logo" },
+        "logo_width": { "label": "Logo width" },
+        "menu": { "label": "Navigation menu" },
+        "show_command_bar": { "label": "Show command bar" }
+      }
+    },
+    "hero_banner": {
+      "name": "Hero banner",
+      "settings": {
+        "badge": { "label": "Badge text" },
+        "heading": { "label": "Heading" },
+        "subtitle": { "label": "Subtitle" },
+        "button_label_1": { "label": "Primary button label" },
+        "button_url_1": { "label": "Primary button URL" },
+        "button_label_2": { "label": "Secondary button label" },
+        "button_url_2": { "label": "Secondary button URL" },
+        "show_terminal": { "label": "Show terminal animation" },
+        "height": { "label": "Section height" },
+        "overlay_opacity": { "label": "Overlay opacity" },
+        "terminal_title": { "label": "Terminal title" },
+        "terminal_line_1": { "label": "Terminal line 1 (command)" },
+        "terminal_line_2": { "label": "Terminal line 2 (output)" },
+        "terminal_line_3": { "label": "Terminal line 3 (output)" },
+        "terminal_line_4": { "label": "Terminal line 4 (output)" }
+      }
+    },
+    "metrics_bar": {
+      "name": "Metrics bar",
+      "settings": {
+        "heading": { "label": "Heading" }
+      }
+    },
+    "featured_courses": {
+      "name": "Featured courses",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "collection": { "label": "Collection" },
+        "products_count": { "label": "Number of courses" },
+        "show_view_all": { "label": "Show 'View all' link" }
+      }
+    },
+    "comparison_table": {
+      "name": "Comparison table",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "subtitle": { "label": "Subtitle" }
+      }
+    },
+    "testimonials": {
+      "name": "Testimonials",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "subtitle": { "label": "Subtitle" },
+        "autoplay": { "label": "Autoplay" },
+        "autoplay_speed": { "label": "Autoplay speed (ms)" }
+      }
+    },
+    "newsletter_cta": {
+      "name": "Newsletter CTA",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "subtitle": { "label": "Subtitle" },
+        "placeholder": { "label": "Email placeholder" },
+        "button_label": { "label": "Button label" },
+        "show_privacy_note": { "label": "Show privacy note" }
+      }
+    },
+    "cta_banner": {
+      "name": "CTA banner",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "subtitle": { "label": "Subtitle" },
+        "button_label": { "label": "Button label" },
+        "button_url": { "label": "Button URL" },
+        "background_style": { "label": "Background style" }
+      }
+    },
+    "footer": {
+      "name": "Footer",
+      "settings": {
+        "about_text": { "label": "About text" },
+        "menu_1": { "label": "First menu" },
+        "menu_1_heading": { "label": "First menu heading" },
+        "menu_2": { "label": "Second menu" },
+        "menu_2_heading": { "label": "Second menu heading" },
+        "menu_3": { "label": "Third menu" },
+        "menu_3_heading": { "label": "Third menu heading" },
+        "show_newsletter": { "label": "Show newsletter signup" },
+        "show_tech_stack": { "label": "Show tech stack credits" },
+        "phone": { "label": "Phone number" },
+        "email": { "label": "Email address" },
+        "address": { "label": "Address" }
+      }
+    },
+    "product_grid": {
+      "name": "Product grid",
+      "settings": {
+        "products_per_page": { "label": "Products per page" },
+        "columns_desktop": { "label": "Desktop columns" },
+        "show_sort": { "label": "Show sort dropdown" }
+      }
+    },
+    "product_detail": {
+      "name": "Product detail",
+      "settings": {
+        "show_rating": { "label": "Show rating" },
+        "show_stock": { "label": "Show stock indicator" },
+        "show_description": { "label": "Show description" }
+      }
+    },
+    "product_tabs": {
+      "name": "Product tabs",
+      "settings": {
+        "show_description": { "label": "Show description tab" },
+        "show_shipping": { "label": "Show shipping tab" },
+        "shipping_text": { "label": "Shipping & returns text" },
+        "show_reviews": { "label": "Show reviews tab" }
+      }
+    },
+    "related_products": {
+      "name": "Related products",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "products_count": { "label": "Number of products" }
+      }
+    },
+    "cart_content": {
+      "name": "Cart content",
+      "settings": {
+        "show_free_shipping_bar": { "label": "Show free shipping progress bar" },
+        "show_payment_icons": { "label": "Show payment icons" }
+      }
+    },
+    "main_page": {
+      "name": "Page content",
+      "settings": {
+        "show_title": { "label": "Show page title" }
+      }
+    },
+    "search_results": {
+      "name": "Search results",
+      "settings": {
+        "products_per_page": { "label": "Products per page" }
+      }
+    },
+    "not_found": {
+      "name": "404 page",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "message": { "label": "Message" },
+        "button_label": { "label": "Button label" },
+        "button_url": { "label": "Button URL" }
+      }
+    },
+    "collections_list": {
+      "name": "Collections list",
+      "settings": {
+        "heading": { "label": "Heading" }
+      }
+    },
+    "customer_login": { "name": "Customer login" },
+    "customer_register": { "name": "Customer register" },
+    "customer_account": { "name": "Customer account" },
+    "customer_order": { "name": "Customer order" }
+  },
+  "blocks": {
+    "course_feature": {
+      "name": "Course feature",
+      "settings": {
+        "text": { "label": "Feature text" },
+        "icon": { "label": "Icon" },
+        "heading": { "label": "Heading" },
+        "description": { "label": "Description" }
+      }
+    },
+    "comparison_row": {
+      "name": "Comparison row",
+      "settings": {
+        "feature_name": { "label": "Feature name" },
+        "plan_basic": { "label": "Basic plan value" },
+        "plan_pro": { "label": "Pro plan value" },
+        "plan_team": { "label": "Team plan value" }
+      }
+    },
+    "testimonial": {
+      "name": "Testimonial",
+      "settings": {
+        "text": { "label": "Quote" },
+        "author_name": { "label": "Author name" },
+        "author_role": { "label": "Author role" },
+        "rating": { "label": "Star rating" }
+      }
+    },
+    "metric_item": {
+      "name": "Metric item",
+      "settings": {
+        "value": { "label": "Value" },
+        "label": { "label": "Label" },
+        "icon": { "label": "Icon" }
+      }
+    },
+    "text": {
+      "name": "Text",
+      "settings": {
+        "text": { "label": "Content" }
+      }
+    },
+    "heading": {
+      "name": "Heading",
+      "settings": {
+        "heading": { "label": "Heading text" },
+        "size": { "label": "Heading size" }
+      }
+    },
+    "image": {
+      "name": "Image",
+      "settings": {
+        "image": { "label": "Image" },
+        "url": { "label": "Link URL" },
+        "alt": { "label": "Alt text" }
+      }
+    }
+  }
+}
