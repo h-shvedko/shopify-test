@@ -1,0 +1,105 @@
+<section class="collections-list section-padding">
+  <div class="container">
+    {% if section.settings.heading != blank %}
+      <h1 class="collections-list__heading">{{ section.settings.heading }}</h1>
+    {% endif %}
+    <div class="collections-list__grid">
+      {% for collection in collections %}
+        {% if collection.handle != 'all' %}
+          <a href="{{ collection.url }}" class="collections-list__item">
+            {% if collection.image %}
+              {{ collection.image | image_url: width: 400 | image_tag: loading: 'lazy', alt: collection.title }}
+            {% else %}
+              <div class="collections-list__item-placeholder" aria-hidden="true"></div>
+            {% endif %}
+            <h3 class="collections-list__item-title">{{ collection.title }}</h3>
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .collections-list__heading {
+    margin-bottom: 32px;
+  }
+
+  .collections-list__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--grid-gap-mobile);
+  }
+
+  .collections-list__item {
+    display: block;
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background: var(--color-background-alt);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .collections-list__item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+  }
+
+  .collections-list__item:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  .collections-list__item img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    display: block;
+  }
+
+  .collections-list__item-placeholder {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: var(--color-border);
+  }
+
+  .collections-list__item-title {
+    padding: 14px 16px;
+    color: var(--color-text);
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .collections-list__grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--grid-gap-desktop);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .collections-list__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.collections_list.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.collections_list.settings.heading.label",
+      "default": "All collections"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collections list"
+    }
+  ]
+}
+{% endschema %}

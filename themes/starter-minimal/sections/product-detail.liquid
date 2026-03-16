@@ -1,0 +1,280 @@
+<section class="product-detail section-padding">
+  <div class="container product-detail__layout">
+    <div class="product-detail__media">
+      {% if product.featured_image %}
+        {{ product.featured_image | image_url: width: 800 | image_tag: loading: 'eager', alt: product.featured_image.alt, class: 'product-detail__image', width: 800, height: 800 }}
+      {% else %}
+        <div class="product-detail__image-placeholder">
+          {{ 'product-1' | placeholder_svg_tag }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="product-detail__info">
+      {% if product.tags contains 'bestseller' %}
+        {% assign bestseller_label = 'badges.bestseller' | t %}
+        {% render 'badge', type: 'bestseller', label: bestseller_label %}
+      {% endif %}
+
+      <h1 class="product-detail__title">{{ product.title }}</h1>
+
+      {% if section.settings.show_rating %}
+        {% if product.metafields.reviews.rating.value != blank %}
+          {% render 'star-rating',
+            rating: product.metafields.reviews.rating.value,
+            count: product.metafields.reviews.rating_count.value
+          %}
+        {% endif %}
+      {% endif %}
+
+      <div class="product-detail__price">
+        {% render 'price', product: product %}
+      </div>
+
+      {% if section.settings.show_stock %}
+        {% assign variant = product.selected_or_first_available_variant %}
+        {% if variant.inventory_management == 'shopify' %}
+          {% if variant.inventory_quantity > 10 %}
+            <p class="product-detail__stock product-detail__stock--in-stock">{{ 'products.in_stock' | t }}</p>
+          {% elsif variant.inventory_quantity > 0 %}
+            <p class="product-detail__stock product-detail__stock--low">{{ 'products.low_stock' | t: count: variant.inventory_quantity }}</p>
+          {% else %}
+            <p class="product-detail__stock product-detail__stock--out">{{ 'products.out_of_stock' | t }}</p>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+
+      {% if section.settings.show_description %}
+        {% if product.description != blank %}
+          <div class="product-detail__description">{{ product.description }}</div>
+        {% endif %}
+      {% endif %}
+
+      {% form 'product', product, data-product-form: '', data-added-message: 'products.added_to_cart' | t %}
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+        <div class="product-detail__quantity">
+          {% render 'quantity-selector', value: 1, name: 'quantity' %}
+        </div>
+        <button
+          type="submit"
+          class="btn btn--primary btn--full-width product-detail__add-btn"
+          {% unless product.available %}disabled{% endunless %}
+        >
+          {% if product.available %}
+            {{ 'products.add_to_cart' | t }}
+          {% else %}
+            {{ 'products.sold_out' | t }}
+          {% endif %}
+        </button>
+      {% endform %}
+    </div>
+  </div>
+</section>
+
+<div class="product-detail__toast" data-cart-toast aria-live="polite" aria-atomic="true"></div>
+
+{% stylesheet %}
+  .product-detail__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .product-detail__media img,
+  .product-detail__image {
+    width: 100%;
+    border-radius: var(--border-radius);
+    display: block;
+  }
+
+  .product-detail__image-placeholder {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background: var(--color-background-alt);
+  }
+
+  .product-detail__image-placeholder svg {
+    width: 100%;
+    display: block;
+  }
+
+  .product-detail__title {
+    font-size: 2rem;
+    margin: 8px 0 8px;
+    line-height: 1.2;
+  }
+
+  .product-detail__price {
+    margin: 8px 0;
+  }
+
+  .product-detail__description {
+    margin: 16px 0;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .product-detail__stock {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 8px 0;
+  }
+
+  .product-detail__stock--in-stock {
+    color: var(--color-success);
+  }
+
+  .product-detail__stock--low {
+    color: var(--color-primary);
+  }
+
+  .product-detail__stock--out {
+    color: var(--color-error);
+  }
+
+  .product-detail__quantity {
+    margin-bottom: 12px;
+  }
+
+  .product-detail__add-btn {
+    margin-top: 16px;
+    width: 100%;
+  }
+
+  .btn--full-width {
+    width: 100%;
+  }
+
+  /* Toast notification */
+  .product-detail__toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    background: var(--color-text);
+    color: var(--color-background);
+    padding: 12px 24px;
+    border-radius: var(--border-radius);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 9999;
+    white-space: nowrap;
+  }
+
+  .product-detail__toast--visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  @media (min-width: 1024px) {
+    .product-detail__layout {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    var form = document.querySelector('[data-product-form]');
+    var toast = document.querySelector('[data-cart-toast]');
+    if (!form) return;
+
+    var toastTimer = null;
+
+    function showToast(message) {
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.add('product-detail__toast--visible');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () {
+        toast.classList.remove('product-detail__toast--visible');
+      }, 3000);
+    }
+
+    function updateCartBadge(count) {
+      var badges = document.querySelectorAll('[data-cart-count]');
+      badges.forEach(function (badge) {
+        badge.textContent = count;
+        badge.hidden = count === 0;
+      });
+    }
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      var submitBtn = form.querySelector('[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
+
+      var formData = new FormData(form);
+      var body = {};
+      formData.forEach(function (value, key) {
+        body[key] = value;
+      });
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        body: JSON.stringify(body)
+      })
+        .then(function (response) {
+          if (!response.ok) {
+            return response.json().then(function (data) {
+              throw new Error(data.description || 'Could not add to cart');
+            });
+          }
+          return response.json();
+        })
+        .then(function () {
+          return fetch('/cart.js', { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        })
+        .then(function (response) { return response.json(); })
+        .then(function (cart) {
+          updateCartBadge(cart.item_count);
+          document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart: cart } }));
+          showToast(form.dataset.addedMessage || 'Added to cart');
+        })
+        .catch(function (err) {
+          showToast(err.message);
+        })
+        .finally(function () {
+          if (submitBtn && !submitBtn.dataset.soldOut) {
+            submitBtn.disabled = false;
+          }
+        });
+    });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.product_detail.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "t:sections.product_detail.settings.show_rating.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stock",
+      "label": "t:sections.product_detail.settings.show_stock.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "t:sections.product_detail.settings.show_description.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product detail"
+    }
+  ]
+}
+{% endschema %}

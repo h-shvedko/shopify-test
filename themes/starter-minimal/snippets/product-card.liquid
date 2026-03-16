@@ -1,0 +1,201 @@
+{% doc %}
+  Renders a product card with image, badge, title, star rating, price, optional
+  description, and an optional add-to-cart form.
+
+  @param {product} product          - Shopify product object. Required.
+  @param {boolean} show_description - Show a truncated product description. Optional, default: false.
+  @param {boolean} show_add_to_cart - Show an add-to-cart button when the product is available.
+                                      Optional, default: true.
+
+  @example
+  {% render 'product-card', product: product %}
+  {% render 'product-card', product: product, show_description: true, show_add_to_cart: false %}
+{% enddoc %}
+
+{% assign show_atc = true %}
+{% if show_add_to_cart == false %}
+  {% assign show_atc = false %}
+{% endif %}
+
+<style>
+  .product-card {
+    background: var(--color-background);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    position: relative;
+    transition: box-shadow 0.2s;
+  }
+
+  .product-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .product-card__image-wrapper {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+
+  .product-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+    display: block;
+  }
+
+  .product-card:hover .product-card__image {
+    transform: scale(1.05);
+  }
+
+  .product-card__image-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--color-background-alt);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .product-card__badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 1;
+  }
+
+  .product-card__info {
+    padding: 16px;
+  }
+
+  .product-card__title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 4px;
+    line-height: 1.3;
+  }
+
+  .product-card__title a {
+    text-decoration: none;
+    color: var(--color-text);
+  }
+
+  .product-card__title a:hover {
+    color: var(--color-primary);
+  }
+
+  .product-card__rating {
+    margin: 4px 0;
+  }
+
+  .product-card__price {
+    margin: 6px 0 0;
+  }
+
+  .product-card__description {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin: 8px 0 0;
+    line-height: 1.5;
+  }
+
+  .product-card__atc {
+    margin-top: 12px;
+  }
+
+  .product-card__atc-btn {
+    width: 100%;
+    padding: 10px 16px;
+    background: var(--color-primary);
+    color: var(--color-primary-contrast);
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .product-card__atc-btn:hover {
+    opacity: 0.88;
+  }
+
+  .product-card__atc-btn:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+</style>
+
+<article class="product-card">
+  <a href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+    <div class="product-card__image-wrapper">
+      {% if product.featured_image %}
+        <img
+          class="product-card__image"
+          src="{{ product.featured_image | image_url: width: 600 }}"
+          alt="{{ product.featured_image.alt | escape }}"
+          width="600"
+          height="600"
+          loading="lazy"
+        >
+      {% else %}
+        <div class="product-card__image-placeholder" aria-hidden="true">
+          {{ 'image' | placeholder_svg_tag }}
+        </div>
+      {% endif %}
+
+      <div class="product-card__badge">
+        {% if product.tags contains 'bestseller' %}
+          {% assign badge_label = 'badges.bestseller' | t %}
+          {% render 'badge', type: 'bestseller', label: badge_label %}
+        {% elsif product.available == false %}
+          {% assign badge_label = 'badges.sold_out' | t %}
+          {% render 'badge', type: 'sold_out', label: badge_label %}
+        {% endif %}
+      </div>
+    </div>
+  </a>
+
+  <div class="product-card__info">
+    <h3 class="product-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+
+    {% if product.metafields.reviews.rating.value != blank %}
+      <div class="product-card__rating">
+        {% render 'star-rating',
+          rating: product.metafields.reviews.rating.value,
+          count: product.metafields.reviews.rating_count.value
+        %}
+      </div>
+    {% endif %}
+
+    <div class="product-card__price">
+      {% render 'price', product: product %}
+    </div>
+
+    {% if show_description %}
+      {% if product.description != blank %}
+        <p class="product-card__description">
+          {{ product.description | strip_html | truncate: 100 }}
+        </p>
+      {% endif %}
+    {% endif %}
+
+    {% if show_atc %}
+      {% if product.available %}
+        <div class="product-card__atc">
+          <form action="{{ routes.cart_add_url }}" method="post">
+            <input type="hidden" name="id" value="{{ product.first_available_variant.id }}">
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="product-card__atc-btn">
+              {{ 'products.add_to_cart' | t }}
+            </button>
+          </form>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</article>

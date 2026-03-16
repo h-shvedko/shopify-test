@@ -1,0 +1,42 @@
+{% doc %}
+  Renders a richtext block with standard body copy styling.
+  Suitable for editorial content, product descriptions, or any free-form text
+  inside a section.
+
+  Parameters (via block.settings):
+  - text {richtext} required — Rich text content to display
+{% enddoc %}
+
+<div class="text-block" {{ block.shopify_attributes }}>
+  {{ block.settings.text }}
+</div>
+
+{% stylesheet %}
+  .text-block {
+    line-height: 1.6;
+    color: var(--color-text);
+  }
+
+  .text-block p {
+    margin: 0 0 1em;
+  }
+
+  .text-block p:last-child {
+    margin-bottom: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:blocks.text.name",
+  "type": "text",
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:blocks.text.settings.text.label",
+      "default": "<p>Add your text here</p>"
+    }
+  ]
+}
+{% endschema %}

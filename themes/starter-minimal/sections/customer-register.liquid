@@ -1,0 +1,133 @@
+<section class="customer-form section-padding">
+  <div class="container customer-form__wrapper">
+    <h1 class="customer-form__title">{{ 'customer.register_title' | t }}</h1>
+
+    {% form 'create_customer' %}
+      {{ form.errors | default_errors }}
+
+      <div class="customer-form__field">
+        <label class="customer-form__label" for="customer-first-name">{{ 'customer.first_name' | t }}</label>
+        <input
+          class="customer-form__input"
+          type="text"
+          id="customer-first-name"
+          name="customer[first_name]"
+          autocomplete="given-name"
+        >
+      </div>
+
+      <div class="customer-form__field">
+        <label class="customer-form__label" for="customer-last-name">{{ 'customer.last_name' | t }}</label>
+        <input
+          class="customer-form__input"
+          type="text"
+          id="customer-last-name"
+          name="customer[last_name]"
+          autocomplete="family-name"
+        >
+      </div>
+
+      <div class="customer-form__field">
+        <label class="customer-form__label" for="customer-email">{{ 'customer.email' | t }}</label>
+        <input
+          class="customer-form__input"
+          type="email"
+          id="customer-email"
+          name="customer[email]"
+          autocomplete="email"
+          required
+        >
+      </div>
+
+      <div class="customer-form__field">
+        <label class="customer-form__label" for="customer-password">{{ 'customer.password' | t }}</label>
+        <input
+          class="customer-form__input"
+          type="password"
+          id="customer-password"
+          name="customer[password]"
+          autocomplete="new-password"
+          required
+        >
+      </div>
+
+      <button type="submit" class="btn btn--primary btn--full-width">
+        {{ 'customer.submit_register' | t }}
+      </button>
+    {% endform %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .customer-form__wrapper {
+    max-width: 480px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .customer-form__title {
+    margin-bottom: 32px;
+  }
+
+  .customer-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  .customer-form__label {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: var(--color-text);
+  }
+
+  .customer-form__input {
+    padding: 12px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    color: var(--color-text);
+    background: var(--color-background);
+    transition: border-color 0.2s ease;
+    width: 100%;
+  }
+
+  .customer-form__input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+
+  .customer-form__input:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  .customer-form__input::placeholder {
+    color: var(--color-text-secondary);
+  }
+
+  .customer-form .errors {
+    background: #fef2f2;
+    border: 1px solid var(--color-error);
+    border-radius: var(--border-radius);
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 0.9375rem;
+    color: var(--color-error);
+  }
+
+  .customer-form .errors ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.customer_register.name",
+  "settings": [],
+  "templates": ["customers/register"]
+}
+{% endschema %}

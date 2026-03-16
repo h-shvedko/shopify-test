@@ -1,0 +1,74 @@
+{% doc %}
+  Renders a single feature highlight with an icon, heading, and description.
+  Intended for use inside a features section as a repeatable block.
+
+  Parameters (via block.settings):
+  - icon {string} required — Icon identifier: truck, shield, star, or check
+  - heading {string} required — Short feature title
+  - description {string} required — Brief supporting description text
+{% enddoc %}
+
+<div class="feature-item" {{ block.shopify_attributes }}>
+  <div class="feature-item__icon">
+    {% render 'icon', name: block.settings.icon, size: 32 %}
+  </div>
+  <h3 class="feature-item__heading">{{ block.settings.heading | escape }}</h3>
+  <p class="feature-item__description">{{ block.settings.description | escape }}</p>
+</div>
+
+{% stylesheet %}
+  .feature-item {
+    text-align: center;
+    padding: 24px;
+  }
+
+  .feature-item__icon {
+    color: var(--color-primary);
+    margin-bottom: 12px;
+  }
+
+  .feature-item__heading {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 8px;
+  }
+
+  .feature-item__description {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:blocks.feature_item.name",
+  "type": "feature_item",
+  "settings": [
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "t:blocks.feature_item.settings.icon.label",
+      "default": "truck",
+      "options": [
+        { "value": "truck", "label": "Truck" },
+        { "value": "shield", "label": "Shield" },
+        { "value": "star", "label": "Star" },
+        { "value": "check", "label": "Check" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:blocks.feature_item.settings.heading.label",
+      "default": "Feature"
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "label": "t:blocks.feature_item.settings.description.label",
+      "default": "Description"
+    }
+  ]
+}
+{% endschema %}

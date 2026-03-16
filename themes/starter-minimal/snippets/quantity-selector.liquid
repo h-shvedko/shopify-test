@@ -1,0 +1,154 @@
+{% doc %}
+  Renders a quantity input with decrement and increment buttons.
+
+  @param {number} value          - Current quantity value. Optional, default: 1.
+  @param {string} name           - The name attribute for the hidden/number input. Required.
+  @param {string} line_item_key  - Cart line item key for AJAX quantity updates. Optional.
+                                   When provided, a 'quantity:change' CustomEvent is dispatched
+                                   on change with detail { key, quantity }.
+
+  @example
+  {% render 'quantity-selector', name: 'quantity', value: 1 %}
+  {% render 'quantity-selector', name: 'quantity', value: item.quantity, line_item_key: item.key %}
+{% enddoc %}
+
+{% assign qty_value = value | default: 1 %}
+
+<style>
+  .quantity-selector {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+  }
+
+  .quantity-selector__btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text);
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .quantity-selector__btn:hover {
+    color: var(--color-primary);
+  }
+
+  .quantity-selector__btn:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+    border-radius: var(--border-radius);
+  }
+
+  .quantity-selector__input {
+    width: 48px;
+    height: 36px;
+    text-align: center;
+    border: none;
+    border-left: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border);
+    font-size: 1rem;
+    color: var(--color-text);
+    background: transparent;
+    -moz-appearance: textfield;
+    padding: 0;
+  }
+
+  .quantity-selector__input::-webkit-outer-spin-button,
+  .quantity-selector__input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .quantity-selector__input:focus {
+    outline: none;
+  }
+</style>
+
+<div
+  class="quantity-selector"
+  {% if line_item_key != blank %}
+    data-line-item-key="{{ line_item_key }}"
+  {% endif %}
+>
+  <button
+    type="button"
+    class="quantity-selector__btn quantity-selector__btn--minus"
+    aria-label="{{ 'accessibility.decrease_quantity' | t }}"
+  >
+    {% render 'icon', name: 'minus', size: 16 %}
+  </button>
+
+  <input
+    type="number"
+    class="quantity-selector__input"
+    name="{{ name }}"
+    value="{{ qty_value }}"
+    min="1"
+    max="99"
+    step="1"
+    aria-label="{{ 'cart.quantity' | t }}"
+  >
+
+  <button
+    type="button"
+    class="quantity-selector__btn quantity-selector__btn--plus"
+    aria-label="{{ 'accessibility.increase_quantity' | t }}"
+  >
+    {% render 'icon', name: 'plus', size: 16 %}
+  </button>
+</div>
+
+<script>
+  (function () {
+    document.querySelectorAll('.quantity-selector').forEach(function (selector) {
+      if (selector.dataset.qsInit) return;
+      selector.dataset.qsInit = '1';
+
+      var input = selector.querySelector('.quantity-selector__input');
+      var minusBtn = selector.querySelector('.quantity-selector__btn--minus');
+      var plusBtn = selector.querySelector('.quantity-selector__btn--plus');
+      var lineItemKey = selector.dataset.lineItemKey || null;
+
+      function clamp(val) {
+        var min = parseInt(input.min, 10) || 1;
+        var max = parseInt(input.max, 10) || 99;
+        return Math.min(max, Math.max(min, val));
+      }
+
+      function dispatchChange(qty) {
+        if (!lineItemKey) return;
+        selector.dispatchEvent(
+          new CustomEvent('quantity:change', {
+            bubbles: true,
+            detail: { key: lineItemKey, quantity: qty }
+          })
+        );
+      }
+
+      minusBtn.addEventListener('click', function () {
+        var next = clamp(parseInt(input.value, 10) - 1);
+        input.value = next;
+        dispatchChange(next);
+      });
+
+      plusBtn.addEventListener('click', function () {
+        var next = clamp(parseInt(input.value, 10) + 1);
+        input.value = next;
+        dispatchChange(next);
+      });
+
+      input.addEventListener('change', function () {
+        var next = clamp(parseInt(input.value, 10) || 1);
+        input.value = next;
+        dispatchChange(next);
+      });
+    });
+  })();
+</script>

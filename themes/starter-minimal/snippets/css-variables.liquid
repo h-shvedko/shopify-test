@@ -1,0 +1,42 @@
+{% doc %}
+  Renders a <style> tag that writes all theme settings as CSS custom properties
+  on :root. Must be included in <head> after critical.css so that runtime values
+  override the fallback variables defined there.
+
+  Parameters: none — reads directly from the global `settings` object.
+
+  Usage:
+    {% render 'css-variables' %}
+{% enddoc %}
+
+<style>
+  :root {
+    /* Colors */
+    --color-primary: {{ settings.color_primary }};
+    --color-primary-contrast: {{ settings.color_primary_contrast }};
+    --color-background: {{ settings.color_background }};
+    --color-background-alt: {{ settings.color_background_alt }};
+    --color-text: {{ settings.color_text }};
+    --color-text-secondary: {{ settings.color_text_secondary }};
+    --color-footer-bg: {{ settings.color_footer_bg }};
+    --color-footer-text: {{ settings.color_footer_text }};
+    --color-border: {{ settings.color_border }};
+    --color-error: {{ settings.color_error }};
+    --color-success: {{ settings.color_success }};
+
+    /* Typography */
+    --font-heading: {{ settings.font_heading.family }}, sans-serif;
+    --font-heading-weight: {{ settings.font_heading.weight }};
+    --font-body: {{ settings.font_body.family }}, sans-serif;
+    --font-body-weight: {{ settings.font_body.weight }};
+    --font-scale-factor: {{ settings.font_scale | divided_by: 100.0 }};
+
+    /* Layout */
+    --page-width: {{ settings.page_width }}px;
+    --border-radius: {{ settings.border_radius }}px;
+    --spacing-scale-factor: {{ settings.spacing_scale | divided_by: 100.0 }};
+  }
+</style>
+
+{{ settings.font_heading | font_face: font_display: 'swap' }}
+{{ settings.font_body | font_face: font_display: 'swap' }}

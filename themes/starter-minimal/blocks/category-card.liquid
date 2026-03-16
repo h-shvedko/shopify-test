@@ -1,0 +1,95 @@
+{% doc %}
+  Renders a linked category card with an image background, dark gradient overlay,
+  and the collection title. Falls back to the collection's own image when no
+  custom image is selected.
+
+  Parameters (via block.settings):
+  - collection {collection} required — The collection to link and display
+  - image {image} optional — Override image; falls back to collection.image
+{% enddoc %}
+
+{%- liquid
+  assign card_image = block.settings.image
+  if card_image == blank
+    assign card_image = block.settings.collection.image
+  endif
+  assign card_collection = block.settings.collection
+-%}
+
+<a
+  class="category-card"
+  href="{{ card_collection.url }}"
+  {{ block.shopify_attributes }}
+>
+  {% if card_image != blank %}
+    <img
+      class="category-card__image"
+      src="{{ card_image | image_url: width: 800 }}"
+      alt="{{ card_image.alt | default: card_collection.title | escape }}"
+      width="{{ card_image.width }}"
+      height="{{ card_image.height }}"
+      loading="lazy"
+    >
+  {% else %}
+    {{ 'collection-1' | placeholder_svg_tag: 'category-card__image category-card__image--placeholder' }}
+  {% endif %}
+  <div class="category-card__overlay" aria-hidden="true"></div>
+  <p class="category-card__title">{{ card_collection.title }}</p>
+</a>
+
+{% stylesheet %}
+  .category-card {
+    position: relative;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    display: block;
+    text-decoration: none;
+  }
+
+  .category-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .category-card__image--placeholder {
+    background-color: var(--color-background-alt);
+  }
+
+  .category-card__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+  }
+
+  .category-card__title {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    text-decoration: none;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:blocks.category_card.name",
+  "type": "category_card",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:blocks.category_card.settings.collection.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:blocks.category_card.settings.image.label"
+    }
+  ]
+}
+{% endschema %}

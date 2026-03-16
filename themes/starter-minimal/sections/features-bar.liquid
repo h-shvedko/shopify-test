@@ -1,0 +1,94 @@
+<section class="features-bar section-padding" style="background: var(--color-background-alt);">
+  <div class="container">
+    {% if section.settings.heading != blank %}
+      <h2 class="features-bar__heading">{{ section.settings.heading | escape }}</h2>
+    {% endif %}
+
+    <div class="features-bar__grid">
+      {% for block in section.blocks %}
+        {% render block %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .features-bar__heading {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .features-bar__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (min-width: 1024px) {
+    .features-bar__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.features_bar.name",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.features_bar.settings.heading.label",
+      "default": ""
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature_item",
+      "name": "t:blocks.feature_item.name",
+      "limit": 8
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Features bar",
+      "blocks": [
+        {
+          "type": "feature_item",
+          "settings": {
+            "icon": "truck",
+            "heading": "Free shipping",
+            "description": "On orders over $99"
+          }
+        },
+        {
+          "type": "feature_item",
+          "settings": {
+            "icon": "shield",
+            "heading": "Secure payment",
+            "description": "100% secure checkout"
+          }
+        },
+        {
+          "type": "feature_item",
+          "settings": {
+            "icon": "star",
+            "heading": "Best quality",
+            "description": "Premium materials"
+          }
+        },
+        {
+          "type": "feature_item",
+          "settings": {
+            "icon": "check",
+            "heading": "Expert support",
+            "description": "Brewing advice included"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,128 @@
+<section class="customer-account section-padding">
+  <div class="container">
+    <h1 class="customer-account__title">{{ 'customer.account_title' | t }}</h1>
+
+    <h2 class="customer-account__subtitle">{{ 'customer.order_history' | t }}</h2>
+
+    {% if customer.orders.size > 0 %}
+      <div class="customer-account__table-wrap">
+        <table class="customer-account__orders">
+          <thead>
+            <tr>
+              <th>{{ 'customer.order_number' | t: number: '' }}</th>
+              <th>{{ 'customer.order_date' | t }}</th>
+              <th>{{ 'customer.order_total' | t }}</th>
+              <th>{{ 'customer.order_status' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in customer.orders %}
+              <tr>
+                <td>
+                  <a href="{{ order.customer_url }}" class="customer-account__order-link">
+                    {{ order.name }}
+                  </a>
+                </td>
+                <td>{{ order.created_at | date: "%B %d, %Y" }}</td>
+                <td>{{ order.total_price | money }}</td>
+                <td>
+                  <span class="customer-account__status">{{ order.financial_status_label }}</span>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="customer-account__no-orders">{{ 'customer.no_orders' | t }}</p>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .customer-account__title {
+    margin-bottom: 8px;
+  }
+
+  .customer-account__subtitle {
+    margin-bottom: 24px;
+    font-size: calc(1.25rem * var(--font-scale-factor));
+    color: var(--color-text-secondary);
+    font-weight: 600;
+  }
+
+  .customer-account__no-orders {
+    color: var(--color-text-secondary);
+    padding: 24px 0;
+  }
+
+  .customer-account__table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--color-border);
+  }
+
+  .customer-account__orders {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+  }
+
+  .customer-account__orders thead {
+    background: var(--color-background-alt);
+  }
+
+  .customer-account__orders th {
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+  }
+
+  .customer-account__orders td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    vertical-align: middle;
+  }
+
+  .customer-account__orders tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .customer-account__orders tbody tr:hover {
+    background: var(--color-background-alt);
+  }
+
+  .customer-account__order-link {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .customer-account__order-link:hover {
+    text-decoration: underline;
+  }
+
+  .customer-account__status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    background: var(--color-background-alt);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.customer_account.name",
+  "settings": [],
+  "templates": ["customers/account"]
+}
+{% endschema %}

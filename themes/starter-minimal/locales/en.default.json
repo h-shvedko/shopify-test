@@ -1,0 +1,148 @@
+{
+  "general": {
+    "skip_to_content": "Skip to content",
+    "cart": "Cart",
+    "search": "Search",
+    "menu": "Menu",
+    "close": "Close",
+    "loading": "Loading"
+  },
+  "header": {
+    "search_placeholder": "Search products...",
+    "cart_count": "{{ count }} items"
+  },
+  "hero": {
+    "default_heading": "Brew your perfect beer",
+    "default_subtitle": "Premium homebrew equipment for every brewer",
+    "shop_now": "Shop now",
+    "learn_more": "Learn more"
+  },
+  "features": {
+    "free_shipping": "Free shipping",
+    "free_shipping_description": "On orders over {{ threshold }}",
+    "secure_payment": "Secure payment",
+    "secure_payment_description": "100% secure checkout",
+    "best_quality": "Best quality",
+    "best_quality_description": "Premium materials",
+    "expert_support": "Expert support",
+    "expert_support_description": "Brewing advice included"
+  },
+  "categories": {
+    "heading": "Shop by category",
+    "view_all": "View all"
+  },
+  "products": {
+    "add_to_cart": "Add to cart",
+    "sold_out": "Sold out",
+    "from_price": "From {{ price }}",
+    "reviews_count": "{{ count }} reviews",
+    "sort_by": "Sort by",
+    "sort_featured": "Featured",
+    "sort_best_selling": "Best selling",
+    "sort_price_asc": "Price, low to high",
+    "sort_price_desc": "Price, high to low",
+    "sort_newest": "Newest",
+    "sort_title_asc": "A-Z",
+    "sort_title_desc": "Z-A",
+    "showing_count": "Showing {{ count }} products",
+    "featured_heading": "Featured products",
+    "view_all": "View all",
+    "you_may_also_like": "You may also like",
+    "in_stock": "In stock",
+    "low_stock": "Only {{ count }} left",
+    "out_of_stock": "Out of stock",
+    "description": "Description",
+    "shipping_returns": "Shipping & returns",
+    "reviews": "Reviews",
+    "added_to_cart": "Added to cart",
+    "no_products": "No products found"
+  },
+  "cart": {
+    "title": "Shopping cart",
+    "empty": "Your cart is empty",
+    "continue_shopping": "Continue shopping",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "shipping_at_checkout": "Calculated at checkout",
+    "tax": "Tax",
+    "tax_included": "Tax included",
+    "total": "Total",
+    "checkout": "Checkout",
+    "free_shipping_notice": "Free shipping on orders over {{ threshold }}",
+    "free_shipping_remaining": "Add {{ amount }} more for free shipping",
+    "free_shipping_achieved": "You qualify for free shipping!",
+    "remove": "Remove",
+    "quantity": "Quantity"
+  },
+  "footer": {
+    "about_heading": "About BrewMaster",
+    "customer_service": "Customer service",
+    "information": "Information",
+    "contact": "Contact",
+    "copyright": "© {{ year }} BrewMaster. All rights reserved.",
+    "newsletter_heading": "Subscribe to our newsletter",
+    "newsletter_placeholder": "Your email address",
+    "subscribe": "Subscribe",
+    "payment_methods": "Accepted payment methods"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search products...",
+    "no_results": "No results for \"{{ query }}\"",
+    "results_count": "{{ count }} results for \"{{ query }}\""
+  },
+  "not_found": {
+    "title": "Page not found",
+    "message": "The page you're looking for doesn't exist.",
+    "back_to_home": "Back to home"
+  },
+  "collections": {
+    "heading": "All collections"
+  },
+  "customer": {
+    "login_title": "Login",
+    "register_title": "Create account",
+    "account_title": "My account",
+    "email": "Email",
+    "password": "Password",
+    "first_name": "First name",
+    "last_name": "Last name",
+    "submit_login": "Sign in",
+    "submit_register": "Create account",
+    "order_history": "Order history",
+    "order_number": "Order {{ number }}",
+    "order_date": "Date",
+    "order_total": "Total",
+    "order_status": "Status",
+    "order_product": "Product",
+    "order_quantity": "Quantity",
+    "no_orders": "You haven't placed any orders yet."
+  },
+  "accessibility": {
+    "increase_quantity": "Increase quantity",
+    "decrease_quantity": "Decrease quantity",
+    "open_menu": "Open menu",
+    "close_menu": "Close menu",
+    "star_rating": "{{ rating }} out of 5 stars",
+    "open_cart": "Open cart",
+    "remove_item": "Remove {{ title }} from cart"
+  },
+  "sections": {
+    "header": {
+      "nav_aria_label": "Main navigation",
+      "mobile_menu_aria_label": "Mobile menu",
+      "mobile_nav_aria_label": "Mobile navigation"
+    }
+  },
+  "pagination": {
+    "label": "Pagination",
+    "previous": "Previous page",
+    "next": "Next page",
+    "page": "Page {{ number }}",
+    "current_page": "Page {{ number }}, current page"
+  },
+  "badges": {
+    "bestseller": "Bestseller",
+    "sold_out": "Sold out"
+  }
+}
