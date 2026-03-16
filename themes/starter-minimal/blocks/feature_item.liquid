@@ -9,7 +9,7 @@
 {% enddoc %}
 
 <div class="feature-item" {{ block.shopify_attributes }}>
-  <div class="feature-item__icon">
+  <div class="feature-item__icon-wrapper">
     {% render 'icon', name: block.settings.icon, size: 32 %}
   </div>
   <h3 class="feature-item__heading">{{ block.settings.heading | escape }}</h3>
@@ -22,9 +22,16 @@
     padding: 24px;
   }
 
-  .feature-item__icon {
+  .feature-item__icon-wrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(217, 119, 6, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
     color: var(--color-primary);
-    margin-bottom: 12px;
   }
 
   .feature-item__heading {

@@ -58,7 +58,8 @@
     "shipping_returns": "Shipping & returns",
     "reviews": "Reviews",
     "added_to_cart": "Added to cart",
-    "no_products": "No products found"
+    "no_products": "No products found",
+    "tax_included": "Tax included"
   },
   "cart": {
     "title": "Shopping cart",
