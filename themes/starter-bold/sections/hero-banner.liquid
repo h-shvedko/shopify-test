@@ -1,0 +1,437 @@
+{%- liquid
+  assign overlay_alpha = section.settings.overlay_opacity | divided_by: 100.0
+-%}
+
+<section
+  class="hero-banner"
+  data-section-id="{{ section.id }}"
+  {%- if section.settings.image != blank -%}
+    style="--hero-bg: url('{{ section.settings.image | image_url: width: 2000 }}')"
+  {%- endif -%}
+>
+  {%- if section.settings.bg_video != blank -%}
+    <div class="hero-banner__bg-video">
+      {{ section.settings.bg_video | video_tag: autoplay: true, muted: true, loop: true, playsinline: true, class: 'hero-banner__video-el' }}
+    </div>
+  {%- elsif section.settings.video_url != blank -%}
+    <div class="hero-banner__bg-video">
+      {%- assign video_src = section.settings.video_url -%}
+      {%- if video_src contains 'youtube.com' or video_src contains 'youtu.be' -%}
+        {%- if video_src contains 'watch?v=' -%}
+          {%- assign yt_id = video_src | split: 'watch?v=' | last | split: '&' | first -%}
+        {%- elsif video_src contains 'youtu.be/' -%}
+          {%- assign yt_id = video_src | split: 'youtu.be/' | last | split: '?' | first -%}
+        {%- endif -%}
+        <iframe
+          class="hero-banner__video-el"
+          src="https://www.youtube.com/embed/{{ yt_id }}?autoplay=1&mute=1&loop=1&playlist={{ yt_id }}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1"
+          allow="autoplay; encrypted-media"
+          frameborder="0"
+          loading="eager"
+        ></iframe>
+      {%- elsif video_src contains 'vimeo.com' -%}
+        {%- assign vimeo_id = video_src | split: 'vimeo.com/' | last | split: '?' | first -%}
+        <iframe
+          class="hero-banner__video-el"
+          src="https://player.vimeo.com/video/{{ vimeo_id }}?autoplay=1&muted=1&loop=1&background=1"
+          allow="autoplay; encrypted-media"
+          frameborder="0"
+          loading="eager"
+        ></iframe>
+      {%- endif -%}
+    </div>
+  {%- elsif section.settings.image != blank -%}
+    <img
+      src="{{ section.settings.image | image_url: width: 2000 }}"
+      alt="{{ section.settings.image.alt | escape }}"
+      class="hero-banner__bg-img"
+      width="2000"
+      height="1125"
+      fetchpriority="high"
+      loading="eager"
+    >
+  {%- else -%}
+    <img src="{{ 'hero-brewing.jpg' | asset_url }}" alt="" class="hero-banner__bg-img" loading="eager">
+  {%- endif -%}
+
+  <div class="hero-banner__overlay" style="opacity: {{ overlay_alpha }};"></div>
+
+  <div class="hero-banner__content container">
+    {%- if section.settings.badge_text != blank -%}
+      <span class="hero-banner__badge">{{ section.settings.badge_text }}</span>
+    {%- endif -%}
+
+    <h1 class="hero-banner__heading">{{ section.settings.heading }}</h1>
+
+    {%- if section.settings.subtitle != blank -%}
+      <p class="hero-banner__subtitle">{{ section.settings.subtitle }}</p>
+    {%- endif -%}
+
+    <div class="hero-banner__actions">
+      {%- if section.settings.button_label_1 != blank -%}
+        {%- assign btn1_label = section.settings.button_label_1 -%}
+        {%- assign btn1_url = section.settings.button_url_1 | default: '/collections/all' -%}
+        {% render 'button', label: btn1_label, url: btn1_url, variant: 'primary' %}
+      {%- endif -%}
+
+      {%- if section.settings.show_play_button -%}
+        {%- if section.settings.button_label_2 != blank -%}
+          <button
+            class="hero-banner__play-btn"
+            aria-label="{{ 'hero.play_video' | t }}"
+            data-video-url="{{ section.settings.video_url }}"
+            data-btn2-label="{{ section.settings.button_label_2 | escape }}"
+          >
+            <span class="hero-banner__play-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 3L15 9L4 15V3Z" fill="currentColor"/>
+              </svg>
+            </span>
+            {{ section.settings.button_label_2 }}
+          </button>
+        {%- endif -%}
+      {%- else -%}
+        {%- if section.settings.button_label_2 != blank -%}
+          {%- assign btn2_label = section.settings.button_label_2 -%}
+          {%- assign btn2_url = section.settings.button_url_2 -%}
+          {% render 'button', label: btn2_label, url: btn2_url, variant: 'outline' %}
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- if section.settings.video_url != blank -%}
+    <dialog class="hero-banner__video-modal" aria-label="{{ 'hero.play_video' | t }}">
+      <div class="hero-banner__video-inner">
+        <button class="hero-banner__video-close" aria-label="{{ 'general.close' | t }}">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div class="hero-banner__video-frame" id="hero-video-frame-{{ section.id }}"></div>
+      </div>
+    </dialog>
+  {%- endif -%}
+</section>
+
+{% stylesheet %}
+  .hero-banner {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 700px;
+    display: flex;
+    align-items: center;
+    background-color: #1e3d2a;
+    overflow: hidden;
+  }
+
+  .hero-banner__bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .hero-banner__bg-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .hero-banner__video-el {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: cover;
+    border: none;
+  }
+
+  /* For iframes which don't support object-fit, scale up */
+  iframe.hero-banner__video-el {
+    width: 177.78vh; /* 16:9 ratio */
+    height: 100vh;
+    min-width: 100%;
+    min-height: 56.25vw; /* 16:9 ratio */
+  }
+
+  .hero-banner__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(30, 61, 42, 0.85), rgba(26, 26, 24, 0.7));
+    z-index: 1;
+  }
+
+  .hero-banner__content {
+    position: relative;
+    z-index: 2;
+    color: #ffffff;
+    max-width: var(--page-width, 1400px);
+    margin: 0 auto;
+    padding: 0 24px;
+    width: 100%;
+  }
+
+  .hero-banner__badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 24px;
+    border: 1px solid rgba(232, 196, 160, 0.6);
+    color: var(--color-accent-light, #e8c4a0);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .hero-banner__heading {
+    font-family: var(--font-heading, georgia, serif);
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0 0 20px;
+    max-width: 14ch;
+    color: #ffffff;
+  }
+
+  .hero-banner__subtitle {
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    color: rgba(255, 255, 255, 0.8);
+    max-width: 480px;
+    margin: 0 0 40px;
+    line-height: 1.6;
+  }
+
+  .hero-banner__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .hero-banner__play-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+    letter-spacing: 0.02em;
+  }
+
+  .hero-banner__play-btn:hover .hero-banner__play-icon {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .hero-banner__play-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  /* Video modal */
+  .hero-banner__video-modal {
+    border: none;
+    padding: 0;
+    background: transparent;
+    max-width: 90vw;
+    max-height: 90vh;
+    width: 900px;
+  }
+
+  .hero-banner__video-modal::backdrop {
+    background: rgba(0, 0, 0, 0.85);
+  }
+
+  .hero-banner__video-inner {
+    position: relative;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .hero-banner__video-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .hero-banner__video-frame iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: none;
+  }
+
+  @media (max-width: 767px) {
+    .hero-banner__actions {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    var section = document.querySelector('[data-section-id="{{ section.id }}"]');
+    if (!section) return;
+
+    var playBtn = section.querySelector('.hero-banner__play-btn');
+    var modal = section.querySelector('.hero-banner__video-modal');
+    var closeBtn = section.querySelector('.hero-banner__video-close');
+    var frame = section.querySelector('#hero-video-frame-{{ section.id }}');
+
+    if (!playBtn || !modal) return;
+
+    playBtn.addEventListener('click', function () {
+      var videoUrl = playBtn.dataset.videoUrl;
+      if (videoUrl && frame) {
+        var embedUrl = videoUrl;
+        if (videoUrl.includes('youtube.com/watch')) {
+          embedUrl = videoUrl.replace('watch?v=', 'embed/') + '?autoplay=1';
+        } else if (videoUrl.includes('youtu.be/')) {
+          embedUrl = 'https://www.youtube.com/embed/' + videoUrl.split('youtu.be/')[1] + '?autoplay=1';
+        } else if (videoUrl.includes('vimeo.com/')) {
+          var vimeoId = videoUrl.split('vimeo.com/')[1];
+          embedUrl = 'https://player.vimeo.com/video/' + vimeoId + '?autoplay=1';
+        }
+        frame.innerHTML = '<iframe src="' + embedUrl + '" allow="autoplay; fullscreen" allowfullscreen></iframe>';
+      }
+      modal.showModal();
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function () {
+        modal.close();
+        if (frame) frame.innerHTML = '';
+      });
+    }
+
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) {
+        modal.close();
+        if (frame) frame.innerHTML = '';
+      }
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.hero_banner.name",
+  "settings": [
+    {
+      "type": "video",
+      "id": "bg_video",
+      "label": "t:sections.hero_banner.settings.bg_video.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.hero_banner.settings.image.label"
+    },
+    {
+      "type": "video_url",
+      "id": "video_url",
+      "label": "t:sections.hero_banner.settings.video_url.label",
+      "accept": ["youtube", "vimeo"],
+      "info": "t:sections.hero_banner.settings.video_url.info"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "t:sections.hero_banner.settings.badge_text.label",
+      "default": "New season 2026"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hero_banner.settings.heading.label",
+      "default": "Where art meets life"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "t:sections.hero_banner.settings.subtitle.label",
+      "default": "Discover handcrafted pieces from independent artists worldwide."
+    },
+    {
+      "type": "text",
+      "id": "button_label_1",
+      "label": "t:sections.hero_banner.settings.button_label_1.label",
+      "default": "Explore collection"
+    },
+    {
+      "type": "url",
+      "id": "button_url_1",
+      "label": "t:sections.hero_banner.settings.button_url_1.label",
+      "default": "/collections/all"
+    },
+    {
+      "type": "text",
+      "id": "button_label_2",
+      "label": "t:sections.hero_banner.settings.button_label_2.label",
+      "default": "Watch story"
+    },
+    {
+      "type": "url",
+      "id": "button_url_2",
+      "label": "t:sections.hero_banner.settings.button_url_2.label"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "t:sections.hero_banner.settings.overlay_opacity.label",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 70,
+      "unit": "%"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_play_button",
+      "label": "t:sections.hero_banner.settings.show_play_button.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero banner"
+    }
+  ]
+}
+{% endschema %}

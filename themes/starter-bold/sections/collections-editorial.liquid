@@ -1,0 +1,117 @@
+<section class="collections-editorial section-padding">
+  <div class="container">
+    <div class="collections-editorial__header">
+      <div>
+        <h2>{{ section.settings.heading }}</h2>
+        {%- if section.settings.description != blank -%}
+          <p>{{ section.settings.description }}</p>
+        {%- endif -%}
+      </div>
+      {%- if section.settings.show_view_all -%}
+        {%- assign view_all_label = 'collections.view_all' | t -%}
+        {% render 'button', label: view_all_label, url: section.settings.view_all_url, variant: 'dark' %}
+      {%- endif -%}
+    </div>
+    <div class="collections-editorial__grid">
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .collections-editorial {
+    padding: 48px 0;
+  }
+
+  @media (min-width: 1024px) {
+    .collections-editorial {
+      padding: 80px 0;
+    }
+  }
+
+  .collections-editorial__header {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .collections-editorial__header h2 {
+    font-family: var(--font-heading, georgia, serif);
+    font-size: clamp(1.75rem, 3vw, 2.75rem);
+    margin: 0;
+  }
+
+  .collections-editorial__header p {
+    color: var(--color-text-secondary, #6b6b63);
+    max-width: 480px;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  @media (min-width: 768px) {
+    .collections-editorial__header {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+  }
+
+  .collections-editorial__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  @media (min-width: 1024px) {
+    .collections-editorial__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .collections-editorial__grid > :first-child {
+      grid-row: span 2;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.collections_editorial.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.collections_editorial.settings.heading.label",
+      "default": "Curated collections"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "t:sections.collections_editorial.settings.description.label",
+      "default": "Explore our handpicked selections, each telling a unique story."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "t:sections.collections_editorial.settings.show_view_all.label",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "view_all_url",
+      "label": "t:sections.collections_editorial.settings.view_all_url.label",
+      "default": "/collections"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collections editorial"
+    }
+  ]
+}
+{% endschema %}

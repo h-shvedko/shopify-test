@@ -1,0 +1,36 @@
+{% doc %}
+  Renders a styled button or anchor element using ArtVault Starter Bold button classes.
+
+  Parameters:
+  - label {string} required — Visible button text
+  - url {string} optional — If provided, renders an <a> tag; otherwise renders a <button>
+  - variant {string} optional — Visual style. One of: primary, green, outline, dark.
+      Default: "primary"
+  - type {string} optional — HTML type attribute for <button> elements. Default: "button"
+  - full_width {boolean} optional — When true, the element spans full container width.
+      Default: false
+
+  All .btn CSS is defined in assets/critical.css — no <style> tag is needed here.
+
+  Usage:
+    {% render 'button', label: 'Explore collection', url: '/collections/all' %}
+    {% render 'button', label: 'Add to cart', variant: 'green', type: 'submit' %}
+    {% render 'button', label: 'Watch story', variant: 'outline', url: '#video' %}
+    {% render 'button', label: 'Checkout', variant: 'dark', full_width: true %}
+{% enddoc %}
+
+{%- liquid
+  assign btn_variant = variant | default: 'primary'
+  assign btn_type    = type    | default: 'button'
+
+  assign btn_class = 'btn btn--' | append: btn_variant
+  if full_width
+    assign btn_class = btn_class | append: ' btn--full'
+  endif
+-%}
+
+{%- if url != blank -%}
+  <a href="{{ url }}" class="{{ btn_class }}">{{ label }}</a>
+{%- else -%}
+  <button type="{{ btn_type }}" class="{{ btn_class }}">{{ label }}</button>
+{%- endif -%}

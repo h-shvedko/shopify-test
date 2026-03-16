@@ -1,0 +1,270 @@
+{
+  "general": {
+    "skip_to_content": "Skip to content",
+    "cart": "Cart",
+    "search": "Search",
+    "menu": "Menu",
+    "close": "Close",
+    "loading": "Loading",
+    "home": "Home",
+    "gift_card_title": "Gift card",
+    "gift_card_expired": "This gift card has expired",
+    "add_to_apple_wallet": "Add to Apple Wallet"
+  },
+  "announcement": {
+    "default_text": "Free shipping on all orders over $99"
+  },
+  "header": {
+    "search_placeholder": "Search artworks...",
+    "cart_count": "{{ count }} items",
+    "account": "Account"
+  },
+  "hero": {
+    "default_badge": "New season 2026",
+    "default_heading": "Where art meets life",
+    "default_subtitle": "Discover handcrafted pieces from independent artists worldwide.",
+    "explore": "Explore collection",
+    "watch_story": "Watch story",
+    "play_video": "Play video"
+  },
+  "marquee": {
+    "handcrafted": "Handcrafted",
+    "sustainable": "Sustainable",
+    "artist_made": "Artist-made",
+    "limited_edition": "Limited edition",
+    "ethically_sourced": "Ethically sourced",
+    "free_shipping": "Free shipping"
+  },
+  "collections": {
+    "heading": "Curated collections",
+    "description": "Explore our handpicked selections, each telling a unique story.",
+    "view_all": "View all",
+    "all_collections": "All collections"
+  },
+  "products": {
+    "add_to_cart": "Add to cart",
+    "sold_out": "Sold out",
+    "quick_view": "Quick view",
+    "from_price": "From {{ price }}",
+    "reviews_count": "{{ count }} reviews",
+    "sort_by": "Sort by",
+    "sort_featured": "Featured",
+    "sort_best_selling": "Best selling",
+    "sort_price_asc": "Price, low to high",
+    "sort_price_desc": "Price, high to low",
+    "sort_newest": "Newest",
+    "sort_title_asc": "A-Z",
+    "sort_title_desc": "Z-A",
+    "showing_count": "Showing {{ count }} products",
+    "featured_heading": "New arrivals",
+    "featured_subtitle": "Fresh from the studios of our featured artists",
+    "view_all": "View all",
+    "you_may_also_like": "You may also like",
+    "in_stock": "In stock",
+    "low_stock": "Only {{ count }} left",
+    "out_of_stock": "Out of stock",
+    "description": "Description",
+    "shipping_returns": "Shipping & returns",
+    "reviews": "Reviews",
+    "added_to_cart": "Added to cart",
+    "no_products": "No products found",
+    "tax_included": "Tax included",
+    "all": "All",
+    "filter_paintings": "Paintings",
+    "filter_prints": "Prints",
+    "filter_sculptures": "Sculptures",
+    "filter_ceramics": "Ceramics"
+  },
+  "cart": {
+    "title": "Your cart",
+    "empty": "Your cart is empty",
+    "continue_shopping": "Continue shopping",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "shipping_at_checkout": "Calculated at checkout",
+    "shipping_free": "Free",
+    "tax": "Tax",
+    "tax_included": "Tax included",
+    "total": "Total",
+    "checkout": "Checkout",
+    "secure_checkout": "Secure checkout powered by Shopify",
+    "order_summary": "Order summary",
+    "free_shipping_notice": "Free shipping on orders over {{ threshold }}",
+    "free_shipping_remaining": "Add {{ amount }} more for free shipping",
+    "free_shipping_achieved": "You qualify for free shipping!",
+    "remove": "Remove",
+    "quantity": "Quantity"
+  },
+  "editorial": {
+    "default_heading": "Every piece tells a story",
+    "default_description": "We partner directly with independent artists and small studios.",
+    "meet_artists": "Meet our artists"
+  },
+  "social": {
+    "heading": "Follow the movement",
+    "subtitle": "See how our community styles their spaces",
+    "follow_us": "Follow us"
+  },
+  "testimonials": {
+    "heading": "What people say"
+  },
+  "newsletter": {
+    "heading": "Join the creative circle",
+    "subtitle": "Get early access to new collections, artist stories, and exclusive offers.",
+    "placeholder": "Your email address",
+    "subscribe": "Subscribe"
+  },
+  "footer": {
+    "about_heading": "About ArtVault",
+    "copyright": "© {{ year }} ArtVault. All rights reserved.",
+    "payment_methods": "Accepted payment methods"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search artworks...",
+    "no_results": "No results for \"{{ query }}\"",
+    "results_count": "{{ count }} results for \"{{ query }}\""
+  },
+  "not_found": {
+    "title": "Page not found",
+    "message": "The page you're looking for doesn't exist.",
+    "back_to_home": "Back to home"
+  },
+  "customer": {
+    "login_title": "Login",
+    "register_title": "Create account",
+    "account_title": "My account",
+    "email": "Email",
+    "password": "Password",
+    "first_name": "First name",
+    "last_name": "Last name",
+    "submit_login": "Sign in",
+    "submit_register": "Create account",
+    "order_history": "Order history",
+    "order_number": "Order {{ number }}",
+    "order_date": "Date",
+    "order_total": "Total",
+    "order_status": "Status",
+    "no_orders": "You haven't placed any orders yet.",
+    "order_product": "Product",
+    "order_quantity": "Quantity"
+  },
+  "accessibility": {
+    "increase_quantity": "Increase quantity",
+    "decrease_quantity": "Decrease quantity",
+    "open_menu": "Open menu",
+    "close_menu": "Close menu",
+    "star_rating": "{{ rating }} out of 5 stars",
+    "open_cart": "Open cart",
+    "remove_item": "Remove {{ title }} from cart"
+  },
+  "pagination": {
+    "label": "Pagination",
+    "previous": "Previous page",
+    "next": "Next page",
+    "page": "Page {{ number }}",
+    "current_page": "Page {{ number }}, current page"
+  },
+  "badges": {
+    "new": "New",
+    "sale": "Sale",
+    "featured": "Featured",
+    "bestseller": "Bestseller",
+    "sold_out": "Sold out"
+  },
+  "blocks": {
+    "collection_card": {
+      "name": "Collection card",
+      "products": "products",
+      "placeholder_title": "Collection",
+      "settings": {
+        "collection": {
+          "label": "Collection"
+        },
+        "image": {
+          "label": "Image override"
+        },
+        "tag_label": {
+          "label": "Tag label"
+        }
+      }
+    },
+    "feature_check": {
+      "name": "Feature check",
+      "settings": {
+        "text": {
+          "label": "Feature text"
+        }
+      }
+    },
+    "testimonial": {
+      "name": "Testimonial",
+      "settings": {
+        "text": {
+          "label": "Quote"
+        },
+        "author_name": {
+          "label": "Author name"
+        },
+        "author_role": {
+          "label": "Author role"
+        },
+        "rating": {
+          "label": "Star rating"
+        }
+      }
+    },
+    "social_feed_item": {
+      "name": "Social feed item",
+      "settings": {
+        "image": {
+          "label": "Image"
+        },
+        "url": {
+          "label": "Link URL"
+        }
+      }
+    },
+    "marquee_item": {
+      "name": "Marquee item",
+      "settings": {
+        "text": {
+          "label": "Text"
+        }
+      }
+    },
+    "text": {
+      "name": "Text",
+      "settings": {
+        "text": {
+          "label": "Content"
+        }
+      }
+    },
+    "heading": {
+      "name": "Heading",
+      "settings": {
+        "heading": {
+          "label": "Heading text"
+        },
+        "size": {
+          "label": "Heading size"
+        }
+      }
+    },
+    "image": {
+      "name": "Image",
+      "settings": {
+        "image": {
+          "label": "Image"
+        },
+        "url": {
+          "label": "Link URL"
+        },
+        "alt": {
+          "label": "Alt text"
+        }
+      }
+    }
+  }
+}

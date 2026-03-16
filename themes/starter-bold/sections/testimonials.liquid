@@ -1,0 +1,69 @@
+<section class="testimonials section-padding" style="background: var(--color-background-alt);">
+  <div class="container">
+    <h2 class="testimonials__heading">{{ section.settings.heading }}</h2>
+    <div class="testimonials__grid">
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .testimonials {
+    padding: 48px 0;
+  }
+
+  @media (min-width: 1024px) {
+    .testimonials {
+      padding: 80px 0;
+    }
+  }
+
+  .testimonials__heading {
+    font-family: var(--font-heading, georgia, serif);
+    font-size: clamp(1.75rem, 3vw, 2.75rem);
+    text-align: center;
+    margin: 0 0 48px;
+  }
+
+  .testimonials__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  @media (min-width: 768px) {
+    .testimonials__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .testimonials__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.testimonials.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.testimonials.settings.heading.label",
+      "default": "What people say"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials"
+    }
+  ]
+}
+{% endschema %}

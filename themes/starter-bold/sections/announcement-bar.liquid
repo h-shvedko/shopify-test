@@ -1,0 +1,69 @@
+{% if section.settings.show_bar %}
+<div class="announcement-bar" data-section-id="{{ section.id }}">
+  {% if section.settings.link_url != blank %}
+    <a href="{{ section.settings.link_url }}" class="announcement-bar__link">
+      {{ section.settings.text }}
+    </a>
+  {% else %}
+    <p class="announcement-bar__text">{{ section.settings.text }}</p>
+  {% endif %}
+</div>
+{% endif %}
+
+{% stylesheet %}
+  .announcement-bar {
+    background: var(--color-primary);
+    color: #ffffff;
+    text-align: center;
+    padding: 10px 24px;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+  }
+
+  .announcement-bar__link {
+    color: #ffffff;
+    text-decoration: none;
+  }
+
+  .announcement-bar__link:hover {
+    text-decoration: underline;
+  }
+
+  .announcement-bar__text {
+    margin: 0;
+  }
+
+  .announcement-bar strong {
+    color: var(--color-accent-light);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.announcement_bar.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "t:sections.announcement_bar.settings.text.label",
+      "default": "Free shipping on all orders over $99"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "t:sections.announcement_bar.settings.link_url.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bar",
+      "label": "t:sections.announcement_bar.settings.show_bar.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement bar"
+    }
+  ]
+}
+{% endschema %}

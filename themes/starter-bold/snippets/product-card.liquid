@@ -1,0 +1,240 @@
+{% doc %}
+  Renders an ArtVault product card with a 4:5 aspect-ratio image, badge overlay,
+  "Quick view" hover bar, category label, Playfair Display title, and green price.
+  No add-to-cart button — quick view is the primary action.
+
+  Parameters:
+  - product {product} required — Shopify product object.
+  - show_quick_view {boolean} optional — Show the hover quick-view overlay bar.
+      Default: true.
+
+  Pre-assign translated strings before calling render:
+    {% assign quick_view_label = 'products.quick_view' | t %}
+    {% render 'product-card', product: product, quick_view_label: quick_view_label %}
+
+  Usage:
+    {% assign quick_view_label = 'products.quick_view' | t %}
+    {% render 'product-card', product: product, quick_view_label: quick_view_label %}
+
+    {% render 'product-card', product: product, show_quick_view: false %}
+{% enddoc %}
+
+{%- liquid
+  assign show_qv = true
+  if show_quick_view == false
+    assign show_qv = false
+  endif
+
+  assign qv_label = quick_view_label | default: 'Quick view'
+-%}
+
+<style>
+  .product-card {
+    background: #ffffff;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    transition: box-shadow 0.3s;
+  }
+
+  .product-card:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  }
+
+  .product-card__image {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .product-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s;
+  }
+
+  .product-card:hover .product-card__image img {
+    transform: scale(1.06);
+  }
+
+  .product-card__image-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--color-background-alt);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  .product-card__badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 1;
+  }
+
+  .product-card__quick {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    background: rgba(26, 26, 24, 0.9);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #ffffff;
+    text-align: center;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    font-size: 0.8rem;
+    font-weight: 600;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.3s, transform 0.3s;
+    text-decoration: none;
+    display: block;
+    letter-spacing: 0.03em;
+  }
+
+  .product-card:hover .product-card__quick {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .product-card__quick:focus-visible {
+    opacity: 1;
+    transform: translateY(0);
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+  }
+
+  .product-card__info {
+    padding: 16px;
+  }
+
+  .product-card__category {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-accent-dark);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .product-card__title {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .product-card__title a {
+    text-decoration: none;
+    color: var(--color-text);
+  }
+
+  .product-card__title a:hover {
+    color: var(--color-primary);
+  }
+
+  .product-card__prices {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .product-card__price-current {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--color-primary);
+  }
+
+  .product-card__price-compare {
+    font-size: 0.85rem;
+    text-decoration: line-through;
+    color: var(--color-text-muted);
+  }
+</style>
+
+<article class="product-card">
+  <div class="product-card__image">
+    {%- if product.featured_image -%}
+      <a href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+        <img
+          src="{{ product.featured_image | image_url: width: 600 }}"
+          alt="{{ product.featured_image.alt | escape }}"
+          width="600"
+          height="750"
+          loading="lazy"
+        >
+      </a>
+    {%- else -%}
+      <a href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+        <div class="product-card__image-placeholder">
+          {{ 'image' | placeholder_svg_tag }}
+        </div>
+      </a>
+    {%- endif -%}
+
+    <div class="product-card__badge">
+      {%- if product.available == false -%}
+        {%- assign badge_label = 'badges.sold_out' | t -%}
+        {% render 'badge', type: 'sold_out', label: badge_label %}
+      {%- elsif product.tags contains 'new' -%}
+        {%- assign badge_label = 'badges.new' | t -%}
+        {% render 'badge', type: 'new', label: badge_label %}
+      {%- elsif product.tags contains 'sale' -%}
+        {%- assign badge_label = 'badges.sale' | t -%}
+        {% render 'badge', type: 'sale', label: badge_label %}
+      {%- elsif product.tags contains 'bestseller' -%}
+        {%- assign badge_label = 'badges.bestseller' | t -%}
+        {% render 'badge', type: 'bestseller', label: badge_label %}
+      {%- elsif product.tags contains 'featured' -%}
+        {%- assign badge_label = 'badges.featured' | t -%}
+        {% render 'badge', type: 'featured', label: badge_label %}
+      {%- endif -%}
+    </div>
+
+    {%- if show_qv -%}
+      <a
+        href="{{ product.url }}"
+        class="product-card__quick"
+        aria-label="{{ qv_label }} — {{ product.title }}"
+      >
+        {% render 'icon', name: 'eye', size: 14 %}
+        {{ qv_label }}
+      </a>
+    {%- endif -%}
+  </div>
+
+  <div class="product-card__info">
+    {%- if product.type != blank -%}
+      <p class="product-card__category">{{ product.type }}</p>
+    {%- endif -%}
+
+    <h3 class="product-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+
+    <div class="product-card__prices">
+      {%- if product.available -%}
+        {%- if product.price_varies -%}
+          <span class="product-card__price-current">
+            {{- 'products.from_price' | t: price: product.price_min | money -}}
+          </span>
+        {%- elsif product.compare_at_price > product.price -%}
+          <span class="product-card__price-current">{{ product.price | money }}</span>
+          <span class="product-card__price-compare">{{ product.compare_at_price | money }}</span>
+        {%- else -%}
+          <span class="product-card__price-current">{{ product.price | money }}</span>
+        {%- endif -%}
+      {%- else -%}
+        <span class="product-card__price-current">{{ 'products.sold_out' | t }}</span>
+      {%- endif -%}
+    </div>
+  </div>
+</article>

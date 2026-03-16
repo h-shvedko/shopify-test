@@ -1,0 +1,74 @@
+{% doc %}
+  Renders a small badge/tag element in ArtVault Starter Bold style.
+
+  Parameters:
+  - type {string} required — Badge variant. One of: new, sale, featured, bestseller,
+      sold_out, default.
+  - label {string} required — Text content displayed inside the badge.
+
+  Usage:
+    {% assign badge_label = 'badges.new' | t %}
+    {% render 'badge', type: 'new', label: badge_label %}
+
+    {% assign badge_label = 'badges.sale' | t %}
+    {% render 'badge', type: 'sale', label: badge_label %}
+
+    {% assign badge_label = 'badges.sold_out' | t %}
+    {% render 'badge', type: 'sold_out', label: badge_label %}
+{% enddoc %}
+
+<style>
+  .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 2px;
+  }
+
+  .badge--new {
+    background: var(--color-primary);
+    color: #ffffff;
+  }
+
+  .badge--sale {
+    background: var(--color-error);
+    color: #ffffff;
+  }
+
+  .badge--featured {
+    background: var(--color-accent);
+    color: var(--color-bg-dark);
+  }
+
+  .badge--bestseller {
+    background: var(--color-primary);
+    color: #ffffff;
+  }
+
+  .badge--sold-out {
+    background: var(--color-error);
+    color: #ffffff;
+  }
+
+  .badge--default {
+    background: var(--color-background-alt);
+    color: var(--color-text);
+  }
+</style>
+
+{%- if type == 'new' -%}
+  <span class="badge badge--new">{{ label }}</span>
+{%- elsif type == 'sale' -%}
+  <span class="badge badge--sale">{{ label }}</span>
+{%- elsif type == 'featured' -%}
+  <span class="badge badge--featured">{{ label }}</span>
+{%- elsif type == 'bestseller' -%}
+  <span class="badge badge--bestseller">{{ label }}</span>
+{%- elsif type == 'sold_out' -%}
+  <span class="badge badge--sold-out">{{ label }}</span>
+{%- else -%}
+  <span class="badge badge--default">{{ label }}</span>
+{%- endif -%}

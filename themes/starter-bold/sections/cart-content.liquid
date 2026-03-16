@@ -1,0 +1,368 @@
+<section class="cart-content section-padding">
+  <div class="container">
+    <h1 class="cart-content__title">{{ 'cart.title' | t }}</h1>
+
+    {% if cart.item_count == 0 %}
+      <div class="cart-content__empty">
+        <p>{{ 'cart.empty' | t }}</p>
+        {%- assign continue_label = 'cart.continue_shopping' | t -%}
+        {% render 'button', label: continue_label, url: routes.all_products_collection_url, variant: 'green' %}
+      </div>
+    {% else %}
+      <div class="cart-content__layout" data-cart-content>
+
+        <div class="cart-content__items">
+          {% for item in cart.items %}
+            <div class="cart-content__item" data-line-item data-line-key="{{ item.key }}">
+              <div class="cart-content__item-image">
+                {% if item.image %}
+                  {{ item.image | image_url: width: 120 | image_tag: loading: 'lazy', alt: item.title }}
+                {% endif %}
+              </div>
+              <div class="cart-content__item-info">
+                <a href="{{ item.url }}" class="cart-content__item-title">{{ item.product.title }}</a>
+                {% if item.variant.title != 'Default Title' %}
+                  <p class="cart-content__item-variant">{{ item.variant.title }}</p>
+                {% endif %}
+                <p class="cart-content__item-price">{{ item.original_line_price | money }}</p>
+              </div>
+              <div class="cart-content__item-actions">
+                {% render 'quantity-selector', value: item.quantity, name: 'updates[]', line_item_key: item.key %}
+                <button
+                  class="cart-content__remove"
+                  data-remove-item="{{ item.key }}"
+                  aria-label="{{ 'accessibility.remove_item' | t: title: item.product.title }}"
+                  type="button"
+                >
+                  {{ 'cart.remove' | t }}
+                </button>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="cart-content__summary">
+          {% if section.settings.show_free_shipping_bar %}
+            {% assign threshold = settings.free_shipping_threshold | times: 100 %}
+            {% if cart.total_price >= threshold %}
+              <div class="cart-content__shipping-bar cart-content__shipping-bar--achieved">
+                <p>{{ 'cart.free_shipping_achieved' | t }}</p>
+                <div class="cart-content__shipping-progress"><div style="width: 100%"></div></div>
+              </div>
+            {% else %}
+              {% assign remaining = threshold | minus: cart.total_price | money %}
+              {% assign progress = cart.total_price | times: 100 | divided_by: threshold %}
+              <div class="cart-content__shipping-bar">
+                <p>{{ 'cart.free_shipping_remaining' | t: amount: remaining }}</p>
+                <div class="cart-content__shipping-progress"><div style="width: {{ progress }}%"></div></div>
+              </div>
+            {% endif %}
+          {% endif %}
+
+          <h2 class="cart-content__summary-title">{{ 'cart.order_summary' | t }}</h2>
+
+          <div class="cart-content__totals">
+            <div class="cart-content__total-row">
+              <span>{{ 'cart.subtotal' | t }}</span>
+              <span data-cart-subtotal>{{ cart.total_price | money }}</span>
+            </div>
+            <div class="cart-content__total-row">
+              <span>{{ 'cart.shipping' | t }}</span>
+              <span>{{ 'cart.shipping_at_checkout' | t }}</span>
+            </div>
+            <div class="cart-content__total-row cart-content__total-row--total">
+              <span>{{ 'cart.total' | t }}</span>
+              <span data-cart-total>{{ cart.total_price | money }}</span>
+            </div>
+          </div>
+
+          <a href="/checkout" class="btn btn--green btn--full cart-content__checkout">{{ 'cart.checkout' | t }}</a>
+
+          <p class="cart-content__secure">{{ 'cart.secure_checkout' | t }}</p>
+
+          {% if section.settings.show_payment_icons %}
+            <div class="cart-content__payment">
+              {% render 'payment-icons' %}
+            </div>
+          {% endif %}
+        </div>
+
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .cart-content__title {
+    font-family: var(--font-heading);
+    margin-bottom: 40px;
+    color: var(--color-text);
+  }
+
+  .cart-content__empty {
+    text-align: center;
+    padding: 80px 0;
+  }
+
+  .cart-content__empty p {
+    margin-bottom: 28px;
+    color: var(--color-text-secondary);
+    font-size: 1.125rem;
+    font-style: italic;
+  }
+
+  .cart-content__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .cart-content__item {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: 16px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--color-border);
+    align-items: start;
+  }
+
+  .cart-content__item-image img {
+    width: 100%;
+    border-radius: var(--border-radius);
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+
+  .cart-content__item-title {
+    display: block;
+    text-decoration: none;
+    color: var(--color-text);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 1rem;
+  }
+
+  .cart-content__item-title:hover {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .cart-content__item-variant {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    margin: 4px 0;
+  }
+
+  .cart-content__item-price {
+    font-weight: 700;
+    margin: 8px 0 0;
+    color: var(--color-primary);
+  }
+
+  .cart-content__item-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  .cart-content__remove {
+    background: none;
+    border: none;
+    color: var(--color-error);
+    cursor: pointer;
+    font-size: 0.8125rem;
+    text-decoration: underline;
+    padding: 0;
+    transition: opacity 0.2s;
+  }
+
+  .cart-content__remove:hover {
+    opacity: 0.75;
+  }
+
+  .cart-content__summary {
+    background: var(--color-background-warm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-lg);
+    padding: 28px;
+  }
+
+  .cart-content__summary-title {
+    font-family: var(--font-heading);
+    font-size: calc(1.25rem * var(--font-scale-factor));
+    margin-bottom: 20px;
+    color: var(--color-text);
+  }
+
+  .cart-content__shipping-bar {
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    background: var(--color-background-alt);
+    border-radius: var(--border-radius);
+  }
+
+  .cart-content__shipping-bar p {
+    font-size: 0.8125rem;
+    margin: 0 0 8px;
+    color: var(--color-text-secondary);
+  }
+
+  .cart-content__shipping-bar--achieved p {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .cart-content__shipping-progress {
+    height: 4px;
+    background: var(--color-border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .cart-content__shipping-progress div {
+    height: 100%;
+    background: var(--color-primary);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  .cart-content__totals {
+    margin-bottom: 24px;
+  }
+
+  .cart-content__total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 0.9375rem;
+    color: var(--color-text);
+  }
+
+  .cart-content__total-row--total {
+    border-top: 2px solid var(--color-text);
+    font-weight: 700;
+    font-size: 1.125rem;
+    padding-top: 16px;
+    margin-top: 8px;
+  }
+
+  .cart-content__checkout {
+    margin-bottom: 12px;
+    font-size: 1rem;
+  }
+
+  .cart-content__secure {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin: 0 0 16px;
+  }
+
+  .cart-content__payment {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+  }
+
+  @media (min-width: 768px) {
+    .cart-content__item {
+      grid-template-columns: 120px 1fr auto;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .cart-content__layout {
+      grid-template-columns: 2fr 1fr;
+      align-items: start;
+    }
+
+    .cart-content__summary {
+      position: sticky;
+      top: 100px;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    var cartContent = document.querySelector('[data-cart-content]');
+    if (!cartContent) return;
+
+    function formatMoney(cents) {
+      var amount = (cents / 100).toFixed(2);
+      var format = (window.Shopify && window.Shopify.money_format) || '${{amount}}';
+      return format
+        .replace('{{amount}}', amount)
+        .replace('{{amount_with_comma_separator}}', amount.replace('.', ','))
+        .replace('{{amount_no_decimals}}', Math.round(cents / 100).toString());
+    }
+
+    function updateCartBadge(count) {
+      var badges = document.querySelectorAll('[data-cart-count]');
+      badges.forEach(function (badge) {
+        badge.textContent = count;
+      });
+    }
+
+    cartContent.addEventListener('quantity:change', function (event) {
+      var key = event.detail.key;
+      var quantity = event.detail.quantity;
+
+      fetch('/cart/change.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: key, quantity: quantity })
+      })
+        .then(function (res) { return res.json(); })
+        .then(function () {
+          window.location.reload();
+        });
+    });
+
+    cartContent.addEventListener('click', function (event) {
+      var removeBtn = event.target.closest('[data-remove-item]');
+      if (!removeBtn) return;
+
+      var key = removeBtn.dataset.removeItem;
+
+      fetch('/cart/change.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: key, quantity: 0 })
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (cart) {
+          updateCartBadge(cart.item_count);
+          document.dispatchEvent(new CustomEvent('cart:updated', { detail: { item_count: cart.item_count } }));
+          window.location.reload();
+        });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.cart_content.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_free_shipping_bar",
+      "label": "t:sections.cart_content.settings.show_free_shipping_bar.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "label": "t:sections.cart_content.settings.show_payment_icons.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cart content"
+    }
+  ]
+}
+{% endschema %}

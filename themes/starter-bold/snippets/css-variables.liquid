@@ -1,0 +1,67 @@
+{% doc %}
+  Renders a <style> tag that writes all ArtVault Starter Bold theme settings as
+  CSS custom properties on :root. Must be included in <head> after critical.css
+  so that runtime values override the fallback variables defined there.
+
+  Maps the following settings groups:
+  - Colors (17 settings) → --color-* custom properties
+  - Typography (font_heading, font_body, font_scale) → --font-* custom properties
+  - Layout (page_width, border_radius, border_radius_lg, spacing_scale) → layout custom properties
+
+  Also emits @font-face rules via Shopify's font_face filter for both heading
+  and body fonts with font-display: swap.
+
+  Parameters: none — reads directly from the global `settings` object.
+
+  Usage:
+    {% render 'css-variables' %}
+{% enddoc %}
+
+<style>
+  :root {
+    /* Primary palette */
+    --color-primary: {{ settings.color_primary }};
+    --color-primary-light: {{ settings.color_primary_light }};
+    --color-primary-dark: {{ settings.color_primary_dark }};
+    --color-primary-contrast: {{ settings.color_primary_contrast }};
+
+    /* Accent palette */
+    --color-accent: {{ settings.color_accent }};
+    --color-accent-light: {{ settings.color_accent_light }};
+    --color-accent-dark: {{ settings.color_accent_dark }};
+
+    /* Backgrounds */
+    --color-background: {{ settings.color_background }};
+    --color-background-alt: {{ settings.color_background_alt }};
+    --color-background-warm: {{ settings.color_background_warm }};
+    --color-bg-dark: {{ settings.color_footer_bg }};
+
+    /* Text */
+    --color-text: {{ settings.color_text }};
+    --color-text-secondary: {{ settings.color_text_secondary }};
+    --color-text-muted: {{ settings.color_text_muted }};
+
+    /* Footer */
+    --color-footer-bg: {{ settings.color_footer_bg }};
+    --color-footer-text: {{ settings.color_footer_text }};
+
+    /* Borders & states */
+    --color-border: {{ settings.color_border }};
+    --color-error: {{ settings.color_error }};
+
+    /* Typography */
+    --font-heading: {{ settings.font_heading.family }}, georgia, serif;
+    --font-heading-weight: {{ settings.font_heading.weight }};
+    --font-body: {{ settings.font_body.family }}, helvetica, arial, sans-serif;
+    --font-body-weight: {{ settings.font_body.weight }};
+    --font-scale-factor: {{ settings.font_scale | divided_by: 100.0 }};
+
+    /* Layout */
+    --page-width: {{ settings.page_width }}px;
+    --border-radius: {{ settings.border_radius }}px;
+    --border-radius-lg: {{ settings.border_radius_lg }}px;
+    --spacing-scale-factor: {{ settings.spacing_scale | divided_by: 100.0 }};
+  }
+</style>
+
+<style>{{ settings.font_heading | font_face: font_display: 'swap' }} {{ settings.font_body | font_face: font_display: 'swap' }}</style>

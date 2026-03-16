@@ -1,0 +1,178 @@
+{% paginate collection.products by section.settings.products_per_page %}
+<section class="product-grid section-padding">
+  <div class="container">
+    <h1 class="product-grid__title">{{ collection.title }}</h1>
+
+    {% if section.settings.show_sort %}
+      <div class="product-grid__toolbar">
+        <p class="product-grid__count">{{ 'products.showing_count' | t: count: collection.products_count }}</p>
+        <div class="product-grid__sort">
+          <label for="sort-by">{{ 'products.sort_by' | t }}</label>
+          <select id="sort-by" data-sort-select>
+            <option value="manual" {% if collection.sort_by == 'manual' %}selected{% endif %}>{{ 'products.sort_featured' | t }}</option>
+            <option value="best-selling" {% if collection.sort_by == 'best-selling' %}selected{% endif %}>{{ 'products.sort_best_selling' | t }}</option>
+            <option value="price-ascending" {% if collection.sort_by == 'price-ascending' %}selected{% endif %}>{{ 'products.sort_price_asc' | t }}</option>
+            <option value="price-descending" {% if collection.sort_by == 'price-descending' %}selected{% endif %}>{{ 'products.sort_price_desc' | t }}</option>
+            <option value="created-descending" {% if collection.sort_by == 'created-descending' %}selected{% endif %}>{{ 'products.sort_newest' | t }}</option>
+            <option value="title-ascending" {% if collection.sort_by == 'title-ascending' %}selected{% endif %}>{{ 'products.sort_title_asc' | t }}</option>
+            <option value="title-descending" {% if collection.sort_by == 'title-descending' %}selected{% endif %}>{{ 'products.sort_title_desc' | t }}</option>
+          </select>
+        </div>
+      </div>
+    {% endif %}
+
+    <div
+      class="product-grid__grid"
+      style="--columns: {{ section.settings.columns_desktop }}"
+    >
+      {% for product in collection.products %}
+        {%- assign quick_view_label = 'products.quick_view' | t -%}
+        {% render 'product-card', product: product, quick_view_label: quick_view_label %}
+      {% else %}
+        <p class="product-grid__empty">{{ 'products.no_products' | t }}</p>
+      {% endfor %}
+    </div>
+
+    {% render 'pagination', paginate: paginate %}
+  </div>
+</section>
+{% endpaginate %}
+
+{% stylesheet %}
+  .product-grid__title {
+    margin: 0 0 32px;
+    font-family: var(--font-heading);
+    color: var(--color-text);
+  }
+
+  .product-grid__toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .product-grid__count {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+    font-style: italic;
+  }
+
+  .product-grid__sort {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .product-grid__sort label {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+
+  .product-grid__sort select {
+    padding: 10px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    background: var(--color-background);
+    font-size: 0.875rem;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .product-grid__sort select:hover {
+    border-color: var(--color-primary);
+  }
+
+  .product-grid__sort select:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  .product-grid__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .product-grid__empty {
+    color: var(--color-text-secondary);
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 0;
+    font-style: italic;
+  }
+
+  @media (min-width: 768px) {
+    .product-grid__grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .product-grid__grid {
+      grid-template-columns: repeat(var(--columns, 4), 1fr);
+      gap: 32px;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    var select = document.querySelector('[data-sort-select]');
+    if (!select) return;
+
+    select.addEventListener('change', function () {
+      var url = new URL(window.location.href);
+      url.searchParams.set('sort_by', this.value);
+      window.location.href = url.toString();
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.product_grid.name",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "t:sections.product_grid.settings.products_per_page.label",
+      "min": 4,
+      "max": 24,
+      "step": 4,
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "t:sections.product_grid.settings.columns_desktop.label",
+      "options": [
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sort",
+      "label": "t:sections.product_grid.settings.show_sort.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product grid"
+    }
+  ]
+}
+{% endschema %}

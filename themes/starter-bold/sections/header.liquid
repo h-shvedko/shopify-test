@@ -1,0 +1,554 @@
+<header class="header" data-section-id="{{ section.id }}" role="banner">
+  <div class="header__inner">
+
+    {%- comment -%} Logo {%- endcomment -%}
+    <a href="{{ routes.root_url }}" class="header__logo" aria-label="{{ shop.name }}">
+      {% if section.settings.logo %}
+        <img
+          src="{{ section.settings.logo | image_url: width: section.settings.logo_width }}"
+          alt="{{ section.settings.logo.alt | default: shop.name }}"
+          width="{{ section.settings.logo_width }}"
+          height="{{ section.settings.logo_width | divided_by: section.settings.logo.aspect_ratio | round }}"
+          loading="eager"
+        >
+      {% else %}
+        <span class="header__logo-text">Art<em>Vault</em></span>
+      {% endif %}
+    </a>
+
+    {%- comment -%} Desktop navigation {%- endcomment -%}
+    {% if section.settings.menu != blank %}
+      <nav class="header__nav" aria-label="{{ 'general.menu' | t }}">
+        {% for link in linklists[section.settings.menu].links %}
+          <a
+            href="{{ link.url }}"
+            class="header__nav-link{% if link.active %} active{% endif %}"
+            {% if link.active %}aria-current="page"{% endif %}
+          >
+            {{ link.title }}
+          </a>
+        {% endfor %}
+      </nav>
+    {% endif %}
+
+    {%- comment -%} Header actions {%- endcomment -%}
+    <div class="header__actions">
+      <a href="{{ routes.search_url }}" class="header__action-btn header__search" aria-label="{{ 'general.search' | t }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </a>
+
+      {% if shop.customer_accounts_enabled %}
+        <a
+          href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}"
+          class="header__action-btn header__account"
+          aria-label="{{ 'header.account' | t }}"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </a>
+      {% endif %}
+
+      <a
+        href="{{ routes.cart_url }}"
+        class="header__cart-pill"
+        aria-label="{{ 'accessibility.open_cart' | t }}"
+        data-cart-link
+      >
+        <span class="header__cart-dot" aria-hidden="true"></span>
+        <span class="header__cart-label">{{ 'general.cart' | t }}</span>
+        <span class="header__cart-count" data-cart-count aria-live="polite">
+          {{- cart.item_count -}}
+        </span>
+      </a>
+
+      {%- comment -%} Mobile menu toggle {%- endcomment -%}
+      <button
+        class="header__mobile-toggle"
+        aria-label="{{ 'accessibility.open_menu' | t }}"
+        aria-expanded="false"
+        aria-controls="mobile-menu-dialog"
+        data-mobile-menu-toggle
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+{%- comment -%} Mobile menu dialog {%- endcomment -%}
+<dialog class="mobile-menu" id="mobile-menu-dialog" aria-label="{{ 'general.menu' | t }}">
+  <div class="mobile-menu__inner">
+    <div class="mobile-menu__header">
+      <span class="mobile-menu__logo-text">Art<em>Vault</em></span>
+      <button
+        class="mobile-menu__close"
+        aria-label="{{ 'accessibility.close_menu' | t }}"
+        data-mobile-menu-close
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    {% if section.settings.menu != blank %}
+      <nav class="mobile-menu__nav" aria-label="{{ 'general.menu' | t }}">
+        {% for link in linklists[section.settings.menu].links %}
+          <a
+            href="{{ link.url }}"
+            class="mobile-menu__link{% if link.active %} active{% endif %}"
+            {% if link.active %}aria-current="page"{% endif %}
+          >
+            {{ link.title }}
+          </a>
+        {% endfor %}
+      </nav>
+    {% endif %}
+
+    <div class="mobile-menu__footer">
+      <a href="{{ routes.cart_url }}" class="mobile-menu__cart-link">
+        {{ 'general.cart' | t }}
+        ({{ cart.item_count }})
+      </a>
+    </div>
+  </div>
+</dialog>
+
+{% stylesheet %}
+  /* ── Header ── */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(26, 26, 24, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    max-width: var(--page-width);
+    margin: 0 auto;
+    gap: 16px;
+  }
+
+  .header__logo {
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .header__logo img {
+    display: block;
+    height: auto;
+  }
+
+  .header__logo-text {
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .header__logo-text em {
+    font-style: italic;
+    color: var(--color-accent-light);
+    font-weight: 400;
+  }
+
+  /* ── Desktop nav ── */
+  .header__nav {
+    display: none;
+    align-items: center;
+    gap: 32px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .header__nav-link {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    transition: color 0.2s;
+    white-space: nowrap;
+  }
+
+  .header__nav-link:hover,
+  .header__nav-link:focus-visible {
+    color: var(--color-accent-light);
+  }
+
+  .header__nav-link.active {
+    color: var(--color-accent-light);
+  }
+
+  @media (min-width: 1024px) {
+    .header__nav {
+      display: flex;
+    }
+  }
+
+  /* ── Actions ── */
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .header__action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    border-radius: 50%;
+    transition: color 0.2s, background-color 0.2s;
+  }
+
+  .header__action-btn:hover,
+  .header__action-btn:focus-visible {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .header__action-btn:focus-visible {
+    outline: 2px solid var(--color-accent-light);
+    outline-offset: 2px;
+  }
+
+  /* Hide account on mobile to save space */
+  .header__account {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .header__account {
+      display: flex;
+    }
+  }
+
+  /* ── Cart pill ── */
+  .header__cart-pill {
+    background: var(--color-primary);
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 24px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+  }
+
+  .header__cart-pill:hover,
+  .header__cart-pill:focus-visible {
+    background: var(--color-primary-light, #3a7a52);
+  }
+
+  .header__cart-pill:focus-visible {
+    outline: 2px solid var(--color-accent-light);
+    outline-offset: 2px;
+  }
+
+  .header__cart-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--color-accent-light);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .header__cart-count {
+    min-width: 12px;
+    text-align: center;
+  }
+
+  /* ── Mobile toggle ── */
+  .header__mobile-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    padding: 0;
+    border-radius: 4px;
+    transition: color 0.2s;
+  }
+
+  .header__mobile-toggle:hover {
+    color: #ffffff;
+  }
+
+  .header__mobile-toggle:focus-visible {
+    outline: 2px solid var(--color-accent-light);
+    outline-offset: 2px;
+  }
+
+  @media (min-width: 1024px) {
+    .header__mobile-toggle {
+      display: none;
+    }
+  }
+
+  /* ── Mobile menu dialog ── */
+  .mobile-menu {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: 0;
+    background: #1a1a18;
+    border: none;
+    overflow: hidden;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+  }
+
+  .mobile-menu[open] {
+    transform: translateX(0);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mobile-menu::backdrop {
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  @media (min-width: 480px) {
+    .mobile-menu {
+      max-width: 360px;
+      right: 0;
+      left: auto;
+    }
+  }
+
+  .mobile-menu__inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .mobile-menu__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .mobile-menu__logo-text {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+  }
+
+  .mobile-menu__logo-text em {
+    font-style: italic;
+    color: var(--color-accent-light);
+    font-weight: 400;
+  }
+
+  .mobile-menu__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    padding: 0;
+    border-radius: 4px;
+    transition: color 0.2s;
+  }
+
+  .mobile-menu__close:hover {
+    color: #ffffff;
+  }
+
+  .mobile-menu__close:focus-visible {
+    outline: 2px solid var(--color-accent-light);
+    outline-offset: 2px;
+  }
+
+  .mobile-menu__nav {
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .mobile-menu__link {
+    display: block;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    transition: color 0.2s;
+  }
+
+  .mobile-menu__link:hover,
+  .mobile-menu__link:focus-visible {
+    color: var(--color-accent-light);
+  }
+
+  .mobile-menu__link.active {
+    color: var(--color-accent-light);
+  }
+
+  .mobile-menu__link:focus-visible {
+    outline: 2px solid var(--color-accent-light);
+    outline-offset: 2px;
+  }
+
+  .mobile-menu__footer {
+    padding: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .mobile-menu__cart-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--color-primary);
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 24px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+
+  .mobile-menu__cart-link:hover {
+    background: var(--color-primary-light, #3a7a52);
+  }
+{% endstylesheet %}
+
+<script>
+(function () {
+  var toggle = document.querySelector('[data-mobile-menu-toggle]');
+  var closeBtn = document.querySelector('[data-mobile-menu-close]');
+  var dialog = document.getElementById('mobile-menu-dialog');
+
+  if (!toggle || !dialog) return;
+
+  function openMenu() {
+    dialog.showModal();
+    toggle.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    dialog.close();
+    toggle.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  toggle.addEventListener('click', openMenu);
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeMenu);
+  }
+
+  dialog.addEventListener('click', function (e) {
+    if (e.target === dialog) closeMenu();
+  });
+
+  dialog.addEventListener('close', function () {
+    toggle.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  });
+
+  /* Update cart badge count when cart:updated is dispatched */
+  document.addEventListener('cart:updated', function (e) {
+    var count = e.detail && e.detail.item_count != null ? e.detail.item_count : null;
+    if (count === null) return;
+    var badges = document.querySelectorAll('[data-cart-count]');
+    badges.forEach(function (badge) {
+      badge.textContent = count;
+    });
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.header.name",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "t:sections.header.settings.logo.label"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "t:sections.header.settings.logo_width.label",
+      "min": 60,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 140
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "t:sections.header.settings.menu.label",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_announcement",
+      "label": "t:sections.header.settings.show_announcement.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header"
+    }
+  ]
+}
+{% endschema %}

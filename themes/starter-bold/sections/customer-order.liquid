@@ -1,0 +1,154 @@
+<section class="customer-order section-padding">
+  <div class="container">
+    <h1 class="customer-order__title">{{ 'customer.order_number' | t: number: order.name }}</h1>
+    <p class="customer-order__date">
+      {{ 'customer.order_date' | t }}: {{ order.created_at | date: "%B %d, %Y" }}
+    </p>
+
+    <div class="customer-order__table-wrap">
+      <table class="customer-order__items">
+        <thead>
+          <tr>
+            <th>{{ 'customer.order_product' | t }}</th>
+            <th>{{ 'customer.order_quantity' | t }}</th>
+            <th>{{ 'customer.order_total' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for line_item in order.line_items %}
+            <tr>
+              <td class="customer-order__product-cell">
+                <span class="customer-order__product-title">{{ line_item.title }}</span>
+              </td>
+              <td>{{ line_item.quantity }}</td>
+              <td class="customer-order__line-total">{{ line_item.final_line_price | money }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="customer-order__summary">
+      <div class="customer-order__total-row">
+        <span>{{ 'cart.subtotal' | t }}</span>
+        <span>{{ order.subtotal_price | money }}</span>
+      </div>
+      {% for shipping_method in order.shipping_methods %}
+        <div class="customer-order__total-row">
+          <span>{{ 'cart.shipping' | t }}</span>
+          <span>{{ shipping_method.price | money }}</span>
+        </div>
+      {% endfor %}
+      {% if order.tax_price > 0 %}
+        <div class="customer-order__total-row">
+          <span>{{ 'cart.tax' | t }}</span>
+          <span>{{ order.tax_price | money }}</span>
+        </div>
+      {% endif %}
+      <div class="customer-order__total-row customer-order__total-row--total">
+        <span>{{ 'customer.order_total' | t }}</span>
+        <span>{{ order.total_price | money }}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .customer-order__title {
+    font-family: var(--font-heading);
+    margin-bottom: 8px;
+    color: var(--color-text);
+  }
+
+  .customer-order__date {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    margin-bottom: 36px;
+    font-style: italic;
+  }
+
+  .customer-order__table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-border);
+    margin-bottom: 28px;
+  }
+
+  .customer-order__items {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+  }
+
+  .customer-order__items thead {
+    background: var(--color-background-warm);
+  }
+
+  .customer-order__items th {
+    padding: 16px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-family: var(--font-heading);
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+    font-size: 0.875rem;
+    letter-spacing: 0.02em;
+  }
+
+  .customer-order__items td {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    vertical-align: middle;
+  }
+
+  .customer-order__items tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .customer-order__product-title {
+    font-weight: 500;
+    font-family: var(--font-heading);
+  }
+
+  .customer-order__line-total {
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+
+  .customer-order__summary {
+    max-width: 360px;
+    margin-left: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-lg);
+    padding: 20px 24px;
+    background: var(--color-background-warm);
+  }
+
+  .customer-order__total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 0.9375rem;
+    color: var(--color-text);
+  }
+
+  .customer-order__total-row--total {
+    border-top: 2px solid var(--color-primary);
+    font-weight: 700;
+    font-size: 1.0625rem;
+    padding-top: 16px;
+    margin-top: 8px;
+    color: var(--color-primary);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.customer_order.name",
+  "settings": [],
+  "templates": ["customers/order"]
+}
+{% endschema %}
