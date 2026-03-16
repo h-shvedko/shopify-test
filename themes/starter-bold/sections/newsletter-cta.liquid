@@ -1,5 +1,7 @@
 {%- liquid
   assign overlay_alpha = section.settings.overlay_opacity | divided_by: 100.0
+  assign form_id = 'newsletter-form-' | append: section.id
+  assign email_id = 'newsletter-email-' | append: section.id
 -%}
 
 <section
@@ -29,14 +31,14 @@
         <p>{{ section.settings.subtitle }}</p>
       {%- endif -%}
 
-      {%- form 'customer', id: 'newsletter-form-{{ section.id }}', class: 'newsletter-cta__form' -%}
+      {%- form 'customer', id: form_id, class: 'newsletter-cta__form' -%}
         <input type="hidden" name="contact[tags]" value="newsletter">
-        <label for="newsletter-email-{{ section.id }}" class="visually-hidden">
+        <label for="{{ email_id }}" class="visually-hidden">
           {{ 'newsletter.placeholder' | t }}
         </label>
         <input
           type="email"
-          id="newsletter-email-{{ section.id }}"
+          id="{{ email_id }}"
           name="contact[email]"
           class="newsletter-cta__input"
           placeholder="{{ 'newsletter.placeholder' | t }}"
