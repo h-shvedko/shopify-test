@@ -1,0 +1,507 @@
+{%- assign current_year = 'now' | date: '%Y' -%}
+
+<footer class="zn-footer" data-section-id="{{ section.id }}">
+
+  {%- comment -%} Main grid {%- endcomment -%}
+  <div class="zn-footer__main">
+    <div class="zn-footer__container">
+      <div class="zn-footer__grid">
+
+        {%- comment -%} Column 1: Brand {%- endcomment -%}
+        <div class="zn-footer__col zn-footer__col--brand">
+          <a href="{{ routes.root_url }}" class="zn-footer__brand-logo">
+            {% if section.settings.logo %}
+              {%- assign footer_logo_alt = shop.name | escape -%}
+              {{
+                section.settings.logo
+                | image_url: width: 160
+                | image_tag:
+                  alt: footer_logo_alt,
+                  width: 160,
+                  loading: 'lazy'
+              }}
+            {% else %}
+              <span class="zn-footer__brand-name">{{ shop.name }}</span>
+            {% endif %}
+          </a>
+          {% if section.settings.about_text != blank %}
+            <p class="zn-footer__about">{{ section.settings.about_text }}</p>
+          {% endif %}
+          {%- comment -%} Social icons {%- endcomment -%}
+          <div class="zn-footer__social">
+            {% if section.settings.social_instagram != blank %}
+              <a href="{{ section.settings.social_instagram }}" class="zn-footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="{{ 'footer.social.instagram' | t }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="currentColor" stroke-width="1.5"/>
+                  <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.5"/>
+                  <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+                </svg>
+              </a>
+            {% endif %}
+            {% if section.settings.social_facebook != blank %}
+              <a href="{{ section.settings.social_facebook }}" class="zn-footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="{{ 'footer.social.facebook' | t }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            {% endif %}
+            {% if section.settings.social_twitter != blank %}
+              <a href="{{ section.settings.social_twitter }}" class="zn-footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="{{ 'footer.social.twitter' | t }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            {% endif %}
+            {% if section.settings.social_youtube != blank %}
+              <a href="{{ section.settings.social_youtube }}" class="zn-footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="{{ 'footer.social.youtube' | t }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.4a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" stroke="currentColor" stroke-width="1.5"/>
+                  <polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            {% endif %}
+            {% if section.settings.social_tiktok != blank %}
+              <a href="{{ section.settings.social_tiktok }}" class="zn-footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="{{ 'footer.social.tiktok' | t }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+
+        {%- comment -%} Column 2: Quick links (from blocks) {%- endcomment -%}
+        {% for block in section.blocks %}
+          {% if block.type == 'link_column' %}
+            <div class="zn-footer__col" {{ block.shopify_attributes }}>
+              {% if block.settings.heading != blank %}
+                <h3 class="zn-footer__col-heading">{{ block.settings.heading }}</h3>
+              {% endif %}
+              {% if block.settings.menu.links.size > 0 %}
+                <ul class="zn-footer__links" role="list">
+                  {% for link in block.settings.menu.links %}
+                    <li><a href="{{ link.url }}" class="zn-footer__link">{{ link.title }}</a></li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+
+        {%- comment -%} Column: Newsletter {%- endcomment -%}
+        {% if section.settings.show_newsletter %}
+          <div class="zn-footer__col zn-footer__col--newsletter">
+            <h3 class="zn-footer__col-heading">{{ 'footer.newsletter_heading' | t }}</h3>
+            {% if section.settings.newsletter_text != blank %}
+              <p class="zn-footer__newsletter-text">{{ section.settings.newsletter_text }}</p>
+            {% endif %}
+            <form
+              class="zn-footer__newsletter-form"
+              action="{{ routes.root_url }}contact#contact_form"
+              method="post"
+              data-newsletter-form
+            >
+              <input type="hidden" name="form_type" value="customer">
+              <input type="hidden" name="utf8" value="&#x2713;">
+              <input type="hidden" name="contact[tags]" value="newsletter">
+              <label for="zn-footer-email-{{ section.id }}" class="visually-hidden">
+                {{ 'footer.newsletter_placeholder' | t }}
+              </label>
+              <input
+                class="zn-footer__newsletter-input"
+                type="email"
+                id="zn-footer-email-{{ section.id }}"
+                name="contact[email]"
+                placeholder="{{ 'footer.newsletter_placeholder' | t }}"
+                autocomplete="email"
+                required
+                aria-required="true"
+              >
+              <button type="submit" class="zn-footer__newsletter-btn">
+                {{ 'footer.subscribe' | t }}
+              </button>
+            </form>
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Bottom bar {%- endcomment -%}
+  <div class="zn-footer__bottom">
+    <div class="zn-footer__container zn-footer__bottom-inner">
+      <p class="zn-footer__copyright">
+        {{ 'footer.copyright' | t: year: current_year, shop_name: shop.name }}
+      </p>
+      <div class="zn-footer__payment-icons" aria-label="{{ 'footer.payment_methods' | t }}">
+        {%- for type in shop.enabled_payment_types -%}
+          {{ type | payment_type_svg_tag: class: 'zn-footer__payment-icon' }}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+{% stylesheet %}
+  /* === Zenith Footer === */
+
+  .zn-footer {
+    background-color: #0A0A0A;
+    border-top: 1px solid #2A2A2A;
+    color: rgba(240, 240, 240, 0.7);
+    font-family: 'Inter', var(--font-body, sans-serif);
+  }
+
+  .zn-footer__container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Main section */
+
+  .zn-footer__main {
+    padding: 64px 0 48px;
+  }
+
+  .zn-footer__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  @media (min-width: 640px) {
+    .zn-footer__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .zn-footer__grid {
+      grid-template-columns: 2fr 1fr 1fr 1.5fr;
+    }
+  }
+
+  /* Brand column */
+
+  .zn-footer__brand-logo {
+    display: inline-flex;
+    text-decoration: none;
+    margin-bottom: 16px;
+  }
+
+  .zn-footer__brand-logo img {
+    display: block;
+    height: auto;
+  }
+
+  .zn-footer__brand-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: #F0F0F0;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+
+  .zn-footer__about {
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: rgba(240, 240, 240, 0.6);
+    margin: 0 0 24px;
+    max-width: 280px;
+  }
+
+  /* Social icons */
+
+  .zn-footer__social {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .zn-footer__social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    border: 1px solid #2A2A2A;
+    background-color: #141414;
+    color: rgba(240, 240, 240, 0.6);
+    text-decoration: none;
+    transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .zn-footer__social-link:hover {
+    color: #00D4AA;
+    border-color: #00D4AA;
+    background: linear-gradient(135deg, rgba(0, 212, 170, 0.08), rgba(0, 212, 170, 0.04));
+    box-shadow: 0 0 12px rgba(0, 212, 170, 0.25);
+    text-decoration: none;
+  }
+
+  /* Link columns */
+
+  .zn-footer__col-heading {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: #F0F0F0;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 0 0 20px;
+  }
+
+  .zn-footer__links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .zn-footer__link {
+    color: rgba(240, 240, 240, 0.6);
+    text-decoration: none;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    transition: color 0.2s ease, padding-left 0.2s ease;
+    display: inline-block;
+  }
+
+  .zn-footer__link:hover {
+    color: #00D4AA;
+    text-decoration: none;
+    padding-left: 4px;
+  }
+
+  /* Newsletter column */
+
+  .zn-footer__newsletter-text {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: rgba(240, 240, 240, 0.6);
+    margin: 0 0 20px;
+  }
+
+  .zn-footer__newsletter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .zn-footer__newsletter-input {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: #141414;
+    border: 1px solid #2A2A2A;
+    border-radius: 8px;
+    color: #F0F0F0;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+  }
+
+  .zn-footer__newsletter-input::placeholder {
+    color: rgba(240, 240, 240, 0.35);
+  }
+
+  .zn-footer__newsletter-input:focus {
+    border-color: #00D4AA;
+    box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.12);
+  }
+
+  .zn-footer__newsletter-btn {
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #00D4AA, #00A885);
+    color: #0A0A0A;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .zn-footer__newsletter-btn:hover {
+    opacity: 0.9;
+    box-shadow: 0 0 20px rgba(0, 212, 170, 0.4);
+  }
+
+  .zn-footer__newsletter-btn:focus-visible {
+    outline: 2px solid #00D4AA;
+    outline-offset: 2px;
+  }
+
+  /* Bottom bar */
+
+  .zn-footer__bottom {
+    border-top: 1px solid #2A2A2A;
+    padding: 20px 0;
+  }
+
+  .zn-footer__bottom-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    .zn-footer__bottom-inner {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  .zn-footer__copyright {
+    font-size: 0.8125rem;
+    color: rgba(240, 240, 240, 0.4);
+    margin: 0;
+  }
+
+  .zn-footer__payment-icons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .zn-footer__payment-icon {
+    height: 22px;
+    width: auto;
+    filter: brightness(0.7);
+    transition: filter 0.2s ease;
+  }
+
+  .zn-footer__payment-icon:hover {
+    filter: brightness(1);
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    'use strict';
+
+    var form = document.querySelector(
+      '.zn-footer[data-section-id="{{ section.id }}"] [data-newsletter-form]'
+    );
+    if (!form) return;
+
+    form.addEventListener('submit', function () {
+      var btn = form.querySelector('button[type="submit"]');
+      if (btn) btn.disabled = true;
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.footer.name",
+  "tag": "div",
+  "class": "zenith-footer-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "t:sections.footer.settings.logo.label"
+    },
+    {
+      "type": "textarea",
+      "id": "about_text",
+      "label": "t:sections.footer.settings.about_text.label",
+      "default": "Premium fitness gear for those who train without limits."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter",
+      "label": "t:sections.footer.settings.show_newsletter.label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "newsletter_text",
+      "label": "t:sections.footer.settings.newsletter_text.label",
+      "default": "Get training tips, exclusive drops, and member-only deals."
+    },
+    {
+      "type": "header",
+      "content": "t:sections.footer.settings.social_header.content"
+    },
+    {
+      "type": "url",
+      "id": "social_instagram",
+      "label": "t:sections.footer.settings.social_instagram.label"
+    },
+    {
+      "type": "url",
+      "id": "social_facebook",
+      "label": "t:sections.footer.settings.social_facebook.label"
+    },
+    {
+      "type": "url",
+      "id": "social_twitter",
+      "label": "t:sections.footer.settings.social_twitter.label"
+    },
+    {
+      "type": "url",
+      "id": "social_youtube",
+      "label": "t:sections.footer.settings.social_youtube.label"
+    },
+    {
+      "type": "url",
+      "id": "social_tiktok",
+      "label": "t:sections.footer.settings.social_tiktok.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link_column",
+      "name": "t:sections.footer.blocks.link_column.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.footer.blocks.link_column.settings.heading.label",
+          "default": "Quick links"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "t:sections.footer.blocks.link_column.settings.menu.label",
+          "default": "footer"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.footer.name",
+      "blocks": [
+        {
+          "type": "link_column",
+          "settings": {
+            "heading": "Quick links"
+          }
+        },
+        {
+          "type": "link_column",
+          "settings": {
+            "heading": "Support"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

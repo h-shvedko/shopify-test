@@ -1,0 +1,504 @@
+{% doc %}
+  Renders a full-screen quick-view <dialog> modal for a product. Left side
+  shows product image, right side shows title, price, variant selector, and
+  add-to-cart. Backdrop blur with dark teal-accent surface.
+
+  @param {product} product - Shopify product object to display. Required.
+
+  Listens for: 'quickview:open' CustomEvent with detail.productHandle
+  The modal opens via JavaScript when the event matches this product's handle.
+  Closing: close button, Escape key, or clicking the backdrop.
+
+  Usage:
+    {% render 'quick-view-modal', product: product %}
+{% enddoc %}
+
+{%- liquid
+  assign first_variant    = product.selected_or_first_available_variant
+  assign close_label      = 'accessibility.close' | t
+  assign add_to_cart_text = 'products.add_to_cart' | t
+  assign sold_out_text    = 'products.sold_out' | t
+  assign quantity_label   = 'products.quantity' | t
+-%}
+
+<style>
+  .qv-modal {
+    border: none;
+    padding: 0;
+    background: transparent;
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .qv-modal::backdrop {
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(6px);
+  }
+
+  .qv-modal__inner {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    pointer-events: none;
+  }
+
+  .qv-modal[open] .qv-modal__inner {
+    pointer-events: auto;
+  }
+
+  .qv-modal__card {
+    background-color: var(--color-surface, #141414);
+    border: 1px solid var(--color-border, #2A2A2A);
+    border-radius: var(--border-radius-lg, 16px);
+    box-shadow: var(--shadow-modal, 0 24px 80px rgba(0,0,0,0.8));
+    width: 100%;
+    max-width: 880px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr;
+    opacity: 0;
+    transform: scale(0.96) translateY(12px);
+    transition: opacity var(--transition-base, 250ms ease),
+                transform var(--transition-base, 250ms ease);
+  }
+
+  .qv-modal[open] .qv-modal__card {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  @media (min-width: 640px) {
+    .qv-modal__card {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* Image side */
+  .qv-modal__image-wrap {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background-color: var(--color-surface-raised, #1E1E1E);
+    position: relative;
+  }
+
+  .qv-modal__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .qv-modal__thumb-strip {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.375rem;
+  }
+
+  .qv-modal__thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color var(--transition-fast, 150ms ease);
+    flex-shrink: 0;
+  }
+
+  .qv-modal__thumb--active {
+    border-color: var(--color-accent, #00D4AA);
+  }
+
+  .qv-modal__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Info side */
+  .qv-modal__info {
+    padding: 1.75rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+  }
+
+  .qv-modal__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    background: var(--color-surface-raised, #1E1E1E);
+    border: 1px solid var(--color-border, #2A2A2A);
+    border-radius: 50%;
+    color: var(--color-text, #F0F0F0);
+    cursor: pointer;
+    transition: border-color var(--transition-fast, 150ms ease),
+                color var(--transition-fast, 150ms ease);
+    z-index: 5;
+  }
+
+  .qv-modal__close:hover {
+    border-color: var(--color-accent, #00D4AA);
+    color: var(--color-accent, #00D4AA);
+  }
+
+  .qv-modal__close:focus-visible {
+    outline: 2px solid var(--color-accent, #00D4AA);
+    outline-offset: 2px;
+  }
+
+  .qv-modal__vendor {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-accent, #00D4AA);
+    font-weight: 600;
+  }
+
+  .qv-modal__title {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text, #F0F0F0);
+    line-height: 1.25;
+    margin: 0;
+    padding-right: 2.5rem;
+  }
+
+  /* Variants */
+  .qv-modal__option-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--color-text-muted, #9A9A9A);
+    margin-bottom: 0.5rem;
+  }
+
+  .qv-modal__swatch-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+
+  .qv-modal__swatch {
+    padding: 0.375rem 0.875rem;
+    font-size: 0.875rem;
+    background-color: var(--color-surface-raised, #1E1E1E);
+    border: 1.5px solid var(--color-border, #2A2A2A);
+    border-radius: 4px;
+    color: var(--color-text, #F0F0F0);
+    cursor: pointer;
+    transition: border-color var(--transition-fast, 150ms ease),
+                color var(--transition-fast, 150ms ease);
+  }
+
+  .qv-modal__swatch:hover {
+    border-color: var(--color-accent, #00D4AA);
+    color: var(--color-accent, #00D4AA);
+  }
+
+  .qv-modal__swatch--active {
+    border-color: var(--color-accent, #00D4AA);
+    color: var(--color-accent, #00D4AA);
+    background-color: rgba(0, 212, 170, 0.1);
+  }
+
+  .qv-modal__swatch--unavailable {
+    opacity: 0.35;
+    text-decoration: line-through;
+    cursor: not-allowed;
+  }
+
+  /* ATC button */
+  .qv-modal__atc {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    background-color: var(--color-accent, #00D4AA);
+    color: var(--color-text-inverse, #0A0A0A);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.03em;
+    border: none;
+    border-radius: var(--border-radius, 8px);
+    cursor: pointer;
+    transition: background-color var(--transition-fast, 150ms ease),
+                box-shadow var(--transition-fast, 150ms ease);
+    margin-top: auto;
+  }
+
+  .qv-modal__atc:hover {
+    background-color: var(--color-accent-dark, #00A888);
+    box-shadow: var(--glow-accent, 0 0 20px rgba(0,212,170,0.25));
+  }
+
+  .qv-modal__atc:disabled {
+    background-color: var(--color-surface-raised, #1E1E1E);
+    color: var(--color-text-muted, #9A9A9A);
+    cursor: not-allowed;
+  }
+
+  .qv-modal__view-link {
+    display: block;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--color-text-muted, #9A9A9A);
+    text-decoration: none;
+    transition: color var(--transition-fast, 150ms ease);
+  }
+
+  .qv-modal__view-link:hover {
+    color: var(--color-accent, #00D4AA);
+  }
+
+  .qv-modal__qty-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .qv-modal__qty-label {
+    font-size: 0.875rem;
+    color: var(--color-text-muted, #9A9A9A);
+    min-width: 4rem;
+  }
+</style>
+
+<dialog
+  class="qv-modal"
+  id="quick-view-{{ product.handle }}"
+  data-quick-view-modal
+  data-product-handle="{{ product.handle }}"
+  aria-label="{{ product.title | escape }}"
+>
+  <div class="qv-modal__inner">
+    <div class="qv-modal__card">
+      <!-- Image side -->
+      <div class="qv-modal__image-wrap">
+        <img
+          src="{{ product.featured_image | image_url: width: 800 }}"
+          alt="{{ product.featured_image.alt | default: product.title | escape }}"
+          width="800"
+          height="800"
+          class="qv-modal__image"
+          data-qv-main-image
+          loading="lazy"
+        >
+        {%- if product.images.size > 1 -%}
+          <div class="qv-modal__thumb-strip">
+            {%- for image in product.images limit: 4 -%}
+              <button
+                type="button"
+                class="qv-modal__thumb{% if forloop.first %} qv-modal__thumb--active{% endif %}"
+                data-qv-thumb
+                data-image-src="{{ image | image_url: width: 800 }}"
+                data-image-alt="{{ image.alt | default: product.title | escape }}"
+                aria-label="{{ 'products.view_image' | t: index: forloop.index }}"
+              >
+                <img src="{{ image | image_url: width: 100 }}" alt="" width="100" height="100" loading="lazy">
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      <!-- Info side -->
+      <div class="qv-modal__info">
+        <button type="button" class="qv-modal__close" data-qv-close aria-label="{{ close_label }}">
+          {% render 'icon', name: 'close', size: 16 %}
+        </button>
+
+        {%- if product.vendor != blank -%}
+          <p class="qv-modal__vendor">{{ product.vendor }}</p>
+        {%- endif -%}
+
+        <h2 class="qv-modal__title">{{ product.title }}</h2>
+
+        <div data-qv-price>
+          {% render 'price', product: product %}
+        </div>
+
+        {%- unless product.has_only_default_variant -%}
+          {%- for option in product.options_with_values -%}
+            <div>
+              <p class="qv-modal__option-label">{{ option.name }}</p>
+              <div class="qv-modal__swatch-list" data-option-index="{{ forloop.index0 }}">
+                {%- for value in option.values -%}
+                  <button
+                    type="button"
+                    class="qv-modal__swatch{% if option.selected_value == value %} qv-modal__swatch--active{% endif %}"
+                    data-swatch-value="{{ value | escape }}"
+                    data-option-index="{{ forloop.parentloop.index0 }}"
+                  >{{ value }}</button>
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- endunless -%}
+
+        <div class="qv-modal__qty-row">
+          <span class="qv-modal__qty-label">{{ quantity_label }}</span>
+          {% render 'quantity-selector', value: 1, name: 'quantity', min: 1 %}
+        </div>
+
+        <button
+          type="button"
+          class="qv-modal__atc"
+          data-qv-atc
+          data-variant-id="{{ first_variant.id }}"
+          {%- unless first_variant.available %} disabled{% endunless %}
+        >
+          {%- if first_variant.available -%}
+            {{ add_to_cart_text }}
+          {%- else -%}
+            {{ sold_out_text }}
+          {%- endif -%}
+        </button>
+
+        <a href="{{ product.url }}" class="qv-modal__view-link">
+          {{ 'products.view_details' | t }} &rarr;
+        </a>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(function () {
+  'use strict';
+
+  var modal   = document.getElementById('quick-view-{{ product.handle }}');
+  if (!modal) return;
+
+  var handle     = modal.dataset.productHandle;
+  var mainImage  = modal.querySelector('[data-qv-main-image]');
+  var atcBtn     = modal.querySelector('[data-qv-atc]');
+  var closeBtn   = modal.querySelector('[data-qv-close]');
+  var thumbs     = modal.querySelectorAll('[data-qv-thumb]');
+  var swatches   = modal.querySelectorAll('[data-swatch-value]');
+  var qtyInput   = modal.querySelector('[data-qty-input]');
+
+  /* Variants JSON embedded to avoid extra fetch */
+  var variantsData = {{ product.variants | json }};
+
+  /* Open/close */
+  function openModal() {
+    modal.showModal();
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.close();
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('quickview:open', function (e) {
+    if (e.detail.productHandle === handle) openModal();
+  });
+
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+  modal.addEventListener('click', function (e) {
+    if (e.target === modal) closeModal();
+  });
+
+  modal.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  /* Thumbnail switching */
+  thumbs.forEach(function (thumb) {
+    thumb.addEventListener('click', function () {
+      if (mainImage) {
+        mainImage.src = thumb.dataset.imageSrc;
+        mainImage.alt = thumb.dataset.imageAlt;
+      }
+      thumbs.forEach(function (t) { t.classList.remove('qv-modal__thumb--active'); });
+      thumb.classList.add('qv-modal__thumb--active');
+    });
+  });
+
+  /* Variant selection */
+  var selectedOptions = {};
+  swatches.forEach(function (sw) {
+    sw.addEventListener('click', function () {
+      var optIdx = parseInt(sw.dataset.optionIndex, 10);
+      selectedOptions[optIdx] = sw.dataset.swatchValue;
+
+      /* Update active classes for this option */
+      modal.querySelectorAll('[data-option-index="' + optIdx + '"] [data-swatch-value]').forEach(function (s) {
+        s.classList.toggle('qv-modal__swatch--active', s.dataset.swatchValue === sw.dataset.swatchValue);
+      });
+
+      /* Find matching variant */
+      var matched = variantsData.find(function (v) {
+        return Object.keys(selectedOptions).every(function (idx) {
+          return v['option' + (parseInt(idx, 10) + 1)] === selectedOptions[idx];
+        });
+      });
+
+      if (matched && atcBtn) {
+        atcBtn.dataset.variantId = matched.id;
+        atcBtn.disabled = !matched.available;
+        atcBtn.textContent = matched.available
+          ? '{{ add_to_cart_text | escape }}'
+          : '{{ sold_out_text | escape }}';
+      }
+    });
+  });
+
+  /* Add to cart */
+  if (atcBtn) {
+    atcBtn.addEventListener('click', function () {
+      var variantId = atcBtn.dataset.variantId;
+      var qty       = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
+      if (!variantId) return;
+
+      atcBtn.disabled = true;
+      var originalText = atcBtn.textContent;
+
+      fetch('/cart/add.js', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ id: variantId, quantity: qty })
+      })
+      .then(function (res) { return res.json(); })
+      .then(function () { return fetch('/cart.js'); })
+      .then(function (res) { return res.json(); })
+      .then(function (cartData) {
+        document.querySelectorAll('[data-cart-count]').forEach(function (b) {
+          b.textContent = cartData.item_count;
+        });
+        atcBtn.textContent = '{{ 'products.added_to_cart' | t | escape }}';
+        setTimeout(function () {
+          atcBtn.textContent = originalText;
+          atcBtn.disabled    = false;
+          closeModal();
+        }, 1500);
+      })
+      .catch(function () {
+        atcBtn.disabled = false;
+      });
+    });
+  }
+}());
+</script>

@@ -1,0 +1,16 @@
+{
+  "sections": {
+    "main": {
+      "type": "product-grid",
+      "settings": {
+        "products_per_page": 12,
+        "columns_desktop": 3,
+        "show_sort": true,
+        "show_filter": true,
+        "show_product_count": true,
+        "image_ratio": "portrait"
+      }
+    }
+  },
+  "order": ["main"]
+}

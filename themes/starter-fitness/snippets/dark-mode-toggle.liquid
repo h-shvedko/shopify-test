@@ -1,0 +1,123 @@
+{% doc %}
+  Renders a sun/moon icon button that toggles between dark and light modes.
+  Adds/removes the data-theme="light" attribute on <html>. Persists the
+  preference to localStorage under the key "zenith-theme". Applies a smooth
+  CSS transition on theme change via a transition class on <html>.
+
+  Parameters: none.
+
+  Usage:
+    {% render 'dark-mode-toggle' %}
+{% enddoc %}
+
+{%- liquid
+  assign toggle_label_dark  = 'accessibility.switch_to_light' | t
+  assign toggle_label_light = 'accessibility.switch_to_dark' | t
+-%}
+
+<style>
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    background: transparent;
+    border: 1.5px solid var(--color-border, #2A2A2A);
+    border-radius: 50%;
+    color: var(--color-text, #F0F0F0);
+    cursor: pointer;
+    transition: border-color var(--transition-fast, 150ms ease),
+                color var(--transition-fast, 150ms ease),
+                background-color var(--transition-fast, 150ms ease);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--color-accent, #00D4AA);
+    color: var(--color-accent, #00D4AA);
+    background-color: rgba(0, 212, 170, 0.08);
+  }
+
+  .theme-toggle:focus-visible {
+    outline: 2px solid var(--color-accent, #00D4AA);
+    outline-offset: 2px;
+  }
+
+  /* Show sun in dark mode, moon in light mode */
+  .theme-toggle .icon--sun  { display: none; }
+  .theme-toggle .icon--moon { display: block; }
+
+  [data-theme="light"] .theme-toggle .icon--sun  { display: block; }
+  [data-theme="light"] .theme-toggle .icon--moon { display: none; }
+
+  /* Smooth transition class applied briefly during theme swap */
+  html.theme-transitioning,
+  html.theme-transitioning *,
+  html.theme-transitioning *::before,
+  html.theme-transitioning *::after {
+    transition: background-color 300ms ease, color 300ms ease,
+                border-color 300ms ease, box-shadow 300ms ease !important;
+  }
+</style>
+
+<button
+  type="button"
+  class="theme-toggle"
+  id="zenith-theme-toggle"
+  aria-label="{{ toggle_label_dark }}"
+  data-toggle-label-dark="{{ toggle_label_dark | escape }}"
+  data-toggle-label-light="{{ toggle_label_light | escape }}"
+>
+  {% render 'icon', name: 'moon', size: 16 %}
+  {% render 'icon', name: 'sun', size: 16 %}
+</button>
+
+<script>
+(function () {
+  'use strict';
+
+  var STORAGE_KEY  = 'zenith-theme';
+  var LIGHT_VALUE  = 'light';
+  var htmlEl       = document.documentElement;
+  var btn          = document.getElementById('zenith-theme-toggle');
+
+  /* Apply saved preference immediately (before paint) */
+  var savedTheme = '';
+  try { savedTheme = localStorage.getItem(STORAGE_KEY) || ''; } catch (e) {}
+  if (savedTheme === LIGHT_VALUE) {
+    htmlEl.setAttribute('data-theme', LIGHT_VALUE);
+  }
+
+  if (!btn) return;
+
+  function updateLabel() {
+    var isLight = htmlEl.getAttribute('data-theme') === LIGHT_VALUE;
+    btn.setAttribute('aria-label',
+      isLight ? btn.dataset.toggleLabelLight : btn.dataset.toggleLabelDark
+    );
+  }
+
+  updateLabel();
+
+  btn.addEventListener('click', function () {
+    /* Briefly enable transitions */
+    htmlEl.classList.add('theme-transitioning');
+    setTimeout(function () {
+      htmlEl.classList.remove('theme-transitioning');
+    }, 350);
+
+    var isCurrentlyLight = htmlEl.getAttribute('data-theme') === LIGHT_VALUE;
+    if (isCurrentlyLight) {
+      htmlEl.removeAttribute('data-theme');
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+    } else {
+      htmlEl.setAttribute('data-theme', LIGHT_VALUE);
+      try { localStorage.setItem(STORAGE_KEY, LIGHT_VALUE); } catch (e) {}
+    }
+
+    updateLabel();
+  });
+}());
+</script>

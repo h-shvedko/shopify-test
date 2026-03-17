@@ -1,0 +1,339 @@
+{% stylesheet %}
+  .recently-viewed {
+    padding: 64px 0;
+    background: var(--color-base);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .recently-viewed[hidden] {
+    display: none;
+  }
+
+  .recently-viewed__container {
+    max-width: var(--page-width, 1280px);
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .recently-viewed__header {
+    margin-bottom: 36px;
+  }
+
+  .recently-viewed__heading {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 800;
+    color: var(--color-text);
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .recently-viewed__track {
+    display: flex;
+    gap: 18px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .recently-viewed__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .recently-viewed__item {
+    flex: 0 0 calc(50% - 9px);
+    scroll-snap-align: start;
+    min-width: 160px;
+  }
+
+  @media (min-width: 640px) {
+    .recently-viewed__item {
+      flex: 0 0 calc(33.333% - 12px);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .recently-viewed__item {
+      flex: 0 0 calc(20% - 15px);
+    }
+  }
+
+  .rv-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius, 8px);
+    overflow: hidden;
+    transition: border-color var(--transition-base, 250ms ease),
+                box-shadow var(--transition-base, 250ms ease),
+                transform var(--transition-base, 250ms ease);
+  }
+
+  .rv-card:hover {
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
+
+  .rv-card__image {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--color-surface-raised);
+    display: block;
+  }
+
+  .rv-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform var(--transition-slow, 400ms ease);
+  }
+
+  .rv-card:hover .rv-card__img {
+    transform: scale(1.04);
+  }
+
+  .rv-card__info {
+    padding: 10px 12px 12px;
+  }
+
+  .rv-card__title {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 4px;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .rv-card__title a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--transition-fast, 150ms ease);
+  }
+
+  .rv-card__title a:hover {
+    color: var(--color-accent);
+  }
+
+  .rv-card__price {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  /* Skeleton loader */
+  .rv-skeleton {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius, 8px);
+    overflow: hidden;
+    animation: rv-pulse 1.5s ease-in-out infinite;
+  }
+
+  .rv-skeleton__image {
+    aspect-ratio: 1 / 1;
+    background: var(--color-surface-raised);
+  }
+
+  .rv-skeleton__line {
+    height: 12px;
+    border-radius: 4px;
+    background: var(--color-surface-raised);
+    margin: 10px 12px 6px;
+  }
+
+  .rv-skeleton__line--short {
+    width: 50%;
+    margin-bottom: 12px;
+  }
+
+  @keyframes rv-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.5; }
+  }
+{% endstylesheet %}
+
+<section
+  class="recently-viewed"
+  id="RecentlyViewed-{{ section.id }}"
+  data-section-id="{{ section.id }}"
+  data-max-items="{{ section.settings.max_items }}"
+  hidden
+>
+  <div class="recently-viewed__container">
+    <header class="recently-viewed__header">
+      <h2 class="recently-viewed__heading">
+        {{ section.settings.heading | default: 'products.recently_viewed_heading' | t }}
+      </h2>
+    </header>
+    <div class="recently-viewed__track" role="list" data-rv-track></div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var STORAGE_KEY = 'zenith_recently_viewed';
+    var MAX_STORE   = 20;
+
+    // ── Record current product handle ──
+    {%- if product -%}
+      var currentHandle = {{ product.handle | json }};
+      try {
+        var stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        stored = stored.filter(function (h) { return h !== currentHandle; });
+        stored.unshift(currentHandle);
+        if (stored.length > MAX_STORE) stored = stored.slice(0, MAX_STORE);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+      } catch (e) {}
+    {%- endif -%}
+
+    // ── Render section ──
+    var section  = document.getElementById('RecentlyViewed-{{ section.id }}');
+    var track    = section ? section.querySelector('[data-rv-track]') : null;
+    var maxItems = section ? parseInt(section.dataset.maxItems, 10) || 6 : 6;
+
+    if (!section || !track) return;
+
+    var handles;
+    try {
+      handles = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    } catch (e) {
+      handles = [];
+    }
+
+    {%- if product -%}
+      handles = handles.filter(function (h) { return h !== {{ product.handle | json }}; });
+    {%- endif -%}
+
+    handles = handles.slice(0, maxItems);
+
+    if (handles.length === 0) return;
+
+    // Show section with skeleton loaders while fetching
+    section.removeAttribute('hidden');
+    handles.forEach(function () {
+      track.appendChild(buildSkeleton());
+    });
+
+    var fetched  = 0;
+    var results  = [];
+    var total    = handles.length;
+
+    handles.forEach(function (handle, index) {
+      fetch('/products/' + encodeURIComponent(handle) + '.json')
+        .then(function (res) {
+          if (!res.ok) throw new Error('Not found');
+          return res.json();
+        })
+        .then(function (data) {
+          results[index] = data.product;
+        })
+        .catch(function () {
+          results[index] = null;
+        })
+        .finally(function () {
+          fetched++;
+          if (fetched === total) renderResults();
+        });
+    });
+
+    function renderResults() {
+      track.innerHTML = '';
+      var hasAny = false;
+      results.forEach(function (product) {
+        if (!product) return;
+        hasAny = true;
+        track.appendChild(buildCard(product));
+      });
+      if (!hasAny) section.setAttribute('hidden', '');
+    }
+
+    function buildSkeleton() {
+      var wrap = document.createElement('div');
+      wrap.className = 'recently-viewed__item';
+      wrap.setAttribute('role', 'listitem');
+      wrap.innerHTML =
+        '<div class="rv-skeleton">' +
+          '<div class="rv-skeleton__image"></div>' +
+          '<div class="rv-skeleton__line"></div>' +
+          '<div class="rv-skeleton__line rv-skeleton__line--short"></div>' +
+        '</div>';
+      return wrap;
+    }
+
+    function formatMoney(cents) {
+      var amount = (cents / 100).toFixed(2);
+      var format = (window.Shopify && window.Shopify.money_format) || {% raw %}'${{amount}}'{% endraw %};
+      return format
+        .replace({% raw %}'{{amount}}'{% endraw %}, amount)
+        .replace({% raw %}'{{amount_with_comma_separator}}'{% endraw %}, amount.replace('.', ','))
+        .replace({% raw %}'{{amount_no_decimals}}'{% endraw %}, Math.round(cents / 100).toString());
+    }
+
+    function escapeHtml(str) {
+      var d = document.createElement('div');
+      d.appendChild(document.createTextNode(str));
+      return d.innerHTML;
+    }
+
+    function buildCard(product) {
+      var wrap = document.createElement('div');
+      wrap.className = 'recently-viewed__item';
+      wrap.setAttribute('role', 'listitem');
+
+      var imgSrc = product.featured_image
+        ? product.featured_image.replace(/(\.\w+)(\?.*)?$/, '_400x400$1')
+        : null;
+      var imgHtml = imgSrc
+        ? '<img class="rv-card__img" src="' + imgSrc + '" alt="' + escapeHtml(product.title) + '" width="400" height="400" loading="lazy">'
+        : '';
+
+      wrap.innerHTML =
+        '<article class="rv-card">' +
+          '<a href="/products/' + product.handle + '" class="rv-card__image" tabindex="-1" aria-hidden="true">' +
+            imgHtml +
+          '</a>' +
+          '<div class="rv-card__info">' +
+            '<h3 class="rv-card__title"><a href="/products/' + product.handle + '">' + escapeHtml(product.title) + '</a></h3>' +
+            '<span class="rv-card__price">' + formatMoney(product.variants[0].price) + '</span>' +
+          '</div>' +
+        '</article>';
+
+      return wrap;
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Recently viewed",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Pick up where you left off"
+    },
+    {
+      "type": "range",
+      "id": "max_items",
+      "label": "Max items to show",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 6
+    }
+  ],
+  "presets": [
+    { "name": "Recently viewed" }
+  ]
+}
+{% endschema %}

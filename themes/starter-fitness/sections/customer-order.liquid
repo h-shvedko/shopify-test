@@ -1,0 +1,391 @@
+<section class="customer-order section-padding">
+  <div class="container">
+
+    <div class="customer-order__header reveal">
+      <a href="{{ routes.account_url }}" class="customer-order__back">
+        ← {{ 'customer.back_to_account' | t }}
+      </a>
+      <div class="customer-order__meta">
+        <h1 class="customer-order__title">{{ 'customer.order_number' | t: number: order.name }}</h1>
+        <p class="customer-order__date">{{ 'customer.order_placed' | t }}: {{ order.created_at | date: "%B %d, %Y" }}</p>
+      </div>
+      <div class="customer-order__status-badges">
+        <span class="customer-order__status-badge customer-order__status-badge--{{ order.financial_status }}">
+          {{ order.financial_status_label }}
+        </span>
+        <span class="customer-order__status-badge customer-order__status-badge--fulfillment-{{ order.fulfillment_status }}">
+          {{ order.fulfillment_status_label }}
+        </span>
+      </div>
+    </div>
+
+    <div class="customer-order__layout">
+
+      {%- comment -%} Line items table {%- endcomment -%}
+      <div class="customer-order__items-wrap reveal">
+        <h2 class="customer-order__section-heading">{{ 'customer.order_items_heading' | t }}</h2>
+        <div class="customer-order__table-wrap">
+          <table class="customer-order__table">
+            <thead>
+              <tr>
+                <th>{{ 'customer.order_product' | t }}</th>
+                <th>{{ 'customer.order_sku' | t }}</th>
+                <th>{{ 'customer.order_unit_price' | t }}</th>
+                <th>{{ 'customer.order_quantity' | t }}</th>
+                <th>{{ 'customer.order_total' | t }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {%- for line_item in order.line_items -%}
+                <tr>
+                  <td class="customer-order__product-cell">
+                    <div class="customer-order__product-wrap">
+                      {%- if line_item.image -%}
+                        {%- assign li_img_alt = line_item.title -%}
+                        {{ line_item.image | image_url: width: 120 | image_tag: loading: 'lazy', alt: li_img_alt, width: 60, height: 60 }}
+                      {%- endif -%}
+                      <div class="customer-order__product-info">
+                        <span class="customer-order__product-title">{{ line_item.title }}</span>
+                        {%- if line_item.variant.title != 'Default Title' -%}
+                          <span class="customer-order__product-variant">{{ line_item.variant.title }}</span>
+                        {%- endif -%}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-secondary">{{ line_item.sku | default: '—' }}</td>
+                  <td>{{ line_item.final_price | money }}</td>
+                  <td>{{ line_item.quantity }}</td>
+                  <td class="font-bold">{{ line_item.final_line_price | money }}</td>
+                </tr>
+              {%- endfor -%}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {%- comment -%} Order summary + shipping address {%- endcomment -%}
+      <div class="customer-order__sidebar">
+
+        <div class="customer-order__totals card reveal">
+          <h3 class="customer-order__section-heading">{{ 'customer.order_summary' | t }}</h3>
+
+          <div class="customer-order__total-row">
+            <span>{{ 'cart.subtotal' | t }}</span>
+            <span>{{ order.subtotal_price | money }}</span>
+          </div>
+
+          {%- for discount in order.cart_level_discount_applications -%}
+            <div class="customer-order__total-row customer-order__total-row--discount">
+              <span>{{ discount.title }}</span>
+              <span>-{{ discount.total_allocated_amount | money }}</span>
+            </div>
+          {%- endfor -%}
+
+          {%- for shipping_method in order.shipping_methods -%}
+            <div class="customer-order__total-row">
+              <span>{{ 'cart.shipping' | t }} ({{ shipping_method.title }})</span>
+              <span>{{ shipping_method.price | money }}</span>
+            </div>
+          {%- endfor -%}
+
+          {%- if order.tax_price > 0 -%}
+            <div class="customer-order__total-row">
+              <span>{{ 'cart.tax' | t }}</span>
+              <span>{{ order.tax_price | money }}</span>
+            </div>
+          {%- endif -%}
+
+          <div class="customer-order__total-row customer-order__total-row--grand-total">
+            <span>{{ 'customer.order_total' | t }}</span>
+            <span>{{ order.total_price | money }}</span>
+          </div>
+        </div>
+
+        {%- if order.shipping_address -%}
+          <div class="customer-order__address card reveal reveal--delay-1">
+            <h3 class="customer-order__section-heading">{{ 'customer.shipping_address' | t }}</h3>
+            <address class="customer-order__address-content">
+              {%- assign addr = order.shipping_address -%}
+              {%- if addr.name != blank -%}<strong>{{ addr.name }}</strong><br>{%- endif -%}
+              {%- if addr.company != blank -%}{{ addr.company }}<br>{%- endif -%}
+              {{ addr.address1 }}<br>
+              {%- if addr.address2 != blank -%}{{ addr.address2 }}<br>{%- endif -%}
+              {{ addr.city }}, {{ addr.province_code }} {{ addr.zip }}<br>
+              {{ addr.country }}
+            </address>
+          </div>
+        {%- endif -%}
+
+        {%- if order.billing_address -%}
+          <div class="customer-order__address card reveal reveal--delay-2">
+            <h3 class="customer-order__section-heading">{{ 'customer.billing_address' | t }}</h3>
+            <address class="customer-order__address-content">
+              {%- assign baddr = order.billing_address -%}
+              {%- if baddr.name != blank -%}<strong>{{ baddr.name }}</strong><br>{%- endif -%}
+              {%- if baddr.company != blank -%}{{ baddr.company }}<br>{%- endif -%}
+              {{ baddr.address1 }}<br>
+              {%- if baddr.address2 != blank -%}{{ baddr.address2 }}<br>{%- endif -%}
+              {{ baddr.city }}, {{ baddr.province_code }} {{ baddr.zip }}<br>
+              {{ baddr.country }}
+            </address>
+          </div>
+        {%- endif -%}
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+{% stylesheet %}
+  .customer-order__header {
+    margin-bottom: 48px;
+  }
+
+  .customer-order__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    margin-bottom: 20px;
+    transition: color var(--transition-fast);
+  }
+
+  .customer-order__back:hover {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .customer-order__title {
+    font-family: var(--font-display);
+    margin-bottom: 6px;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .customer-order__date {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    margin-bottom: 16px;
+  }
+
+  .customer-order__status-badges {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .customer-order__status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: var(--color-surface-elevated);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+  }
+
+  .customer-order__status-badge--paid,
+  .customer-order__status-badge--fulfilled {
+    background: rgba(0, 212, 170, 0.12);
+    color: var(--color-accent);
+    border-color: rgba(0, 212, 170, 0.3);
+  }
+
+  .customer-order__status-badge--refunded,
+  .customer-order__status-badge--voided {
+    background: rgba(255, 107, 107, 0.12);
+    color: var(--color-accent-secondary);
+    border-color: rgba(255, 107, 107, 0.3);
+  }
+
+  .customer-order__status-badge--pending,
+  .customer-order__status-badge--fulfillment-partial {
+    background: rgba(255, 184, 0, 0.12);
+    color: var(--color-warning);
+    border-color: rgba(255, 184, 0, 0.3);
+  }
+
+  /* ── Layout ── */
+  .customer-order__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+
+  .customer-order__section-heading {
+    font-family: var(--font-display);
+    font-size: calc(1rem * var(--font-scale-factor));
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-secondary);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* ── Table ── */
+  .customer-order__table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+  }
+
+  .customer-order__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+    min-width: 540px;
+  }
+
+  .customer-order__table thead {
+    background: var(--color-surface);
+  }
+
+  .customer-order__table th {
+    padding: 14px 20px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+  }
+
+  .customer-order__table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    vertical-align: middle;
+  }
+
+  .customer-order__table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .customer-order__product-cell {
+    min-width: 200px;
+  }
+
+  .customer-order__product-wrap {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .customer-order__product-wrap img {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+    border: 1px solid var(--color-border);
+  }
+
+  .customer-order__product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .customer-order__product-title {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .customer-order__product-variant {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+  }
+
+  .text-secondary {
+    color: var(--color-text-secondary);
+  }
+
+  .font-bold {
+    font-weight: 700;
+  }
+
+  /* ── Totals ── */
+  .customer-order__totals {
+    padding: 24px 28px;
+    margin-bottom: 20px;
+  }
+
+  .customer-order__total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    font-size: 0.9375rem;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+
+  .customer-order__total-row:last-child {
+    border-bottom: none;
+  }
+
+  .customer-order__total-row--discount {
+    color: var(--color-accent-secondary);
+  }
+
+  .customer-order__total-row--grand-total {
+    font-weight: 700;
+    font-size: 1.125rem;
+    border-top: 2px solid var(--color-border);
+    border-bottom: none;
+    padding-top: 16px;
+    margin-top: 8px;
+    color: var(--color-accent);
+  }
+
+  /* ── Address ── */
+  .customer-order__address {
+    padding: 24px 28px;
+    margin-bottom: 20px;
+  }
+
+  .customer-order__address-content {
+    font-style: normal;
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.8;
+  }
+
+  .customer-order__address-content strong {
+    color: var(--color-text);
+  }
+
+  @media (min-width: 1024px) {
+    .customer-order__layout {
+      grid-template-columns: 1fr 320px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.customer_order.name",
+  "settings": [],
+  "presets": [
+    {
+      "name": "t:sections.customer_order.presets.default.name"
+    }
+  ]
+}
+{% endschema %}

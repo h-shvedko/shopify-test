@@ -1,0 +1,165 @@
+{% doc %}
+  Renders a dark-surface quantity selector with teal-accent borders and
+  accessible increment/decrement buttons.
+
+  @param {number} [value] - Initial quantity value. Default: 1.
+  @param {string} [name] - Input name attribute for form submission. Default: quantity.
+  @param {number} [min] - Minimum allowed quantity. Default: 1.
+  @param {number} [max] - Maximum allowed quantity. Omit for no upper limit.
+
+  Usage:
+    {% render 'quantity-selector' %}
+    {% render 'quantity-selector', value: 2, name: 'quantity', min: 1, max: 10 %}
+{% enddoc %}
+
+{%- liquid
+  assign qty_value = value | default: 1
+  assign qty_name  = name  | default: 'quantity'
+  assign qty_min   = min   | default: 1
+  assign decrease_label = 'accessibility.decrease_quantity' | t
+  assign increase_label = 'accessibility.increase_quantity' | t
+-%}
+
+<style>
+  .quantity-selector {
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--color-surface, #141414);
+    border: 1.5px solid var(--color-border, #2A2A2A);
+    border-radius: var(--border-radius, 8px);
+    overflow: hidden;
+    transition: border-color var(--transition-fast, 150ms ease);
+  }
+
+  .quantity-selector:focus-within {
+    border-color: var(--color-accent, #00D4AA);
+    box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.15);
+  }
+
+  .quantity-selector__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: transparent;
+    border: none;
+    color: var(--color-text, #F0F0F0);
+    cursor: pointer;
+    transition: color var(--transition-fast, 150ms ease),
+                background-color var(--transition-fast, 150ms ease);
+    flex-shrink: 0;
+  }
+
+  .quantity-selector__btn:hover {
+    color: var(--color-accent, #00D4AA);
+    background-color: rgba(0, 212, 170, 0.08);
+  }
+
+  .quantity-selector__btn:focus-visible {
+    outline: 2px solid var(--color-accent, #00D4AA);
+    outline-offset: -2px;
+  }
+
+  .quantity-selector__btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .quantity-selector__input {
+    width: 3rem;
+    height: 2.5rem;
+    text-align: center;
+    background: transparent;
+    border: none;
+    border-left: 1px solid var(--color-border, #2A2A2A);
+    border-right: 1px solid var(--color-border, #2A2A2A);
+    color: var(--color-text, #F0F0F0);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
+  .quantity-selector__input::-webkit-outer-spin-button,
+  .quantity-selector__input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .quantity-selector__input:focus {
+    outline: none;
+  }
+</style>
+
+<div class="quantity-selector" data-quantity-selector>
+  <button
+    type="button"
+    class="quantity-selector__btn"
+    data-decrease
+    aria-label="{{ decrease_label }}"
+  >
+    {% render 'icon', name: 'minus', size: 16 %}
+  </button>
+
+  <input
+    type="number"
+    class="quantity-selector__input"
+    name="{{ qty_name }}"
+    value="{{ qty_value }}"
+    min="{{ qty_min }}"
+    {%- if max != blank %} max="{{ max }}"{% endif %}
+    aria-label="{{ 'products.quantity' | t }}"
+    data-qty-input
+  >
+
+  <button
+    type="button"
+    class="quantity-selector__btn"
+    data-increase
+    aria-label="{{ increase_label }}"
+  >
+    {% render 'icon', name: 'plus', size: 16 %}
+  </button>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  document.querySelectorAll('[data-quantity-selector]').forEach(function (el) {
+    var input    = el.querySelector('[data-qty-input]');
+    var decBtn   = el.querySelector('[data-decrease]');
+    var incBtn   = el.querySelector('[data-increase]');
+
+    if (!input) return;
+
+    var minVal = parseInt(input.min, 10) || 1;
+    var maxVal = input.max ? parseInt(input.max, 10) : Infinity;
+
+    function update(val) {
+      var next = Math.max(minVal, Math.min(maxVal, val));
+      input.value = next;
+      decBtn.disabled = next <= minVal;
+      incBtn.disabled = next >= maxVal;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    decBtn.addEventListener('click', function () {
+      update(parseInt(input.value, 10) - 1);
+    });
+
+    incBtn.addEventListener('click', function () {
+      update(parseInt(input.value, 10) + 1);
+    });
+
+    input.addEventListener('change', function () {
+      update(parseInt(input.value, 10) || minVal);
+    });
+
+    /* Initial state */
+    update(parseInt(input.value, 10) || minVal);
+  });
+}());
+</script>

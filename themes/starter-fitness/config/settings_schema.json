@@ -1,0 +1,215 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Zenith",
+    "theme_version": "1.0.0",
+    "theme_author": "Starter Fitness",
+    "theme_documentation_url": "https://github.com/h-shvedko/shopify-test",
+    "theme_support_url": "https://github.com/h-shvedko/shopify-test/issues"
+  },
+  {
+    "name": "t:settings.colors.name",
+    "settings": [
+      {
+        "id": "color_base",
+        "type": "color",
+        "label": "t:settings.colors.color_base.label",
+        "default": "#0A0A0A"
+      },
+      {
+        "id": "color_surface",
+        "type": "color",
+        "label": "t:settings.colors.color_surface.label",
+        "default": "#141414"
+      },
+      {
+        "id": "color_surface_elevated",
+        "type": "color",
+        "label": "t:settings.colors.color_surface_elevated.label",
+        "default": "#1E1E1E"
+      },
+      {
+        "id": "color_accent",
+        "type": "color",
+        "label": "t:settings.colors.color_accent.label",
+        "default": "#00D4AA"
+      },
+      {
+        "id": "color_accent_secondary",
+        "type": "color",
+        "label": "t:settings.colors.color_accent_secondary.label",
+        "default": "#FF6B6B"
+      },
+      {
+        "id": "color_text",
+        "type": "color",
+        "label": "t:settings.colors.color_text.label",
+        "default": "#F0F0F0"
+      },
+      {
+        "id": "color_text_secondary",
+        "type": "color",
+        "label": "t:settings.colors.color_text_secondary.label",
+        "default": "#8A8A8A"
+      },
+      {
+        "id": "color_border",
+        "type": "color",
+        "label": "t:settings.colors.color_border.label",
+        "default": "#2A2A2A"
+      }
+    ]
+  },
+  {
+    "name": "t:settings.typography.name",
+    "settings": [
+      {
+        "id": "font_display",
+        "type": "font_picker",
+        "label": "t:settings.typography.font_display.label",
+        "default": "assistant_n7"
+      },
+      {
+        "id": "font_body",
+        "type": "font_picker",
+        "label": "t:settings.typography.font_body.label",
+        "default": "inter_n4"
+      },
+      {
+        "id": "font_serif",
+        "type": "font_picker",
+        "label": "t:settings.typography.font_serif.label",
+        "default": "source_serif_pro_n4"
+      },
+      {
+        "id": "font_scale",
+        "type": "range",
+        "label": "t:settings.typography.font_scale.label",
+        "min": 80,
+        "max": 130,
+        "step": 5,
+        "unit": "%",
+        "default": 100
+      }
+    ]
+  },
+  {
+    "name": "t:settings.layout.name",
+    "settings": [
+      {
+        "id": "page_width",
+        "type": "range",
+        "label": "t:settings.layout.page_width.label",
+        "min": 1000,
+        "max": 1600,
+        "step": 40,
+        "unit": "px",
+        "default": 1280
+      },
+      {
+        "id": "border_radius",
+        "type": "range",
+        "label": "t:settings.layout.border_radius.label",
+        "min": 0,
+        "max": 24,
+        "step": 2,
+        "unit": "px",
+        "default": 8
+      },
+      {
+        "id": "spacing_scale",
+        "type": "range",
+        "label": "t:settings.layout.spacing_scale.label",
+        "min": 80,
+        "max": 130,
+        "step": 10,
+        "unit": "%",
+        "default": 100
+      }
+    ]
+  },
+  {
+    "name": "t:settings.social.name",
+    "settings": [
+      {
+        "id": "social_instagram",
+        "type": "text",
+        "label": "t:settings.social.social_instagram.label",
+        "placeholder": "https://instagram.com/yourhandle"
+      },
+      {
+        "id": "social_facebook",
+        "type": "text",
+        "label": "t:settings.social.social_facebook.label",
+        "placeholder": "https://facebook.com/yourpage"
+      },
+      {
+        "id": "social_twitter",
+        "type": "text",
+        "label": "t:settings.social.social_twitter.label",
+        "placeholder": "https://twitter.com/yourhandle"
+      },
+      {
+        "id": "social_youtube",
+        "type": "text",
+        "label": "t:settings.social.social_youtube.label",
+        "placeholder": "https://youtube.com/yourchannel"
+      },
+      {
+        "id": "social_tiktok",
+        "type": "text",
+        "label": "t:settings.social.social_tiktok.label",
+        "placeholder": "https://tiktok.com/@yourhandle"
+      }
+    ]
+  },
+  {
+    "name": "t:settings.favicon.name",
+    "settings": [
+      {
+        "id": "favicon",
+        "type": "image_picker",
+        "label": "t:settings.favicon.favicon.label"
+      }
+    ]
+  },
+  {
+    "name": "t:settings.countdown.name",
+    "settings": [
+      {
+        "id": "countdown_target_date",
+        "type": "text",
+        "label": "t:settings.countdown.countdown_target_date.label",
+        "placeholder": "2026-12-31T23:59:59"
+      },
+      {
+        "id": "countdown_text",
+        "type": "text",
+        "label": "t:settings.countdown.countdown_text.label",
+        "default": "Sale ends in"
+      }
+    ]
+  },
+  {
+    "name": "t:settings.dark_mode.name",
+    "settings": [
+      {
+        "id": "enable_dark_mode_toggle",
+        "type": "checkbox",
+        "label": "t:settings.dark_mode.enable_dark_mode_toggle.label",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "t:settings.cart.name",
+    "settings": [
+      {
+        "id": "free_shipping_threshold",
+        "type": "number",
+        "label": "t:settings.cart.free_shipping_threshold.label",
+        "default": 75
+      }
+    ]
+  }
+]

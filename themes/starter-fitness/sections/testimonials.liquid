@@ -1,0 +1,491 @@
+{% stylesheet %}
+  .testimonials {
+    padding: 80px 0;
+    background: var(--color-base);
+    overflow: hidden;
+  }
+
+  .testimonials__container {
+    max-width: var(--page-width, 1280px);
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .testimonials__header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+
+  .testimonials__eyebrow {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin: 0 0 16px;
+  }
+
+  .testimonials__heading {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    font-weight: 800;
+    color: var(--color-text);
+    margin: 0 0 16px;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+
+  .testimonials__subtitle {
+    font-family: var(--font-serif, 'Source Serif 4', Georgia, serif);
+    font-size: 1.05rem;
+    color: var(--color-text-muted);
+    margin: 0 auto;
+    max-width: 480px;
+    line-height: 1.65;
+    font-style: italic;
+  }
+
+  /* Carousel / scroll-snap */
+  .testimonials__carousel {
+    position: relative;
+  }
+
+  .testimonials__track {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 24px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .testimonials__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .testimonials__slide {
+    flex: 0 0 min(88vw, 420px);
+    scroll-snap-align: center;
+  }
+
+  @media (min-width: 768px) {
+    .testimonials__slide {
+      flex: 0 0 380px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .testimonials__slide {
+      flex: 0 0 calc(33.333% - 16px);
+    }
+  }
+
+  /* Testimonial card */
+  .testimonial-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-lg, 16px);
+    padding: 36px 32px 28px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: border-color var(--transition-base, 250ms ease),
+                box-shadow var(--transition-base, 250ms ease),
+                transform var(--transition-base, 250ms ease);
+    overflow: hidden;
+  }
+
+  .testimonial-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--gradient-accent);
+    opacity: 0;
+    transition: opacity var(--transition-base, 250ms ease);
+  }
+
+  .testimonial-card:hover {
+    border-color: rgba(0, 212, 170, 0.3);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-4px);
+  }
+
+  .testimonial-card:hover::before {
+    opacity: 1;
+  }
+
+  /* Quote mark */
+  .testimonial-card__quote-icon {
+    color: var(--color-accent);
+    opacity: 0.25;
+    margin-bottom: 20px;
+    flex-shrink: 0;
+  }
+
+  /* Stars */
+  .testimonial-card__stars {
+    display: flex;
+    gap: 3px;
+    color: var(--color-accent);
+    margin-bottom: 20px;
+    flex-shrink: 0;
+  }
+
+  /* Quote text */
+  .testimonial-card__quote {
+    font-family: var(--font-serif, 'Source Serif 4', Georgia, serif);
+    font-size: 1.05rem;
+    font-style: italic;
+    line-height: 1.75;
+    color: var(--color-text);
+    margin: 0;
+    flex: 1;
+  }
+
+  /* Author */
+  .testimonial-card__author {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--color-border);
+    flex-shrink: 0;
+  }
+
+  .testimonial-card__avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: var(--color-surface-raised);
+    border: 2px solid var(--color-border);
+    transition: border-color var(--transition-fast, 150ms ease);
+  }
+
+  .testimonial-card:hover .testimonial-card__avatar {
+    border-color: var(--color-accent);
+  }
+
+  .testimonial-card__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .testimonial-card__avatar-initials {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--color-accent);
+    background: rgba(0, 212, 170, 0.1);
+    text-transform: uppercase;
+  }
+
+  .testimonial-card__name {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 2px;
+  }
+
+  .testimonial-card__role {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  /* Navigation dots */
+  .testimonials__dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 32px;
+  }
+
+  .testimonials__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-border);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: background var(--transition-fast, 150ms ease),
+                transform var(--transition-fast, 150ms ease);
+  }
+
+  .testimonials__dot.is-active {
+    background: var(--color-accent);
+    transform: scale(1.3);
+  }
+{% endstylesheet %}
+
+<section class="testimonials section-snap" data-section-id="{{ section.id }}">
+  <div class="testimonials__container">
+
+    <header class="testimonials__header">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="testimonials__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      <h2 class="testimonials__heading">{{ section.settings.heading }}</h2>
+      {%- if section.settings.subtitle != blank -%}
+        <p class="testimonials__subtitle">{{ section.settings.subtitle }}</p>
+      {%- endif -%}
+    </header>
+
+    <div class="testimonials__carousel" data-testimonials-carousel>
+      <div class="testimonials__track" role="list" data-testimonials-track>
+
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'testimonial' -%}
+            {%- assign avatar_alt = block.settings.image.alt | escape | default: block.settings.author | escape -%}
+            {%- assign rating = block.settings.rating | default: 5 -%}
+            <div
+              class="testimonials__slide"
+              role="listitem"
+              {{ block.shopify_attributes }}
+            >
+              <article class="testimonial-card">
+
+                <svg class="testimonial-card__quote-icon" width="40" height="40" viewBox="0 0 40 40" fill="currentColor" aria-hidden="true">
+                  <path d="M8 20c0-6.6 4.8-12 11.2-13.4L20 8c-4 1.2-6.4 4.4-6.8 7.6.4-.2.8-.2 1.2-.2 2.8 0 5.2 2.2 5.2 5.2 0 3-2.4 5.4-5.4 5.4C11.2 26 8 23.2 8 20zm14 0c0-6.6 4.8-12 11.2-13.4L34 8c-4 1.2-6.4 4.4-6.8 7.6.4-.2.8-.2 1.2-.2 2.8 0 5.2 2.2 5.2 5.2 0 3-2.4 5.4-5.4 5.4C25.2 26 22 23.2 22 20z"/>
+                </svg>
+
+                <div class="testimonial-card__stars" aria-label="{{ 'testimonials.stars_aria' | t: count: rating }}">
+                  {%- for i in (1..5) -%}
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="{% if i <= rating %}currentColor{% else %}none{% endif %}" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  {%- endfor -%}
+                </div>
+
+                {%- if block.settings.quote != blank -%}
+                  <blockquote class="testimonial-card__quote">
+                    {{ block.settings.quote | escape }}
+                  </blockquote>
+                {%- endif -%}
+
+                {%- if block.settings.author != blank -%}
+                  <footer class="testimonial-card__author">
+                    <div class="testimonial-card__avatar">
+                      {%- if block.settings.image != blank -%}
+                        <img
+                          src="{{ block.settings.image | image_url: width: 96 }}"
+                          alt="{{ avatar_alt }}"
+                          width="96"
+                          height="96"
+                          loading="lazy"
+                        >
+                      {%- else -%}
+                        <div class="testimonial-card__avatar-initials" aria-hidden="true">
+                          {{- block.settings.author | slice: 0 -}}
+                        </div>
+                      {%- endif -%}
+                    </div>
+                    <div>
+                      <p class="testimonial-card__name">{{ block.settings.author }}</p>
+                      {%- if block.settings.role != blank -%}
+                        <p class="testimonial-card__role">{{ block.settings.role }}</p>
+                      {%- endif -%}
+                    </div>
+                  </footer>
+                {%- endif -%}
+
+              </article>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+      </div>
+    </div>
+
+    {%- if section.blocks.size > 1 -%}
+      <div class="testimonials__dots" role="tablist" aria-label="{{ section.settings.heading }}" data-testimonials-dots>
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'testimonial' -%}
+            <button
+              type="button"
+              class="testimonials__dot{% if forloop.first %} is-active{% endif %}"
+              role="tab"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              aria-label="{{ 'pagination.page' | t: number: forloop.index }}"
+              data-dot-index="{{ forloop.index0 }}"
+            ></button>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<script>
+  (function () {
+    var track = document.querySelector('[data-testimonials-track]');
+    var dots  = document.querySelectorAll('[data-dot-index]');
+    if (!track || dots.length === 0) return;
+
+    var slides  = track.querySelectorAll('.testimonials__slide');
+    var current = 0;
+
+    function scrollToSlide(index) {
+      var slide = slides[index];
+      if (!slide) return;
+      track.scrollTo({ left: slide.offsetLeft - track.offsetLeft, behavior: 'smooth' });
+    }
+
+    dots.forEach(function (dot) {
+      dot.addEventListener('click', function () {
+        var idx = parseInt(this.dataset.dotIndex, 10);
+        current = idx;
+        scrollToSlide(idx);
+        updateDots(idx);
+      });
+    });
+
+    function updateDots(activeIdx) {
+      dots.forEach(function (dot, i) {
+        dot.classList.toggle('is-active', i === activeIdx);
+        dot.setAttribute('aria-selected', i === activeIdx ? 'true' : 'false');
+      });
+    }
+
+    // Update dots on scroll
+    var ticking = false;
+    track.addEventListener('scroll', function () {
+      if (!ticking) {
+        window.requestAnimationFrame(function () {
+          var mid = track.scrollLeft + track.offsetWidth / 2;
+          var closest = 0;
+          var closestDist = Infinity;
+          slides.forEach(function (slide, i) {
+            var slideMid = slide.offsetLeft - track.offsetLeft + slide.offsetWidth / 2;
+            var dist = Math.abs(mid - slideMid);
+            if (dist < closestDist) {
+              closestDist = dist;
+              closest = i;
+            }
+          });
+          if (closest !== current) {
+            current = closest;
+            updateDots(current);
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow label",
+      "default": "Community"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What our community says"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Real results from real people."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Quote"
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Author name"
+        },
+        {
+          "type": "text",
+          "id": "role",
+          "label": "Author role / location"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Avatar image"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Star rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "quote": "The programming here is unlike anything I've tried before. Three months in and I'm hitting PRs I thought were years away.",
+            "author": "Jordan M.",
+            "role": "Competitive CrossFit athlete",
+            "rating": 5
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "quote": "I was skeptical about training online but the structure and support changed everything. Down 18 lbs and stronger than ever.",
+            "author": "Priya K.",
+            "role": "Member since 2024",
+            "rating": 5
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "quote": "The gear is elite-level quality and ships incredibly fast. But it's the community that keeps me coming back.",
+            "author": "Marcus T.",
+            "role": "Marathon runner, NYC",
+            "rating": 5
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

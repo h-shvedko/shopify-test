@@ -1,0 +1,184 @@
+{% doc %}
+  Renders a countdown timer displaying days, hours, minutes, and seconds in
+  coral-accented boxes for urgency. Shows "Expired" text when the target date
+  has passed. JS updates the countdown every second.
+
+  @param {string} [target_date] - ISO 8601 date/time string for the deadline
+      (e.g. "2026-12-31T23:59:59"). Required for countdown to work.
+  @param {string} [label] - Optional label displayed above the timer boxes.
+
+  Usage:
+    {% render 'countdown-timer', target_date: '2026-12-31T23:59:59', label: 'Sale ends in' %}
+{% enddoc %}
+
+{%- liquid
+  assign timer_id    = 'zenith-timer-' | append: target_date | handleize | slice: 0, 20 | replace: '-', ''
+  assign days_label  = 'countdown.days' | t
+  assign hours_label = 'countdown.hours' | t
+  assign mins_label  = 'countdown.minutes' | t
+  assign secs_label  = 'countdown.seconds' | t
+  assign expired_text = 'countdown.expired' | t
+-%}
+
+<style>
+  .countdown {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .countdown__label {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted, #9A9A9A);
+  }
+
+  .countdown__boxes {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .countdown__box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    background-color: var(--color-surface-raised, #1E1E1E);
+    border: 1px solid var(--color-secondary, #FF6B6B);
+    border-radius: var(--border-radius, 8px);
+    padding: 0.625rem 0.875rem;
+    min-width: 4rem;
+    box-shadow: 0 0 12px rgba(255, 107, 107, 0.15);
+  }
+
+  .countdown__value {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-secondary, #FF6B6B);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .countdown__unit {
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted, #9A9A9A);
+    font-weight: 600;
+  }
+
+  .countdown__sep {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-secondary, #FF6B6B);
+    line-height: 1;
+    align-self: flex-start;
+    padding-top: 0.5rem;
+  }
+
+  .countdown__expired {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-muted, #9A9A9A);
+    padding: 1rem 1.5rem;
+    background-color: var(--color-surface-raised, #1E1E1E);
+    border-radius: var(--border-radius, 8px);
+  }
+
+  @media (min-width: 480px) {
+    .countdown__box {
+      min-width: 5rem;
+      padding: 0.75rem 1.25rem;
+    }
+    .countdown__value {
+      font-size: 2.25rem;
+    }
+  }
+</style>
+
+<div class="countdown" data-countdown id="{{ timer_id }}" data-target="{{ target_date | escape }}">
+  {%- if label != blank -%}
+    <p class="countdown__label">{{ label }}</p>
+  {%- endif -%}
+
+  <div class="countdown__boxes" data-countdown-boxes>
+    <div class="countdown__box">
+      <span class="countdown__value" data-days>00</span>
+      <span class="countdown__unit">{{ days_label }}</span>
+    </div>
+    <span class="countdown__sep" aria-hidden="true">:</span>
+    <div class="countdown__box">
+      <span class="countdown__value" data-hours>00</span>
+      <span class="countdown__unit">{{ hours_label }}</span>
+    </div>
+    <span class="countdown__sep" aria-hidden="true">:</span>
+    <div class="countdown__box">
+      <span class="countdown__value" data-minutes>00</span>
+      <span class="countdown__unit">{{ mins_label }}</span>
+    </div>
+    <span class="countdown__sep" aria-hidden="true">:</span>
+    <div class="countdown__box">
+      <span class="countdown__value" data-seconds>00</span>
+      <span class="countdown__unit">{{ secs_label }}</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var el = document.getElementById('{{ timer_id }}');
+  if (!el) return;
+
+  var target = el.dataset.target;
+  if (!target) return;
+
+  var targetTime = new Date(target).getTime();
+  if (isNaN(targetTime)) return;
+
+  var daysEl    = el.querySelector('[data-days]');
+  var hoursEl   = el.querySelector('[data-hours]');
+  var minsEl    = el.querySelector('[data-minutes]');
+  var secsEl    = el.querySelector('[data-seconds]');
+  var boxesEl   = el.querySelector('[data-countdown-boxes]');
+
+  function pad(n) {
+    return n < 10 ? '0' + n : String(n);
+  }
+
+  function tick() {
+    var now  = Date.now();
+    var diff = targetTime - now;
+
+    if (diff <= 0) {
+      boxesEl.innerHTML = '<p class="countdown__expired">{{ expired_text | escape }}</p>';
+      return;
+    }
+
+    var totalSec = Math.floor(diff / 1000);
+    var days  = Math.floor(totalSec / 86400);
+    var hours = Math.floor((totalSec % 86400) / 3600);
+    var mins  = Math.floor((totalSec % 3600) / 60);
+    var secs  = totalSec % 60;
+
+    if (daysEl)  daysEl.textContent  = pad(days);
+    if (hoursEl) hoursEl.textContent = pad(hours);
+    if (minsEl)  minsEl.textContent  = pad(mins);
+    if (secsEl)  secsEl.textContent  = pad(secs);
+
+    setTimeout(tick, 1000);
+  }
+
+  tick();
+}());
+</script>

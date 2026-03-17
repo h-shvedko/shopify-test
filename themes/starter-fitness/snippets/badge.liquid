@@ -1,0 +1,86 @@
+{% doc %}
+  Renders a product badge with Zenith cinematic dark styling.
+
+  @param {string} text - Badge label text. Required.
+  @param {string} [type] - Badge type controlling colour scheme. One of:
+      sale (coral fill), new (teal fill), sold_out (muted fill),
+      popular (teal-to-cyan gradient), low_stock (coral with pulse animation).
+      Default: new.
+  @param {boolean} [small] - Render smaller badge variant. Default: false.
+
+  Usage:
+    {% render 'badge', text: sale_text, type: 'sale' %}
+    {% render 'badge', text: new_text, type: 'new', small: true %}
+{% enddoc %}
+
+{%- liquid
+  assign badge_type = type | default: 'new'
+
+  assign badge_classes = 'badge badge--' | append: badge_type
+  if small == true
+    assign badge_classes = badge_classes | append: ' badge--small'
+  endif
+-%}
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.625rem;
+    border-radius: 4px;
+    line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .badge--small {
+    font-size: 0.5625rem;
+    padding: 0.1875rem 0.5rem;
+  }
+
+  /* Sale — coral */
+  .badge--sale {
+    background-color: var(--color-secondary, #FF6B6B);
+    color: #FFFFFF;
+  }
+
+  /* New — teal */
+  .badge--new {
+    background-color: var(--color-accent, #00D4AA);
+    color: var(--color-text-inverse, #0A0A0A);
+  }
+
+  /* Sold out — muted surface */
+  .badge--sold_out {
+    background-color: var(--color-surface-raised, #1E1E1E);
+    color: var(--color-text-muted, #9A9A9A);
+    border: 1px solid var(--color-border, #2A2A2A);
+  }
+
+  /* Popular — teal gradient */
+  .badge--popular {
+    background: var(--gradient-accent, linear-gradient(135deg, #00D4AA, #00A8D4));
+    color: var(--color-text-inverse, #0A0A0A);
+  }
+
+  /* Low stock — coral with pulse */
+  .badge--low_stock {
+    background-color: var(--color-secondary, #FF6B6B);
+    color: #FFFFFF;
+    animation: badge-pulse 1.8s ease-in-out infinite;
+  }
+
+  @keyframes badge-pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.5); }
+    50% { opacity: 0.85; box-shadow: 0 0 0 6px rgba(255, 107, 107, 0); }
+  }
+</style>
+
+<span class="{{ badge_classes }}">{{ text }}</span>

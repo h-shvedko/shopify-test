@@ -1,0 +1,311 @@
+{%- liquid
+  assign collection_obj = collections[section.settings.collection]
+  assign view_all_label = 'featured_collection.view_all' | t
+  assign heading_text   = section.settings.heading | default: 'featured_collection.heading' | t
+-%}
+
+{% stylesheet %}
+  .featured-collection {
+    padding: 80px 0;
+    background: var(--color-base);
+    overflow: hidden;
+  }
+
+  .featured-collection__container {
+    max-width: var(--page-width, 1280px);
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .featured-collection__header {
+    text-align: center;
+    margin-bottom: 52px;
+  }
+
+  .featured-collection__heading {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin: 0 0 24px;
+    background: var(--gradient-accent, linear-gradient(135deg, #00D4AA 0%, #00A8D4 100%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .featured-collection__subheading {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    margin: 0 0 32px;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .featured-collection__view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--border-radius, 8px);
+    padding: 11px 24px;
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    transition: background var(--transition-fast, 150ms ease),
+                color var(--transition-fast, 150ms ease),
+                box-shadow var(--transition-base, 250ms ease);
+  }
+
+  .featured-collection__view-all:hover {
+    background: rgba(0, 212, 170, 0.1);
+    box-shadow: var(--glow-accent);
+    text-decoration: none;
+  }
+
+  .featured-collection__view-all:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  /* Scroll-snap track */
+  .featured-collection__track {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .featured-collection__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .featured-collection__track-item {
+    flex: 0 0 calc(50% - 10px);
+    scroll-snap-align: start;
+  }
+
+  @media (min-width: 640px) {
+    .featured-collection__track-item {
+      flex: 0 0 calc(33.333% - 14px);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .featured-collection__track-item {
+      flex: 0 0 calc(25% - 15px);
+    }
+  }
+
+  /* Inline product card for snap track */
+  .fc-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius, 8px);
+    overflow: hidden;
+    height: 100%;
+    transition: border-color var(--transition-base, 250ms ease),
+                box-shadow var(--transition-base, 250ms ease),
+                transform var(--transition-base, 250ms ease);
+  }
+
+  .fc-card:hover {
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-3px);
+  }
+
+  .fc-card__image {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: var(--color-surface-raised);
+  }
+
+  .fc-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform var(--transition-slow, 400ms ease);
+  }
+
+  .fc-card:hover .fc-card__img {
+    transform: scale(1.04);
+  }
+
+  .fc-card__info {
+    padding: 14px 16px 16px;
+  }
+
+  .fc-card__title {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 6px;
+    line-height: 1.3;
+  }
+
+  .fc-card__title a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--transition-fast, 150ms ease);
+  }
+
+  .fc-card__title a:hover {
+    color: var(--color-accent);
+  }
+
+  .fc-card__price {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .fc-card__price-compare {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--color-text-muted);
+    text-decoration: line-through;
+    margin-left: 6px;
+  }
+
+  /* Empty state */
+  .featured-collection__empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--color-text-muted);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.9rem;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--border-radius-lg, 16px);
+  }
+{% endstylesheet %}
+
+<section class="featured-collection section-snap" data-section-id="{{ section.id }}">
+  <div class="featured-collection__container">
+
+    <header class="featured-collection__header">
+      <h2 class="featured-collection__heading">{{ heading_text }}</h2>
+
+      {%- if section.settings.subheading != blank -%}
+        <p class="featured-collection__subheading">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+
+      {%- if collection_obj != blank -%}
+        <a
+          href="{{ collection_obj.url }}"
+          class="featured-collection__view-all"
+          aria-label="{{ view_all_label }}: {{ collection_obj.title }}"
+        >
+          {{ view_all_label }}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      {%- else -%}
+        <a href="{{ routes.all_products_collection_url }}" class="featured-collection__view-all">
+          {{ view_all_label }}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      {%- endif -%}
+    </header>
+
+    {%- if collection_obj != blank -%}
+      {%- if collection_obj.products.size > 0 -%}
+        <div class="featured-collection__track" role="list" aria-label="{{ heading_text }}">
+          {%- for product in collection_obj.products limit: section.settings.products_limit -%}
+            {%- assign fc_alt = product.featured_image.alt | escape | default: product.title | escape -%}
+            <div class="featured-collection__track-item" role="listitem">
+              <article class="fc-card">
+                <a href="{{ product.url }}" class="fc-card__image" tabindex="-1" aria-hidden="true">
+                  {%- if product.featured_image -%}
+                    <img
+                      class="fc-card__img"
+                      src="{{ product.featured_image | image_url: width: 600 }}"
+                      alt="{{ fc_alt }}"
+                      width="600"
+                      height="800"
+                      loading="lazy"
+                    >
+                  {%- else -%}
+                    {{ 'product-1' | placeholder_svg_tag: 'fc-card__img' }}
+                  {%- endif -%}
+                </a>
+                <div class="fc-card__info">
+                  <h3 class="fc-card__title">
+                    <a href="{{ product.url }}">{{ product.title }}</a>
+                  </h3>
+                  <div>
+                    {%- if product.compare_at_price > product.price -%}
+                      <span class="fc-card__price">{{ product.price | money }}</span>
+                      <span class="fc-card__price-compare">{{ product.compare_at_price | money }}</span>
+                    {%- else -%}
+                      <span class="fc-card__price">{{ product.price | money }}</span>
+                    {%- endif -%}
+                  </div>
+                </div>
+              </article>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <div class="featured-collection__empty">
+          {{ 'products.no_products' | t }}
+        </div>
+      {%- endif -%}
+    {%- else -%}
+      <div class="featured-collection__empty">
+        {{ 'products.no_products' | t }}
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Featured collection",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop the drop"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Max products to show",
+      "min": 4,
+      "max": 12,
+      "step": 2,
+      "default": 8
+    }
+  ],
+  "presets": [
+    { "name": "Featured collection" }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,303 @@
+{%- liquid
+  assign form_id  = 'newsletter-form-' | append: section.id
+  assign email_id = 'newsletter-email-' | append: section.id
+-%}
+
+{% stylesheet %}
+  .newsletter-cta {
+    position: relative;
+    padding: 96px 0;
+    overflow: hidden;
+  }
+
+  /* Teal gradient background */
+  .newsletter-cta__bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #00D4AA 0%, #00A8D4 60%, #0070C0 100%);
+    z-index: 0;
+  }
+
+  /* Cinematic noise overlay */
+  .newsletter-cta__noise {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 256px 256px;
+    opacity: 0.06;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Dark tinted overlay for depth */
+  .newsletter-cta__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 10, 0.18);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Decorative glow blobs */
+  .newsletter-cta__blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .newsletter-cta__blob--1 {
+    width: 400px;
+    height: 400px;
+    background: rgba(255, 107, 107, 0.35);
+    top: -100px;
+    right: -80px;
+  }
+
+  .newsletter-cta__blob--2 {
+    width: 300px;
+    height: 300px;
+    background: rgba(0, 70, 100, 0.4);
+    bottom: -60px;
+    left: -60px;
+  }
+
+  .newsletter-cta__container {
+    position: relative;
+    z-index: 2;
+    max-width: var(--page-width, 1280px);
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: center;
+  }
+
+  .newsletter-cta__eyebrow {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(10, 10, 10, 0.65);
+    margin: 0 0 20px;
+  }
+
+  .newsletter-cta__heading {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: clamp(2.25rem, 6vw, 4rem);
+    font-weight: 800;
+    color: #0A0A0A;
+    margin: 0 0 16px;
+    letter-spacing: -0.04em;
+    line-height: 1.0;
+  }
+
+  .newsletter-cta__subtitle {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 1rem;
+    color: rgba(10, 10, 10, 0.7);
+    margin: 0 auto 40px;
+    max-width: 520px;
+    line-height: 1.65;
+  }
+
+  /* Form */
+  .newsletter-cta__form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 500px;
+    margin: 0 auto 20px;
+  }
+
+  @media (min-width: 600px) {
+    .newsletter-cta__form {
+      flex-direction: row;
+    }
+  }
+
+  .newsletter-cta__input {
+    flex: 1;
+    padding: 15px 20px;
+    border-radius: var(--border-radius, 8px);
+    border: 2px solid rgba(10, 10, 10, 0.15);
+    background: rgba(10, 10, 10, 0.12);
+    color: #0A0A0A;
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.95rem;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: border-color var(--transition-fast, 150ms ease),
+                background var(--transition-fast, 150ms ease);
+    min-width: 0;
+  }
+
+  .newsletter-cta__input::placeholder {
+    color: rgba(10, 10, 10, 0.5);
+  }
+
+  .newsletter-cta__input:focus {
+    outline: none;
+    border-color: rgba(10, 10, 10, 0.4);
+    background: rgba(10, 10, 10, 0.18);
+  }
+
+  .newsletter-cta__submit {
+    padding: 15px 32px;
+    background: #0A0A0A;
+    color: var(--color-accent, #00D4AA);
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: var(--border-radius, 8px);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity var(--transition-fast, 150ms ease),
+                transform var(--transition-fast, 150ms ease);
+  }
+
+  .newsletter-cta__submit:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+  }
+
+  .newsletter-cta__submit:focus-visible {
+    outline: 3px solid rgba(10, 10, 10, 0.5);
+    outline-offset: 3px;
+  }
+
+  .newsletter-cta__privacy {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.75rem;
+    color: rgba(10, 10, 10, 0.55);
+    margin: 0;
+  }
+
+  /* Success state */
+  .newsletter-cta__success {
+    display: none;
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0A0A0A;
+    padding: 20px;
+    animation: nl-fade-in 0.4s ease forwards;
+  }
+
+  .newsletter-cta__success.is-visible {
+    display: block;
+  }
+
+  @keyframes nl-fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 767px) {
+    .newsletter-cta {
+      padding: 64px 0;
+    }
+  }
+{% endstylesheet %}
+
+<section class="newsletter-cta" data-section-id="{{ section.id }}">
+  <div class="newsletter-cta__bg" aria-hidden="true"></div>
+  <div class="newsletter-cta__noise" aria-hidden="true"></div>
+  <div class="newsletter-cta__overlay" aria-hidden="true"></div>
+  <div class="newsletter-cta__blob newsletter-cta__blob--1" aria-hidden="true"></div>
+  <div class="newsletter-cta__blob newsletter-cta__blob--2" aria-hidden="true"></div>
+
+  <div class="newsletter-cta__container">
+
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="newsletter-cta__eyebrow">{{ section.settings.eyebrow }}</p>
+    {%- endif -%}
+
+    <h2 class="newsletter-cta__heading">{{ section.settings.heading }}</h2>
+
+    {%- if section.settings.subtitle != blank -%}
+      <p class="newsletter-cta__subtitle">{{ section.settings.subtitle }}</p>
+    {%- endif -%}
+
+    <div data-nl-form-wrap>
+      {%- form 'customer', id: form_id, class: 'newsletter-cta__form', data-nl-form: '' -%}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <label for="{{ email_id }}" class="visually-hidden">
+          {{ 'newsletter.placeholder' | t }}
+        </label>
+        <input
+          type="email"
+          id="{{ email_id }}"
+          name="contact[email]"
+          class="newsletter-cta__input"
+          placeholder="{{ 'newsletter.placeholder' | t }}"
+          required
+          autocomplete="email"
+        >
+        <button type="submit" class="newsletter-cta__submit">
+          {{ 'newsletter.subscribe' | t }}
+        </button>
+      {%- endform -%}
+    </div>
+
+    <div class="newsletter-cta__success" id="NlSuccess-{{ section.id }}" data-nl-success role="status" aria-live="polite">
+      ✓ {{ 'newsletter.success' | t }}
+    </div>
+
+    <p class="newsletter-cta__privacy">{{ 'newsletter.privacy_note' | t }}</p>
+
+  </div>
+</section>
+
+<script>
+  (function () {
+    var form    = document.querySelector('[data-nl-form]');
+    var success = document.getElementById('NlSuccess-{{ section.id }}');
+    var wrap    = document.querySelector('[data-nl-form-wrap]');
+    if (!form || !success) return;
+
+    form.addEventListener('submit', function (e) {
+      // Shopify handles the form submission; if already successful via Liquid,
+      // the form tag is not rendered. We add optimistic UX feedback here.
+      // For AJAX submission, prevent default and use fetch if preferred.
+    });
+
+    // If Shopify redirected back with success param, hide form & show message
+    if (window.location.search.indexOf('customer_posted=true') > -1) {
+      if (wrap) wrap.style.display = 'none';
+      success.classList.add('is-visible');
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Newsletter CTA",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow label",
+      "default": "Community"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Join the movement"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Get training tips, new arrivals, and exclusive member offers — straight to your inbox."
+    }
+  ],
+  "presets": [
+    { "name": "Newsletter CTA" }
+  ]
+}
+{% endschema %}

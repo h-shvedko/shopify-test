@@ -1,0 +1,322 @@
+{% stylesheet %}
+  .collections-list {
+    padding: 80px 0;
+    background: var(--color-base);
+  }
+
+  .collections-list__container {
+    max-width: var(--page-width, 1280px);
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .collections-list__header {
+    text-align: center;
+    margin-bottom: 52px;
+  }
+
+  .collections-list__heading {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    color: var(--color-text);
+    margin: 0 0 16px;
+    letter-spacing: -0.03em;
+  }
+
+  .collections-list__subtitle {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    margin: 0 auto;
+    max-width: 460px;
+    line-height: 1.6;
+  }
+
+  /* Grid */
+  .collections-list__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  @media (min-width: 1024px) {
+    .collections-list__grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+  }
+
+  /* Collection card */
+  .collection-card {
+    position: relative;
+    border-radius: var(--border-radius-lg, 16px);
+    overflow: hidden;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    aspect-ratio: 3 / 4;
+    display: block;
+    text-decoration: none;
+    transition: border-color var(--transition-base, 250ms ease),
+                box-shadow var(--transition-base, 250ms ease),
+                transform var(--transition-base, 250ms ease);
+  }
+
+  .collection-card:hover {
+    border-color: rgba(0, 212, 170, 0.4);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), var(--glow-accent);
+    transform: translateY(-4px);
+    text-decoration: none;
+  }
+
+  /* Background image */
+  .collection-card__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform var(--transition-slow, 400ms ease);
+  }
+
+  .collection-card:hover .collection-card__img {
+    transform: scale(1.06);
+  }
+
+  /* Dark base overlay */
+  .collection-card__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(10,10,10,0.92) 0%,
+      rgba(10,10,10,0.45) 45%,
+      rgba(10,10,10,0.1) 100%
+    );
+    z-index: 1;
+    transition: opacity var(--transition-base, 250ms ease);
+  }
+
+  /* Teal accent overlay on hover */
+  .collection-card__hover-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(0, 212, 170, 0.18) 0%,
+      rgba(0, 168, 212, 0.08) 100%
+    );
+    z-index: 2;
+    opacity: 0;
+    transition: opacity var(--transition-base, 250ms ease);
+  }
+
+  .collection-card:hover .collection-card__hover-overlay {
+    opacity: 1;
+  }
+
+  /* Content */
+  .collection-card__content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    padding: 24px 20px;
+  }
+
+  .collection-card__count {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin: 0 0 6px;
+    display: block;
+  }
+
+  .collection-card__title {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    font-weight: 800;
+    color: var(--color-text, #F0F0F0);
+    margin: 0 0 10px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .collection-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity var(--transition-base, 250ms ease),
+                transform var(--transition-base, 250ms ease);
+  }
+
+  .collection-card:hover .collection-card__cta {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Placeholder for collections without images */
+  .collection-card__placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-surface-raised);
+  }
+
+  .collection-card__placeholder svg {
+    opacity: 0.2;
+    width: 64px;
+    height: 64px;
+  }
+
+  @media (max-width: 639px) {
+    .collections-list__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .collection-card {
+      aspect-ratio: 2 / 3;
+    }
+  }
+{% endstylesheet %}
+
+<section class="collections-list" data-section-id="{{ section.id }}">
+  <div class="collections-list__container">
+
+    {%- if section.settings.heading != blank -%}
+      <header class="collections-list__header">
+        <h2 class="collections-list__heading">{{ section.settings.heading }}</h2>
+        {%- if section.settings.subtitle != blank -%}
+          <p class="collections-list__subtitle">{{ section.settings.subtitle }}</p>
+        {%- endif -%}
+      </header>
+    {%- endif -%}
+
+    <div class="collections-list__grid" role="list">
+
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'collection_item' -%}
+          {%- assign coll = collections[block.settings.collection] -%}
+          {%- if coll != blank -%}
+            {%- assign coll_alt = coll.image.alt | escape | default: coll.title | escape -%}
+            <div role="listitem" {{ block.shopify_attributes }}>
+              <a
+                href="{{ coll.url }}"
+                class="collection-card"
+                aria-label="{{ coll.title }}"
+              >
+                {%- if coll.image != blank -%}
+                  <img
+                    class="collection-card__img"
+                    src="{{ coll.image | image_url: width: 800 }}"
+                    alt="{{ coll_alt }}"
+                    width="800"
+                    height="1066"
+                    loading="lazy"
+                  >
+                {%- elsif coll.products.first.featured_image != blank -%}
+                  {%- assign first_img = coll.products.first.featured_image -%}
+                  {%- assign first_img_alt = first_img.alt | escape | default: coll.title | escape -%}
+                  <img
+                    class="collection-card__img"
+                    src="{{ first_img | image_url: width: 800 }}"
+                    alt="{{ first_img_alt }}"
+                    width="800"
+                    height="1066"
+                    loading="lazy"
+                  >
+                {%- else -%}
+                  <div class="collection-card__placeholder" aria-hidden="true">
+                    {{ 'collection-1' | placeholder_svg_tag }}
+                  </div>
+                {%- endif -%}
+
+                <div class="collection-card__overlay" aria-hidden="true"></div>
+                <div class="collection-card__hover-overlay" aria-hidden="true"></div>
+
+                <div class="collection-card__content">
+                  <span class="collection-card__count">{{ coll.products_count }} {{ 'collections.view_all' | t | downcase }}</span>
+                  <h3 class="collection-card__title">{{ coll.title }}</h3>
+                  <span class="collection-card__cta" aria-hidden="true">
+                    {{ 'collections.view_all' | t }}
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                  </span>
+                </div>
+              </a>
+            </div>
+
+          {%- else -%}
+            {%- comment -%} Placeholder block in editor when no collection selected {%- endcomment -%}
+            <div role="listitem" {{ block.shopify_attributes }}>
+              <div class="collection-card" style="pointer-events: none;">
+                <div class="collection-card__placeholder" aria-hidden="true">
+                  {{ 'collection-1' | placeholder_svg_tag }}
+                </div>
+                <div class="collection-card__overlay" aria-hidden="true"></div>
+                <div class="collection-card__content">
+                  <h3 class="collection-card__title">{{ 'collections.heading' | t }}</h3>
+                </div>
+              </div>
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collections list",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop by category"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_item",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collections list",
+      "blocks": [
+        { "type": "collection_item" },
+        { "type": "collection_item" },
+        { "type": "collection_item" }
+      ]
+    }
+  ]
+}
+{% endschema %}

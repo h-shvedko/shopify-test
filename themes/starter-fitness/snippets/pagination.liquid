@@ -1,0 +1,125 @@
+{% doc %}
+  Renders a Zenith-styled pagination nav with teal active state and dark
+  surface buttons.
+
+  @param {paginate} paginate - Shopify paginate object from a {% paginate %}
+      block. Required.
+
+  Usage:
+    {% paginate collection.products by 24 %}
+      ...
+      {% render 'pagination', paginate: paginate %}
+    {% endpaginate %}
+{% enddoc %}
+
+{%- if paginate.pages > 1 -%}
+  <style>
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+      padding: 2rem 0;
+    }
+
+    .pagination__item {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.5rem;
+      height: 2.5rem;
+      padding: 0 0.625rem;
+      font-family: var(--font-body, 'Inter', sans-serif);
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--color-text, #F0F0F0);
+      background-color: var(--color-surface, #141414);
+      border: 1px solid var(--color-border, #2A2A2A);
+      border-radius: var(--border-radius, 8px);
+      text-decoration: none;
+      transition: border-color var(--transition-fast, 150ms ease),
+                  color var(--transition-fast, 150ms ease),
+                  box-shadow var(--transition-fast, 150ms ease);
+      cursor: pointer;
+    }
+
+    .pagination__item:hover {
+      border-color: var(--color-accent, #00D4AA);
+      color: var(--color-accent, #00D4AA);
+    }
+
+    .pagination__item:focus-visible {
+      outline: 2px solid var(--color-accent, #00D4AA);
+      outline-offset: 2px;
+    }
+
+    .pagination__item--current {
+      background-color: var(--color-accent, #00D4AA);
+      border-color: var(--color-accent, #00D4AA);
+      color: var(--color-text-inverse, #0A0A0A);
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    .pagination__item--disabled {
+      opacity: 0.35;
+      pointer-events: none;
+      cursor: default;
+    }
+
+    .pagination__arrow {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+  </style>
+
+  <nav class="pagination" aria-label="{{ 'pagination.label' | t }}">
+    {%- if paginate.previous -%}
+      <a
+        href="{{ paginate.previous.url }}"
+        class="pagination__item pagination__arrow"
+        aria-label="{{ 'pagination.previous' | t }}"
+      >
+        {% render 'icon', name: 'chevron-left', size: 16 %}
+      </a>
+    {%- else -%}
+      <span class="pagination__item pagination__arrow pagination__item--disabled" aria-disabled="true" aria-label="{{ 'pagination.previous' | t }}">
+        {% render 'icon', name: 'chevron-left', size: 16 %}
+      </span>
+    {%- endif -%}
+
+    {%- for part in paginate.parts -%}
+      {%- if part.is_link -%}
+        <a
+          href="{{ part.url }}"
+          class="pagination__item"
+          aria-label="{{ 'pagination.page' | t: number: part.title }}"
+        >{{ part.title }}</a>
+      {%- elsif part.title == paginate.current_page -%}
+        <span
+          class="pagination__item pagination__item--current"
+          aria-current="page"
+          aria-label="{{ 'pagination.current_page' | t: number: part.title }}"
+        >{{ part.title }}</span>
+      {%- else -%}
+        <span class="pagination__item pagination__item--disabled" aria-hidden="true">{{ part.title }}</span>
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- if paginate.next -%}
+      <a
+        href="{{ paginate.next.url }}"
+        class="pagination__item pagination__arrow"
+        aria-label="{{ 'pagination.next' | t }}"
+      >
+        {% render 'icon', name: 'chevron-right', size: 16 %}
+      </a>
+    {%- else -%}
+      <span class="pagination__item pagination__arrow pagination__item--disabled" aria-disabled="true" aria-label="{{ 'pagination.next' | t }}">
+        {% render 'icon', name: 'chevron-right', size: 16 %}
+      </span>
+    {%- endif -%}
+  </nav>
+{%- endif -%}

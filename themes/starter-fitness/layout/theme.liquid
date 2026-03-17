@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="{{ request.locale.iso_code }}" data-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0A0A0A">
+
+    <title>
+      {{ page_title }}
+      {%- if current_tags %} &ndash; {{ 'general.meta.tagged' | t: tags: current_tags | join: ', ' }}{%- endif %}
+      {%- if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{%- endif %}
+      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{%- endunless %}
+    </title>
+
+    {%- if page_description -%}
+      <meta name="description" content="{{ page_description | escape }}">
+    {%- endif -%}
+
+    <link rel="canonical" href="{{ canonical_url }}">
+
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+    {%- endif -%}
+
+    {{ content_for_header }}
+
+    {{- 'critical.css' | asset_url | stylesheet_tag -}}
+
+    {%- render 'css-variables' -%}
+
+    {%- if settings.font_display != blank -%}
+      <style>{{ settings.font_display | font_face }}</style>
+    {%- endif -%}
+    {%- if settings.font_body != blank -%}
+      <style>{{ settings.font_body | font_face }}</style>
+    {%- endif -%}
+    {%- if settings.font_serif != blank -%}
+      <style>{{ settings.font_serif | font_face }}</style>
+    {%- endif -%}
+  </head>
+
+  <body class="{% if template.name == 'index' %}template-index{% endif %}">
+    <a href="#MainContent" class="skip-to-content-link visually-hidden">
+      {{- 'general.skip_to_content' | t -}}
+    </a>
+
+    {%- sections 'header-group' -%}
+
+    <main
+      id="MainContent"
+      role="main"
+      tabindex="-1"
+      {% if template.name == 'index' %}class="snap-container"{% endif %}
+    >
+      {{ content_for_layout }}
+    </main>
+
+    {%- sections 'footer-group' -%}
+
+    {%- render 'bottom-tab-bar' -%}
+
+    {%- if settings.enable_dark_mode_toggle -%}
+      <script>
+        (function () {
+          var saved = localStorage.getItem('zenith-theme');
+          if (saved === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+          } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          }
+        })();
+      </script>
+    {%- endif -%}
+
+    <script>
+      // Scroll reveal via IntersectionObserver
+      (function () {
+        if (!('IntersectionObserver' in window)) {
+          document.querySelectorAll('.reveal').forEach(function (el) {
+            el.classList.add('revealed');
+          });
+          return;
+        }
+
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+        );
+
+        document.querySelectorAll('.reveal').forEach(function (el) {
+          observer.observe(el);
+        });
+
+        // Re-observe dynamically added elements
+        var mutationObserver = new MutationObserver(function (mutations) {
+          mutations.forEach(function (mutation) {
+            mutation.addedNodes.forEach(function (node) {
+              if (node.nodeType === 1) {
+                if (node.classList && node.classList.contains('reveal')) {
+                  observer.observe(node);
+                }
+                node.querySelectorAll && node.querySelectorAll('.reveal').forEach(function (el) {
+                  observer.observe(el);
+                });
+              }
+            });
+          });
+        });
+
+        mutationObserver.observe(document.body, { childList: true, subtree: true });
+      })();
+
+      // Dark mode toggle helper (dispatched by toggle button)
+      document.addEventListener('zenith:toggle-theme', function () {
+        var current = document.documentElement.getAttribute('data-theme');
+        var next = current === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('zenith-theme', next);
+      });
+    </script>
+  </body>
+</html>

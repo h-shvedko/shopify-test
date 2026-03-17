@@ -1,0 +1,736 @@
+{%- liquid
+  assign sort_by_label     = 'products.sort_by' | t
+  assign sort_featured     = 'products.sort_featured' | t
+  assign sort_best_selling = 'products.sort_best_selling' | t
+  assign sort_price_asc    = 'products.sort_price_asc' | t
+  assign sort_price_desc   = 'products.sort_price_desc' | t
+  assign sort_newest       = 'products.sort_newest' | t
+  assign sort_title_asc    = 'products.sort_title_asc' | t
+  assign sort_title_desc   = 'products.sort_title_desc' | t
+  assign no_products_label = 'products.no_products' | t
+-%}
+
+{% stylesheet %}
+  .product-grid-section {
+    padding: 56px 0 80px;
+    background: var(--color-base);
+  }
+
+  .product-grid__container {
+    max-width: var(--page-width, 1280px);
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* ── Toolbar ── */
+  .product-grid__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+
+  .product-grid__count {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .product-grid__sort {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .product-grid__sort-label {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+
+  .product-grid__sort-select {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.8rem;
+    padding: 9px 36px 9px 14px;
+    border-radius: var(--border-radius, 8px);
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239A9A9A' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    transition: border-color var(--transition-fast, 150ms ease);
+  }
+
+  .product-grid__sort-select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+  }
+
+  /* ── Grid ── */
+  .product-grid__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  @media (min-width: 1024px) {
+    .product-grid__grid--cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+    .product-grid__grid--cols-4 {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+  }
+
+  /* ── Product card ── */
+  .product-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius, 8px);
+    overflow: hidden;
+    transition: border-color var(--transition-base, 250ms ease),
+                box-shadow var(--transition-base, 250ms ease),
+                transform var(--transition-base, 250ms ease);
+    position: relative;
+    cursor: pointer;
+  }
+
+  .product-card:hover {
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-card-hover, 0 8px 32px rgba(0,0,0,0.6));
+    transform: translateY(-3px);
+  }
+
+  .product-card__media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 3 / 4;
+    background: var(--color-surface-raised);
+  }
+
+  .product-card__img,
+  .product-card__img-hover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity var(--transition-slow, 400ms ease);
+  }
+
+  .product-card__img-hover {
+    opacity: 0;
+  }
+
+  .product-card:hover .product-card__img-hover {
+    opacity: 1;
+  }
+
+  .product-card__badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 4px;
+    z-index: 2;
+  }
+
+  .product-card__badge--sale {
+    background: var(--color-secondary);
+    color: #fff;
+  }
+
+  .product-card__badge--new {
+    background: var(--color-accent);
+    color: var(--color-text-inverse, #0A0A0A);
+  }
+
+  .product-card__badge--sold-out {
+    background: var(--color-surface-raised);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+  }
+
+  /* Swipe overlay actions */
+  .product-card__actions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background: linear-gradient(to top, rgba(10,10,10,0.9) 0%, transparent 100%);
+    transform: translateY(100%);
+    transition: transform var(--transition-base, 250ms ease);
+    z-index: 3;
+  }
+
+  .product-card:hover .product-card__actions,
+  .product-card:focus-within .product-card__actions {
+    transform: translateY(0);
+  }
+
+  .product-card__quick-add {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    background: var(--color-accent);
+    color: var(--color-text-inverse, #0A0A0A);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: none;
+    border-radius: var(--border-radius, 8px);
+    cursor: pointer;
+    text-align: center;
+    transition: opacity var(--transition-fast, 150ms ease);
+    letter-spacing: 0.03em;
+  }
+
+  .product-card__quick-add:hover {
+    opacity: 0.88;
+  }
+
+  .product-card__quick-add:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .product-card__compare-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 8px 16px;
+    background: transparent;
+    color: var(--color-text);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.75rem;
+    border: 1px solid rgba(240,240,240,0.2);
+    border-radius: var(--border-radius, 8px);
+    cursor: pointer;
+    transition: border-color var(--transition-fast, 150ms ease),
+                color var(--transition-fast, 150ms ease);
+  }
+
+  .product-card__compare-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .product-card__compare-btn.is-selected {
+    background: rgba(0, 212, 170, 0.12);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  /* Card info */
+  .product-card__info {
+    padding: 16px;
+  }
+
+  .product-card__vendor {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin: 0 0 4px;
+  }
+
+  .product-card__title {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 8px;
+    line-height: 1.3;
+  }
+
+  .product-card__title a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--transition-fast, 150ms ease);
+  }
+
+  .product-card__title a:hover {
+    color: var(--color-accent);
+  }
+
+  .product-card__prices {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .product-card__price {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .product-card__price--sale {
+    color: var(--color-secondary);
+  }
+
+  .product-card__price-compare {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--color-text-muted);
+    text-decoration: line-through;
+  }
+
+  /* ── Empty state ── */
+  .product-grid__empty {
+    text-align: center;
+    padding: 100px 20px;
+    color: var(--color-text-muted);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 1rem;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--border-radius-lg, 16px);
+  }
+
+  .product-grid__empty-icon {
+    display: block;
+    margin: 0 auto 16px;
+    opacity: 0.3;
+  }
+
+  /* ── Pagination ── */
+  .product-grid__pagination {
+    margin-top: 56px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .product-grid__page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: var(--border-radius, 8px);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: border-color var(--transition-fast, 150ms ease),
+                color var(--transition-fast, 150ms ease),
+                background var(--transition-fast, 150ms ease);
+  }
+
+  .product-grid__page-link:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .product-grid__page-link--active {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-text-inverse, #0A0A0A);
+    font-weight: 700;
+    pointer-events: none;
+  }
+
+  .product-grid__page-link--disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  /* ── Compare bar ── */
+  .compare-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    padding: 14px 20px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    z-index: 200;
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
+    flex-wrap: wrap;
+  }
+
+  .compare-bar.is-visible {
+    display: flex;
+  }
+
+  .compare-bar__title {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+
+  .compare-bar__items {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+    flex-wrap: wrap;
+  }
+
+  .compare-bar__item {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-text);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius, 8px);
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .compare-bar__item-remove {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0;
+    transition: color var(--transition-fast, 150ms ease);
+  }
+
+  .compare-bar__item-remove:hover {
+    color: var(--color-secondary);
+  }
+
+  .compare-bar__actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .compare-bar__compare-btn {
+    background: var(--color-accent);
+    color: var(--color-text-inverse, #0A0A0A);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.85rem;
+    font-weight: 700;
+    border: none;
+    border-radius: var(--border-radius, 8px);
+    padding: 10px 20px;
+    cursor: pointer;
+    box-shadow: var(--glow-accent);
+    transition: opacity var(--transition-fast, 150ms ease);
+  }
+
+  .compare-bar__compare-btn:hover {
+    opacity: 0.88;
+  }
+
+  .compare-bar__clear-btn {
+    background: transparent;
+    color: var(--color-text-muted);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.8rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius, 8px);
+    padding: 9px 16px;
+    cursor: pointer;
+    transition: border-color var(--transition-fast, 150ms ease),
+                color var(--transition-fast, 150ms ease);
+  }
+
+  .compare-bar__clear-btn:hover {
+    border-color: var(--color-secondary);
+    color: var(--color-secondary);
+  }
+
+  @media (min-width: 768px) {
+    .product-grid__grid {
+      gap: 24px;
+    }
+  }
+{% endstylesheet %}
+
+{%- paginate collection.products by section.settings.products_per_page -%}
+
+<section class="product-grid-section" data-section-id="{{ section.id }}">
+  <div class="product-grid__container">
+
+    <div class="product-grid__toolbar">
+      <p class="product-grid__count">
+        {{- 'products.showing_count' | t: count: collection.products_count -}}
+      </p>
+
+      {%- if section.settings.show_sort -%}
+        <div class="product-grid__sort">
+          <label class="product-grid__sort-label" for="SortBy-{{ section.id }}">
+            {{ sort_by_label }}:
+          </label>
+          <select
+            id="SortBy-{{ section.id }}"
+            class="product-grid__sort-select"
+            data-sort-select
+          >
+            <option value="manual"{% if collection.sort_by == 'manual' %} selected{% endif %}>{{ sort_featured }}</option>
+            <option value="best-selling"{% if collection.sort_by == 'best-selling' %} selected{% endif %}>{{ sort_best_selling }}</option>
+            <option value="price-ascending"{% if collection.sort_by == 'price-ascending' %} selected{% endif %}>{{ sort_price_asc }}</option>
+            <option value="price-descending"{% if collection.sort_by == 'price-descending' %} selected{% endif %}>{{ sort_price_desc }}</option>
+            <option value="created-descending"{% if collection.sort_by == 'created-descending' %} selected{% endif %}>{{ sort_newest }}</option>
+            <option value="title-ascending"{% if collection.sort_by == 'title-ascending' %} selected{% endif %}>{{ sort_title_asc }}</option>
+            <option value="title-descending"{% if collection.sort_by == 'title-descending' %} selected{% endif %}>{{ sort_title_desc }}</option>
+          </select>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- if collection.products.size > 0 -%}
+      <div
+        class="product-grid__grid product-grid__grid--cols-{{ section.settings.columns_desktop }}"
+        data-compare-grid
+      >
+        {%- for product in collection.products -%}
+          {% render 'product-card',
+            product: product,
+            show_quick_add: true,
+            show_compare: true,
+            enable_swipe: true
+          %}
+        {%- endfor -%}
+      </div>
+
+      {%- if paginate.pages > 1 -%}
+        <nav class="product-grid__pagination" aria-label="{{ 'pagination.label' | t }}">
+          {%- if paginate.previous -%}
+            <a
+              href="{{ paginate.previous.url }}"
+              class="product-grid__page-link"
+              aria-label="{{ 'pagination.previous' | t }}"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+            </a>
+          {%- else -%}
+            <span class="product-grid__page-link product-grid__page-link--disabled" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+            </span>
+          {%- endif -%}
+
+          {%- for part in paginate.parts -%}
+            {%- if part.is_link -%}
+              <a
+                href="{{ part.url }}"
+                class="product-grid__page-link"
+                aria-label="{{ 'pagination.page' | t: number: part.title }}"
+              >{{ part.title }}</a>
+            {%- else -%}
+              {%- if part.title == paginate.current_page -%}
+                <span
+                  class="product-grid__page-link product-grid__page-link--active"
+                  aria-current="page"
+                  aria-label="{{ 'pagination.current_page' | t: number: part.title }}"
+                >{{ part.title }}</span>
+              {%- else -%}
+                <span class="product-grid__page-link product-grid__page-link--disabled">{{ part.title }}</span>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+
+          {%- if paginate.next -%}
+            <a
+              href="{{ paginate.next.url }}"
+              class="product-grid__page-link"
+              aria-label="{{ 'pagination.next' | t }}"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+          {%- else -%}
+            <span class="product-grid__page-link product-grid__page-link--disabled" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
+          {%- endif -%}
+        </nav>
+      {%- endif -%}
+
+    {%- else -%}
+      <div class="product-grid__empty" role="status">
+        <svg class="product-grid__empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        {{ no_products_label }}
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+{%- assign compare_bar_title   = 'cart.compare_bar_title' | t: count: 0 -%}
+{%- assign compare_bar_clear   = 'cart.compare_bar_clear' | t -%}
+{%- assign compare_bar_compare = 'cart.compare_bar_compare' | t -%}
+
+<div class="compare-bar" id="CompareBar" role="region" aria-label="{{ compare_bar_title }}" aria-live="polite">
+  <p class="compare-bar__title" data-compare-bar-title></p>
+  <div class="compare-bar__items" data-compare-bar-items></div>
+  <div class="compare-bar__actions">
+    <button type="button" class="compare-bar__clear-btn" data-compare-clear>{{ compare_bar_clear }}</button>
+    <button type="button" class="compare-bar__compare-btn" data-compare-go>{{ compare_bar_compare }}</button>
+  </div>
+</div>
+
+{%- endpaginate -%}
+
+<script>
+  (function () {
+    // Sort select
+    var sortSelect = document.querySelector('[data-sort-select]');
+    if (sortSelect) {
+      sortSelect.addEventListener('change', function () {
+        var url = new URL(window.location.href);
+        url.searchParams.set('sort_by', this.value);
+        window.location.href = url.toString();
+      });
+    }
+
+    // Compare functionality
+    var compareBar       = document.getElementById('CompareBar');
+    var compareBarTitle  = compareBar ? compareBar.querySelector('[data-compare-bar-title]') : null;
+    var compareBarItems  = compareBar ? compareBar.querySelector('[data-compare-bar-items]') : null;
+    var compareClearBtn  = compareBar ? compareBar.querySelector('[data-compare-clear]') : null;
+    var compareGoBtn     = compareBar ? compareBar.querySelector('[data-compare-go]') : null;
+
+    var MAX_COMPARE = 3;
+    var compared = [];
+
+    function updateCompareBar() {
+      if (!compareBar) return;
+      if (compared.length === 0) {
+        compareBar.classList.remove('is-visible');
+        return;
+      }
+      compareBar.classList.add('is-visible');
+      if (compareBarTitle) {
+        compareBarTitle.textContent = compared.length + ' items selected for comparison';
+      }
+      if (compareBarItems) {
+        compareBarItems.innerHTML = '';
+        compared.forEach(function (item) {
+          var el = document.createElement('span');
+          el.className = 'compare-bar__item';
+          el.innerHTML =
+            escapeHtml(item.title) +
+            '<button type="button" class="compare-bar__item-remove" aria-label="Remove ' + escapeHtml(item.title) + '" data-remove-id="' + item.id + '">&times;</button>';
+          compareBarItems.appendChild(el);
+        });
+        compareBarItems.querySelectorAll('[data-remove-id]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var id = this.dataset.removeId;
+            compared = compared.filter(function (p) { return p.id !== id; });
+            updateCompareBar();
+            var gridBtn = document.querySelector('[data-compare-btn][data-product-id="' + id + '"]');
+            if (gridBtn) gridBtn.classList.remove('is-selected');
+          });
+        });
+      }
+    }
+
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-compare-btn]');
+      if (!btn) return;
+      var id    = btn.dataset.productId;
+      var title = btn.dataset.productTitle;
+      var idx   = compared.findIndex(function (p) { return p.id === id; });
+      if (idx > -1) {
+        compared.splice(idx, 1);
+        btn.classList.remove('is-selected');
+      } else {
+        if (compared.length >= MAX_COMPARE) return;
+        compared.push({ id: id, title: title });
+        btn.classList.add('is-selected');
+      }
+      updateCompareBar();
+    });
+
+    if (compareClearBtn) {
+      compareClearBtn.addEventListener('click', function () {
+        compared = [];
+        document.querySelectorAll('[data-compare-btn]').forEach(function (btn) {
+          btn.classList.remove('is-selected');
+        });
+        updateCompareBar();
+      });
+    }
+
+    if (compareGoBtn) {
+      compareGoBtn.addEventListener('click', function () {
+        if (compared.length < 2) return;
+        var ids = compared.map(function (p) { return p.id; }).join(',');
+        window.location.href = '/search?q=' + encodeURIComponent(ids) + '&type=product';
+      });
+    }
+
+    function escapeHtml(str) {
+      var d = document.createElement('div');
+      d.appendChild(document.createTextNode(str));
+      return d.innerHTML;
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Product grid",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 4,
+      "max": 24,
+      "step": 4,
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "options": [
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sort",
+      "label": "Show sort dropdown",
+      "default": true
+    }
+  ],
+  "presets": [
+    { "name": "Product grid" }
+  ]
+}
+{% endschema %}

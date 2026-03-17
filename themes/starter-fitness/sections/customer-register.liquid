@@ -1,0 +1,144 @@
+<section class="customer-auth section-padding">
+  <div class="container customer-auth__wrapper">
+
+    <div class="customer-auth__card card reveal">
+      <div class="customer-auth__card-header">
+        <span class="eyebrow">{{ 'customer.join_eyebrow' | t }}</span>
+        <h1 class="customer-auth__title">{{ 'customer.register_title' | t }}</h1>
+        <p class="customer-auth__subtitle">{{ 'customer.register_subtitle' | t }}</p>
+      </div>
+
+      {% form 'create_customer' %}
+        {{ form.errors | default_errors }}
+
+        <div class="customer-auth__name-row">
+          <div class="form-group">
+            <label for="customer-first-name">{{ 'customer.first_name' | t }}</label>
+            <input
+              type="text"
+              id="customer-first-name"
+              name="customer[first_name]"
+              autocomplete="given-name"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="customer-last-name">{{ 'customer.last_name' | t }}</label>
+            <input
+              type="text"
+              id="customer-last-name"
+              name="customer[last_name]"
+              autocomplete="family-name"
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="customer-email">{{ 'customer.email' | t }}</label>
+          <input
+            type="email"
+            id="customer-email"
+            name="customer[email]"
+            autocomplete="email"
+            required
+            aria-required="true"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="customer-password">{{ 'customer.password' | t }}</label>
+          <div class="customer-auth__password-wrap">
+            <input
+              type="password"
+              id="customer-password"
+              name="customer[password]"
+              autocomplete="new-password"
+              required
+              aria-required="true"
+              minlength="5"
+            >
+            <button
+              type="button"
+              class="customer-auth__toggle-pw"
+              aria-label="{{ 'customer.show_password' | t }}"
+              data-pw-toggle="customer-password"
+            >
+              <svg class="icon-eye-show" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg class="icon-eye-hide" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="display:none">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            </button>
+          </div>
+          <p class="customer-auth__field-hint">{{ 'customer.password_hint' | t }}</p>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full-width btn--lg">
+          {{ 'customer.submit_register' | t }}
+        </button>
+      {% endform %}
+
+      <div class="customer-auth__divider">
+        <span>{{ 'customer.or' | t }}</span>
+      </div>
+
+      <a href="{{ routes.account_login_url }}" class="btn btn--ghost btn--full-width">
+        {{ 'customer.already_have_account' | t }}
+      </a>
+    </div>
+
+  </div>
+</section>
+
+{% stylesheet %}
+  .customer-auth__subtitle {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    margin-top: 8px;
+  }
+
+  .customer-auth__name-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .customer-auth__field-hint {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    margin-top: 6px;
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    var toggleBtns = document.querySelectorAll('[data-pw-toggle]');
+    toggleBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var input = document.getElementById(btn.dataset.pwToggle);
+        if (!input) return;
+        var isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        var showIcon = btn.querySelector('.icon-eye-show');
+        var hideIcon = btn.querySelector('.icon-eye-hide');
+        if (showIcon) showIcon.style.display = isHidden ? 'none' : '';
+        if (hideIcon) hideIcon.style.display = isHidden ? '' : 'none';
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.customer_register.name",
+  "settings": [],
+  "presets": [
+    {
+      "name": "t:sections.customer_register.presets.default.name"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,304 @@
+<section class="customer-account section-padding">
+  <div class="container">
+
+    <div class="customer-account__header reveal">
+      <div>
+        <span class="eyebrow">{{ 'customer.account_eyebrow' | t }}</span>
+        <h1 class="customer-account__title">
+          {{ 'customer.account_greeting' | t: name: customer.first_name }}
+        </h1>
+        <p class="customer-account__email">{{ customer.email }}</p>
+      </div>
+      <div class="customer-account__actions">
+        <a href="{{ routes.account_logout_url }}" class="btn btn--ghost btn--sm">
+          {{ 'customer.logout' | t }}
+        </a>
+      </div>
+    </div>
+
+    <div class="customer-account__stats reveal reveal--delay-1">
+      <div class="customer-account__stat card">
+        <span class="customer-account__stat-value">{{ customer.orders_count }}</span>
+        <span class="customer-account__stat-label">{{ 'customer.stat_orders' | t }}</span>
+      </div>
+      <div class="customer-account__stat card">
+        <span class="customer-account__stat-value">{{ customer.total_spent | money }}</span>
+        <span class="customer-account__stat-label">{{ 'customer.stat_spent' | t }}</span>
+      </div>
+      {%- if customer.default_address -%}
+        <div class="customer-account__stat card">
+          <span class="customer-account__stat-value">{{ customer.default_address.city }}</span>
+          <span class="customer-account__stat-label">{{ 'customer.stat_location' | t }}</span>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <h2 class="customer-account__section-heading reveal">{{ 'customer.order_history' | t }}</h2>
+
+    {%- if customer.orders.size > 0 -%}
+      <div class="customer-account__table-wrap reveal reveal--delay-1">
+        <table class="customer-account__orders">
+          <thead>
+            <tr>
+              <th>{{ 'customer.order_number' | t: number: '' }}</th>
+              <th>{{ 'customer.order_date' | t }}</th>
+              <th>{{ 'customer.order_payment_status' | t }}</th>
+              <th>{{ 'customer.order_fulfillment_status' | t }}</th>
+              <th>{{ 'customer.order_total' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {%- for order in customer.orders -%}
+              <tr>
+                <td>
+                  <a href="{{ order.customer_url }}" class="customer-account__order-link">
+                    {{ order.name }}
+                  </a>
+                </td>
+                <td class="text-secondary">{{ order.created_at | date: "%b %d, %Y" }}</td>
+                <td>
+                  <span class="customer-account__status customer-account__status--{{ order.financial_status }}">
+                    {{ order.financial_status_label }}
+                  </span>
+                </td>
+                <td>
+                  <span class="customer-account__status customer-account__status--fulfillment-{{ order.fulfillment_status }}">
+                    {{ order.fulfillment_status_label }}
+                  </span>
+                </td>
+                <td class="customer-account__order-total">{{ order.total_price | money }}</td>
+              </tr>
+            {%- endfor -%}
+          </tbody>
+        </table>
+      </div>
+    {%- else -%}
+      <div class="customer-account__empty reveal">
+        <div class="customer-account__empty-icon" aria-hidden="true">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+        </div>
+        <p>{{ 'customer.no_orders' | t }}</p>
+        <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary">
+          {{ 'cart.continue_shopping' | t }}
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+{% stylesheet %}
+  .customer-account__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+
+  .customer-account__title {
+    font-family: var(--font-display);
+    margin-bottom: 6px;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .customer-account__email {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+  }
+
+  .customer-account__stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 56px;
+  }
+
+  .customer-account__stat {
+    padding: 24px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .customer-account__stat-value {
+    font-family: var(--font-display);
+    font-size: calc(1.75rem * var(--font-scale-factor));
+    font-weight: 700;
+    color: var(--color-accent);
+    line-height: 1;
+  }
+
+  .customer-account__stat-label {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+
+  .customer-account__section-heading {
+    font-family: var(--font-display);
+    font-size: calc(1.25rem * var(--font-scale-factor));
+    color: var(--color-text-secondary);
+    margin-bottom: 24px;
+    font-weight: 600;
+  }
+
+  /* ── Table ── */
+  .customer-account__table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+  }
+
+  .customer-account__orders {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+    min-width: 600px;
+  }
+
+  .customer-account__orders thead {
+    background: var(--color-surface);
+  }
+
+  .customer-account__orders th {
+    padding: 14px 20px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+  }
+
+  .customer-account__orders td {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    vertical-align: middle;
+  }
+
+  .customer-account__orders tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .customer-account__orders tbody tr {
+    transition: background var(--transition-fast);
+  }
+
+  .customer-account__orders tbody tr:hover {
+    background: rgba(0, 212, 170, 0.04);
+  }
+
+  .customer-account__order-link {
+    color: var(--color-accent);
+    font-weight: 700;
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .customer-account__order-link:hover {
+    color: var(--color-accent-hover);
+    text-decoration: underline;
+  }
+
+  .customer-account__order-total {
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .text-secondary {
+    color: var(--color-text-secondary);
+  }
+
+  /* ── Status badges ── */
+  .customer-account__status {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: var(--color-surface-elevated);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+  }
+
+  .customer-account__status--paid,
+  .customer-account__status--fulfilled {
+    background: rgba(0, 212, 170, 0.12);
+    color: var(--color-accent);
+    border-color: rgba(0, 212, 170, 0.3);
+  }
+
+  .customer-account__status--refunded,
+  .customer-account__status--returned,
+  .customer-account__status--voided {
+    background: rgba(255, 107, 107, 0.12);
+    color: var(--color-accent-secondary);
+    border-color: rgba(255, 107, 107, 0.3);
+  }
+
+  .customer-account__status--pending,
+  .customer-account__status--partially_paid,
+  .customer-account__status--fulfillment-partial {
+    background: rgba(255, 184, 0, 0.12);
+    color: var(--color-warning);
+    border-color: rgba(255, 184, 0, 0.3);
+  }
+
+  /* ── Empty ── */
+  .customer-account__empty {
+    text-align: center;
+    padding: 60px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .customer-account__empty-icon {
+    color: var(--color-border);
+  }
+
+  .customer-account__empty p {
+    color: var(--color-text-secondary);
+    font-size: 1.0625rem;
+  }
+
+  @media (min-width: 768px) {
+    .customer-account__stats {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.customer_account.name",
+  "settings": [],
+  "presets": [
+    {
+      "name": "t:sections.customer_account.presets.default.name"
+    }
+  ]
+}
+{% endschema %}

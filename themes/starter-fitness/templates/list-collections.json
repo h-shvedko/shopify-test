@@ -1,0 +1,13 @@
+{
+  "sections": {
+    "main": {
+      "type": "collections-list",
+      "settings": {
+        "heading": "Shop by category",
+        "columns_desktop": 3,
+        "image_ratio": "square"
+      }
+    }
+  },
+  "order": ["main"]
+}

@@ -1,0 +1,200 @@
+{%- if section.settings.heading != blank -%}
+<div
+  class="zn-countdown-bar"
+  data-section-id="{{ section.id }}"
+  style="--countdown-bg: {{ section.settings.background_color }};"
+  data-countdown-bar
+>
+  <div class="zn-countdown-bar__inner">
+
+    <p class="zn-countdown-bar__text">{{ section.settings.heading }}</p>
+
+    {% if section.settings.target_date != blank %}
+      <div
+        class="zn-countdown-bar__timer"
+        data-countdown
+        data-target="{{ section.settings.target_date }}"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        <span class="zn-countdown-bar__unit" data-days>
+          <span class="zn-countdown-bar__num" data-days-value>00</span>
+          <span class="zn-countdown-bar__label">{{ 'sections.countdown_bar.days' | t }}</span>
+        </span>
+        <span class="zn-countdown-bar__sep" aria-hidden="true">:</span>
+        <span class="zn-countdown-bar__unit" data-hours>
+          <span class="zn-countdown-bar__num" data-hours-value>00</span>
+          <span class="zn-countdown-bar__label">{{ 'sections.countdown_bar.hours' | t }}</span>
+        </span>
+        <span class="zn-countdown-bar__sep" aria-hidden="true">:</span>
+        <span class="zn-countdown-bar__unit" data-minutes>
+          <span class="zn-countdown-bar__num" data-minutes-value>00</span>
+          <span class="zn-countdown-bar__label">{{ 'sections.countdown_bar.minutes' | t }}</span>
+        </span>
+        <span class="zn-countdown-bar__sep" aria-hidden="true">:</span>
+        <span class="zn-countdown-bar__unit" data-seconds>
+          <span class="zn-countdown-bar__num" data-seconds-value>00</span>
+          <span class="zn-countdown-bar__label">{{ 'sections.countdown_bar.seconds' | t }}</span>
+        </span>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{%- endif -%}
+
+{% stylesheet %}
+  /* === Zenith Countdown Bar === */
+
+  .zn-countdown-bar {
+    background-color: var(--countdown-bg, #FF6B6B);
+    padding: 10px 24px;
+  }
+
+  .zn-countdown-bar__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .zn-countdown-bar__text {
+    font-family: 'Inter', var(--font-body, sans-serif);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: #ffffff;
+    margin: 0;
+    text-align: center;
+  }
+
+  .zn-countdown-bar__timer {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .zn-countdown-bar__unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 36px;
+  }
+
+  .zn-countdown-bar__num {
+    font-family: 'Syne', var(--font-heading, sans-serif);
+    font-weight: 700;
+    font-size: 1.125rem;
+    line-height: 1;
+    color: #ffffff;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .zn-countdown-bar__label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.5625rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
+    margin-top: 2px;
+  }
+
+  .zn-countdown-bar__sep {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: rgba(255, 255, 255, 0.6);
+    padding-bottom: 12px;
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    'use strict';
+
+    var bar = document.querySelector('.zn-countdown-bar[data-section-id="{{ section.id }}"]');
+    if (!bar) return;
+
+    var timer = bar.querySelector('[data-countdown]');
+    if (!timer) return;
+
+    var targetStr = timer.getAttribute('data-target');
+    if (!targetStr) return;
+
+    var target = new Date(targetStr).getTime();
+
+    var daysEl = timer.querySelector('[data-days-value]');
+    var hoursEl = timer.querySelector('[data-hours-value]');
+    var minsEl = timer.querySelector('[data-minutes-value]');
+    var secsEl = timer.querySelector('[data-seconds-value]');
+
+    function pad(n) {
+      return String(Math.max(0, n)).padStart(2, '0');
+    }
+
+    function tick() {
+      var now = Date.now();
+      var diff = target - now;
+
+      if (diff <= 0) {
+        daysEl.textContent = '00';
+        hoursEl.textContent = '00';
+        minsEl.textContent = '00';
+        secsEl.textContent = '00';
+        return;
+      }
+
+      var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      var secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+      daysEl.textContent = pad(days);
+      hoursEl.textContent = pad(hours);
+      minsEl.textContent = pad(mins);
+      secsEl.textContent = pad(secs);
+
+      setTimeout(tick, 1000);
+    }
+
+    tick();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.countdown_bar.name",
+  "tag": "div",
+  "class": "zenith-countdown-bar-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.countdown_bar.settings.heading.label",
+      "default": "Limited time offer — sale ends in:"
+    },
+    {
+      "type": "text",
+      "id": "target_date",
+      "label": "t:sections.countdown_bar.settings.target_date.label",
+      "info": "t:sections.countdown_bar.settings.target_date.info",
+      "default": "2026-12-31T23:59:59"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:sections.countdown_bar.settings.background_color.label",
+      "default": "#FF6B6B"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.countdown_bar.name"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,187 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero-banner",
+      "settings": {
+        "heading": "Train like your life depends on it",
+        "subheading": "Premium fitness programs engineered for the dedicated few.",
+        "button_label": "Start your journey",
+        "button_url": "shopify://collections/all",
+        "button_secondary_label": "View programs",
+        "button_secondary_url": "",
+        "height": "fullscreen",
+        "overlay_opacity": 50,
+        "text_align": "center"
+      }
+    },
+    "countdown": {
+      "type": "countdown-bar",
+      "settings": {}
+    },
+    "programs": {
+      "type": "program-showcase",
+      "blocks": {
+        "program_1": {
+          "type": "program",
+          "settings": {
+            "name": "Basic",
+            "price": "$29/mo",
+            "description": "Perfect for beginners starting their fitness journey.",
+            "features": "3 workouts per week\nBasic nutrition guide\nCommunity access\nProgress tracking",
+            "button_label": "Get started",
+            "button_url": "",
+            "highlight": false
+          }
+        },
+        "program_2": {
+          "type": "program",
+          "settings": {
+            "name": "Pro",
+            "price": "$59/mo",
+            "description": "The most popular plan for serious athletes.",
+            "features": "6 workouts per week\nPersonalised nutrition plan\nWeekly coach check-in\nAdvanced analytics\nPriority support",
+            "button_label": "Start pro",
+            "button_url": "",
+            "highlight": true
+          }
+        },
+        "program_3": {
+          "type": "program",
+          "settings": {
+            "name": "Elite",
+            "price": "$99/mo",
+            "description": "Full concierge coaching for peak performance.",
+            "features": "Unlimited workouts\n1-on-1 personal coaching\nCustom meal planning\nBiometric analysis\n24/7 support\nExclusive community",
+            "button_label": "Go elite",
+            "button_url": "",
+            "highlight": false
+          }
+        }
+      },
+      "block_order": ["program_1", "program_2", "program_3"],
+      "settings": {
+        "heading": "Choose your program",
+        "subheading": "Every plan includes a 14-day free trial. No credit card required."
+      }
+    },
+    "stats": {
+      "type": "stats-counter",
+      "blocks": {
+        "stat_1": {
+          "type": "stat",
+          "settings": {
+            "value": "10000",
+            "suffix": "+",
+            "label": "Members worldwide",
+            "icon": "users"
+          }
+        },
+        "stat_2": {
+          "type": "stat",
+          "settings": {
+            "value": "500000",
+            "suffix": "+",
+            "label": "Workouts completed",
+            "icon": "activity"
+          }
+        },
+        "stat_3": {
+          "type": "stat",
+          "settings": {
+            "value": "50",
+            "suffix": "+",
+            "label": "Countries reached",
+            "icon": "globe"
+          }
+        },
+        "stat_4": {
+          "type": "stat",
+          "settings": {
+            "value": "98",
+            "suffix": "%",
+            "label": "Satisfaction rate",
+            "icon": "star"
+          }
+        }
+      },
+      "block_order": ["stat_1", "stat_2", "stat_3", "stat_4"],
+      "settings": {
+        "heading": "Our community in numbers",
+        "subheading": ""
+      }
+    },
+    "featured": {
+      "type": "featured-collection",
+      "settings": {
+        "heading": "Shop the collection",
+        "collection": "",
+        "products_count": 4,
+        "show_view_all": true
+      }
+    },
+    "brand_story": {
+      "type": "brand-story",
+      "settings": {
+        "eyebrow": "Our mission",
+        "heading": "Built by athletes, for athletes",
+        "body": "Zenith was founded in 2018 by a team of elite coaches and sports scientists who believed that world-class training should be accessible to everyone. We combine cutting-edge exercise science with real-world coaching to help you reach your peak.",
+        "button_label": "Learn our story",
+        "button_url": "/pages/about"
+      }
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "blocks": {
+        "testimonial_1": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "After 3 months on the Pro program I hit a personal best deadlift and dropped 8% body fat. The coaching is elite — these coaches genuinely care about your results.",
+            "author": "Marcus T.",
+            "role": "Pro member since 2023",
+            "rating": 5
+          }
+        },
+        "testimonial_2": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "I was skeptical about online coaching but Zenith completely changed my perspective. The workout plans adapt to my schedule and the nutrition guidance is practical — not just generic advice.",
+            "author": "Priya S.",
+            "role": "Elite member since 2022",
+            "rating": 5
+          }
+        }
+      },
+      "block_order": ["testimonial_1", "testimonial_2"],
+      "settings": {
+        "heading": "What our community says",
+        "subheading": "Real results from real people."
+      }
+    },
+    "newsletter": {
+      "type": "newsletter-cta",
+      "settings": {
+        "heading": "Join the movement",
+        "subheading": "Get training tips, new arrivals, and exclusive member offers — straight to your inbox.",
+        "button_label": "Subscribe"
+      }
+    },
+    "recently_viewed": {
+      "type": "recently-viewed",
+      "settings": {
+        "heading": "Pick up where you left off",
+        "products_to_show": 4
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "countdown",
+    "programs",
+    "stats",
+    "featured",
+    "brand_story",
+    "testimonials",
+    "newsletter",
+    "recently_viewed"
+  ]
+}

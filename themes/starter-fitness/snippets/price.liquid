@@ -1,0 +1,75 @@
+{% doc %}
+  Renders the price display for a Zenith product, including sale compare-at
+  price with a strikethrough and a teal-coloured current price.
+
+  @param {product} product - Shopify product object. Required.
+
+  Usage:
+    {% render 'price', product: product %}
+{% enddoc %}
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign price           = current_variant.price | money
+  assign compare_price   = current_variant.compare_at_price | money
+  assign on_sale         = false
+  if current_variant.compare_at_price > current_variant.price
+    assign on_sale = true
+  endif
+-%}
+
+<style>
+  .price {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+
+  .price__current {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--color-accent, #00D4AA);
+    line-height: 1.2;
+  }
+
+  .price__current--on-sale {
+    color: var(--color-secondary, #FF6B6B);
+  }
+
+  .price__compare {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-weight: 400;
+    font-size: 0.9375rem;
+    color: var(--color-text-muted, #9A9A9A);
+    text-decoration: line-through;
+    line-height: 1.2;
+  }
+
+  .price--large .price__current {
+    font-size: 1.625rem;
+  }
+
+  .price--large .price__compare {
+    font-size: 1.125rem;
+  }
+</style>
+
+<div class="price{% if on_sale %} price--on-sale{% endif %}">
+  {%- if on_sale -%}
+    <span class="price__compare">
+      <span class="visually-hidden">{{ 'products.compare_at' | t: price: compare_price }}</span>
+      <span aria-hidden="true">{{ compare_price }}</span>
+    </span>
+    <span class="price__current price__current--on-sale">
+      <span class="visually-hidden">{{ 'products.sale_price' | t: price: price }}</span>
+      <span aria-hidden="true">{{ price }}</span>
+    </span>
+  {%- else -%}
+    <span class="price__current">
+      <span class="visually-hidden">{{ 'products.regular_price' | t: price: price }}</span>
+      <span aria-hidden="true">{{ price }}</span>
+    </span>
+  {%- endif -%}
+</div>

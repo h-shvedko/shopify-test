@@ -1,0 +1,9 @@
+{
+  "type": "header",
+  "name": "t:sections.header.name",
+  "sections": {
+    "countdown": { "type": "countdown-bar", "settings": {} },
+    "header": { "type": "header", "settings": {} }
+  },
+  "order": ["countdown", "header"]
+}

@@ -1,0 +1,490 @@
+<section
+  class="zn-programs section-snap"
+  data-section-id="{{ section.id }}"
+>
+  <div class="zn-programs__container">
+
+    {%- comment -%} Section header {%- endcomment -%}
+    {% if section.settings.heading != blank %}
+      <div class="zn-programs__header">
+        {% if section.settings.eyebrow != blank %}
+          <p class="zn-programs__eyebrow">{{ section.settings.eyebrow }}</p>
+        {% endif %}
+        <h2 class="zn-programs__heading">{{ section.settings.heading }}</h2>
+        {% if section.settings.subheading != blank %}
+          <p class="zn-programs__subheading">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {%- comment -%} Program cards grid {%- endcomment -%}
+    <div class="zn-programs__grid">
+      {% for block in section.blocks %}
+        {% if block.type == 'program' %}
+          <div
+            class="zn-programs__card{% if block.settings.is_popular %} zn-programs__card--popular{% endif %}"
+            {{ block.shopify_attributes }}
+          >
+            {% if block.settings.is_popular %}
+              <div class="zn-programs__badge">{{ 'sections.program_showcase.popular_badge' | t }}</div>
+            {% endif %}
+
+            <div class="zn-programs__card-top">
+              {% if block.settings.icon != blank %}
+                <p class="zn-programs__card-icon">{{ block.settings.icon }}</p>
+              {% endif %}
+              {% if block.settings.name != blank %}
+                <h3 class="zn-programs__card-name">{{ block.settings.name }}</h3>
+              {% endif %}
+              {% if block.settings.description != blank %}
+                <p class="zn-programs__card-desc">{{ block.settings.description }}</p>
+              {% endif %}
+            </div>
+
+            <div class="zn-programs__pricing">
+              {% if block.settings.price != blank %}
+                <span class="zn-programs__price">{{ block.settings.price }}</span>
+              {% endif %}
+              {% if block.settings.period != blank %}
+                <span class="zn-programs__period">/ {{ block.settings.period }}</span>
+              {% endif %}
+            </div>
+
+            {% if block.settings.features != blank %}
+              <ul class="zn-programs__features" role="list">
+                {% assign features_list = block.settings.features | newline_to_br | split: '<br />' %}
+                {% for feature in features_list %}
+                  {%- assign feature_trimmed = feature | strip -%}
+                  {% if feature_trimmed != blank %}
+                    <li class="zn-programs__feature">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M20 6 9 17l-5-5" stroke="#00D4AA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      {{ feature_trimmed }}
+                    </li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            {% if block.settings.button_text != blank %}
+              <a
+                href="{{ block.settings.button_url | default: routes.all_products_collection_url }}"
+                class="zn-programs__card-cta{% if block.settings.is_popular %} zn-programs__card-cta--primary{% endif %}"
+              >
+                {{ block.settings.button_text }}
+              </a>
+            {% endif %}
+
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+{% stylesheet %}
+  /* === Zenith Program Showcase === */
+
+  .zn-programs {
+    background-color: #0A0A0A;
+    padding: 80px 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+  }
+
+  .zn-programs__container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px;
+    width: 100%;
+  }
+
+  /* Header */
+
+  .zn-programs__header {
+    text-align: center;
+    margin-bottom: 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .zn-programs__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #00D4AA;
+    margin: 0;
+  }
+
+  .zn-programs__eyebrow::before,
+  .zn-programs__eyebrow::after {
+    content: '';
+    display: block;
+    width: 28px;
+    height: 1px;
+    background-color: #00D4AA;
+    opacity: 0.5;
+  }
+
+  .zn-programs__heading {
+    font-family: 'Syne', var(--font-heading, sans-serif);
+    font-weight: 800;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    letter-spacing: -0.03em;
+    color: #F0F0F0;
+    margin: 0;
+    line-height: 1.1;
+  }
+
+  .zn-programs__subheading {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: rgba(240, 240, 240, 0.6);
+    margin: 0;
+    max-width: 520px;
+  }
+
+  /* Grid */
+
+  .zn-programs__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    align-items: stretch;
+  }
+
+  @media (min-width: 640px) {
+    .zn-programs__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .zn-programs__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Card */
+
+  .zn-programs__card {
+    position: relative;
+    background-color: #141414;
+    border: 1px solid #2A2A2A;
+    border-radius: 8px;
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  }
+
+  .zn-programs__card:hover {
+    border-color: rgba(0, 212, 170, 0.5);
+    box-shadow: 0 0 32px rgba(0, 212, 170, 0.12), 0 8px 32px rgba(0, 0, 0, 0.4);
+    transform: translateY(-4px);
+  }
+
+  .zn-programs__card--popular {
+    border-color: #00D4AA;
+    background-color: #141414;
+    box-shadow: 0 0 40px rgba(0, 212, 170, 0.18), 0 8px 32px rgba(0, 0, 0, 0.5);
+  }
+
+  .zn-programs__card--popular:hover {
+    border-color: #00D4AA;
+    box-shadow: 0 0 60px rgba(0, 212, 170, 0.28), 0 12px 40px rgba(0, 0, 0, 0.5);
+    transform: translateY(-6px);
+  }
+
+  /* Popular badge */
+
+  .zn-programs__badge {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, #00D4AA, #00A885);
+    color: #0A0A0A;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 5px 16px;
+    border-radius: 0 0 8px 8px;
+    white-space: nowrap;
+  }
+
+  /* Card top */
+
+  .zn-programs__card-top {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 12px;
+  }
+
+  .zn-programs__card-icon {
+    font-size: 2rem;
+    margin: 0 0 4px;
+    line-height: 1;
+  }
+
+  .zn-programs__card-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.375rem;
+    color: #F0F0F0;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .zn-programs__card-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    color: rgba(240, 240, 240, 0.55);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* Pricing */
+
+  .zn-programs__pricing {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 16px 0;
+    border-top: 1px solid #2A2A2A;
+    border-bottom: 1px solid #2A2A2A;
+  }
+
+  .zn-programs__price {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, #00D4AA, #00A885);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+  }
+
+  .zn-programs__period {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    color: rgba(240, 240, 240, 0.45);
+  }
+
+  /* Features list */
+
+  .zn-programs__features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .zn-programs__feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    color: rgba(240, 240, 240, 0.72);
+    line-height: 1.5;
+  }
+
+  .zn-programs__feature svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* CTA button */
+
+  .zn-programs__card-cta {
+    display: block;
+    text-align: center;
+    padding: 14px 24px;
+    border: 2px solid #2A2A2A;
+    border-radius: 8px;
+    color: #F0F0F0;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 0.875rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+    margin-top: auto;
+  }
+
+  .zn-programs__card-cta:hover {
+    border-color: #00D4AA;
+    color: #00D4AA;
+    text-decoration: none;
+  }
+
+  .zn-programs__card-cta--primary {
+    background: linear-gradient(135deg, #00D4AA, #00A885);
+    border-color: transparent;
+    color: #0A0A0A;
+    box-shadow: 0 0 20px rgba(0, 212, 170, 0.3);
+  }
+
+  .zn-programs__card-cta--primary:hover {
+    border-color: transparent;
+    color: #0A0A0A;
+    opacity: 0.9;
+    box-shadow: 0 0 32px rgba(0, 212, 170, 0.5);
+    text-decoration: none;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.program_showcase.name",
+  "tag": "section",
+  "class": "zenith-programs-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.program_showcase.settings.eyebrow.label",
+      "default": "Membership plans"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.program_showcase.settings.heading.label",
+      "default": "Choose your path"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "t:sections.program_showcase.settings.subheading.label",
+      "default": "Every plan includes access to our premium equipment library and community."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "program",
+      "name": "t:sections.program_showcase.blocks.program.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "t:sections.program_showcase.blocks.program.settings.icon.label",
+          "info": "t:sections.program_showcase.blocks.program.settings.icon.info",
+          "default": "⚡"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "t:sections.program_showcase.blocks.program.settings.name.label",
+          "default": "Starter"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "t:sections.program_showcase.blocks.program.settings.description.label",
+          "default": "Perfect for those just getting started on their fitness journey."
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "t:sections.program_showcase.blocks.program.settings.price.label",
+          "default": "$29"
+        },
+        {
+          "type": "text",
+          "id": "period",
+          "label": "t:sections.program_showcase.blocks.program.settings.period.label",
+          "default": "month"
+        },
+        {
+          "type": "textarea",
+          "id": "features",
+          "label": "t:sections.program_showcase.blocks.program.settings.features.label",
+          "info": "t:sections.program_showcase.blocks.program.settings.features.info",
+          "default": "Access to 20+ programs\nWeekly workout plans\nProgress tracking\nCommunity forum"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "t:sections.program_showcase.blocks.program.settings.button_text.label",
+          "default": "Get started"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "t:sections.program_showcase.blocks.program.settings.button_url.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "is_popular",
+          "label": "t:sections.program_showcase.blocks.program.settings.is_popular.label",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.program_showcase.name",
+      "blocks": [
+        {
+          "type": "program",
+          "settings": {
+            "icon": "⚡",
+            "name": "Starter",
+            "price": "$29",
+            "period": "month",
+            "features": "Access to 20+ programs\nWeekly workout plans\nProgress tracking\nCommunity forum",
+            "button_text": "Get started",
+            "is_popular": false
+          }
+        },
+        {
+          "type": "program",
+          "settings": {
+            "icon": "🔥",
+            "name": "Pro",
+            "price": "$59",
+            "period": "month",
+            "features": "Everything in Starter\nPersonalized training plans\nNutrition guidance\n1-on-1 coaching sessions\nPriority support",
+            "button_text": "Go Pro",
+            "is_popular": true
+          }
+        },
+        {
+          "type": "program",
+          "settings": {
+            "icon": "👑",
+            "name": "Elite",
+            "price": "$99",
+            "period": "month",
+            "features": "Everything in Pro\nUnlimited coaching calls\nCustom meal planning\nVIP community access\nEarly product drops",
+            "button_text": "Join Elite",
+            "is_popular": false
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,289 @@
+{% doc %}
+  Renders a horizontally swipeable image gallery for a product with CSS
+  scroll-snap, dot indicators, and JS-driven touch event handling.
+
+  @param {product} product - Shopify product object. Required.
+  @param {string} [size] - Layout size variant. One of: small (compact
+      thumbnails, 4:5 ratio), large (hero display, 3:4 ratio). Default: small.
+
+  Usage:
+    {% render 'swipeable-images', product: product %}
+    {% render 'swipeable-images', product: product, size: 'large' %}
+{% enddoc %}
+
+{%- liquid
+  assign gallery_size  = size | default: 'small'
+  assign gallery_id    = 'zenith-gallery-' | append: product.id
+  assign image_width   = 600
+  if gallery_size == 'large'
+    assign image_width = 1200
+  endif
+-%}
+
+<style>
+  .swipeable-gallery {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--border-radius, 8px);
+    background-color: var(--color-surface-raised, #1E1E1E);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .swipeable-gallery--small {
+    aspect-ratio: 4 / 5;
+  }
+
+  .swipeable-gallery--large {
+    aspect-ratio: 3 / 4;
+  }
+
+  @media (min-width: 768px) {
+    .swipeable-gallery--large {
+      aspect-ratio: 1 / 1;
+    }
+  }
+
+  .swipeable-gallery__track {
+    display: flex;
+    height: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+  }
+
+  .swipeable-gallery__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .swipeable-gallery__slide {
+    flex-shrink: 0;
+    width: 100%;
+    height: 100%;
+    scroll-snap-align: start;
+    overflow: hidden;
+  }
+
+  .swipeable-gallery__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+    -webkit-user-drag: none;
+  }
+
+  /* Dots */
+  .swipeable-gallery__dots {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.375rem;
+    z-index: 2;
+  }
+
+  .swipeable-gallery__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: rgba(240, 240, 240, 0.35);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background-color var(--transition-fast, 150ms ease),
+                transform var(--transition-fast, 150ms ease);
+    flex-shrink: 0;
+  }
+
+  .swipeable-gallery__dot--active {
+    background-color: var(--color-accent, #00D4AA);
+    transform: scale(1.3);
+  }
+
+  .swipeable-gallery__dot:focus-visible {
+    outline: 2px solid var(--color-accent, #00D4AA);
+    outline-offset: 2px;
+  }
+
+  /* Prev / next arrows (shown only on large size & hover) */
+  .swipeable-gallery__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    background: rgba(10, 10, 10, 0.65);
+    border: 1px solid var(--color-border, #2A2A2A);
+    border-radius: 50%;
+    color: var(--color-text, #F0F0F0);
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: border-color var(--transition-fast, 150ms ease),
+                color var(--transition-fast, 150ms ease);
+  }
+
+  .swipeable-gallery--large .swipeable-gallery__arrow {
+    display: flex;
+  }
+
+  .swipeable-gallery__arrow:hover {
+    border-color: var(--color-accent, #00D4AA);
+    color: var(--color-accent, #00D4AA);
+  }
+
+  .swipeable-gallery__arrow:focus-visible {
+    outline: 2px solid var(--color-accent, #00D4AA);
+    outline-offset: 2px;
+  }
+
+  .swipeable-gallery__arrow--prev { left: 0.625rem; }
+  .swipeable-gallery__arrow--next { right: 0.625rem; }
+</style>
+
+<div
+  class="swipeable-gallery swipeable-gallery--{{ gallery_size }}"
+  id="{{ gallery_id }}"
+  data-gallery
+  aria-label="{{ 'products.thumbnail_list' | t }}"
+>
+  <div class="swipeable-gallery__track" data-gallery-track>
+    {%- for image in product.images limit: 8 -%}
+      <div
+        class="swipeable-gallery__slide"
+        role="group"
+        aria-label="{{ 'products.view_image' | t: index: forloop.index }}"
+      >
+        <img
+          src="{{ image | image_url: width: image_width }}"
+          alt="{{ image.alt | default: product.title | escape }}"
+          width="{{ image_width }}"
+          height="{{ image_width }}"
+          {%- if forloop.first %}loading="eager"{% else %}loading="lazy"{% endif %}
+          class="swipeable-gallery__image"
+        >
+      </div>
+    {%- else -%}
+      <div class="swipeable-gallery__slide">
+        {{ 'product-1' | placeholder_svg_tag: 'swipeable-gallery__image' }}
+      </div>
+    {%- endfor -%}
+  </div>
+
+  {%- if product.images.size > 1 -%}
+    {%- if gallery_size == 'large' -%}
+      <button
+        type="button"
+        class="swipeable-gallery__arrow swipeable-gallery__arrow--prev"
+        data-gallery-prev
+        aria-label="{{ 'products.prev_image' | t }}"
+      >{% render 'icon', name: 'chevron-left', size: 18 %}</button>
+      <button
+        type="button"
+        class="swipeable-gallery__arrow swipeable-gallery__arrow--next"
+        data-gallery-next
+        aria-label="{{ 'products.next_image' | t }}"
+      >{% render 'icon', name: 'chevron-right', size: 18 %}</button>
+    {%- endif -%}
+
+    <div class="swipeable-gallery__dots" data-gallery-dots aria-hidden="true">
+      {%- for image in product.images limit: 8 -%}
+        <button
+          type="button"
+          class="swipeable-gallery__dot{% if forloop.first %} swipeable-gallery__dot--active{% endif %}"
+          data-dot="{{ forloop.index0 }}"
+        ></button>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var gallery = document.getElementById('{{ gallery_id }}');
+  if (!gallery) return;
+
+  var track    = gallery.querySelector('[data-gallery-track]');
+  var dotsEl   = gallery.querySelector('[data-gallery-dots]');
+  var prevBtn  = gallery.querySelector('[data-gallery-prev]');
+  var nextBtn  = gallery.querySelector('[data-gallery-next]');
+  var dots     = dotsEl ? dotsEl.querySelectorAll('[data-dot]') : [];
+  var slides   = track ? track.querySelectorAll('.swipeable-gallery__slide') : [];
+  var total    = slides.length;
+  var current  = 0;
+
+  if (total <= 1) return;
+
+  function goTo(index) {
+    if (index < 0)      index = total - 1;
+    if (index >= total) index = 0;
+    current = index;
+
+    track.scrollTo({ left: track.clientWidth * current, behavior: 'smooth' });
+
+    dots.forEach(function (d) {
+      d.classList.toggle('swipeable-gallery__dot--active',
+        parseInt(d.dataset.dot, 10) === current
+      );
+    });
+  }
+
+  /* Dot navigation */
+  dots.forEach(function (dot) {
+    dot.addEventListener('click', function () {
+      goTo(parseInt(dot.dataset.dot, 10));
+    });
+  });
+
+  /* Arrow navigation */
+  if (prevBtn) prevBtn.addEventListener('click', function () { goTo(current - 1); });
+  if (nextBtn) nextBtn.addEventListener('click', function () { goTo(current + 1); });
+
+  /* Sync dots on scroll (for native scroll-snap) */
+  var scrollTimer;
+  track.addEventListener('scroll', function () {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(function () {
+      var idx = Math.round(track.scrollLeft / track.clientWidth);
+      if (idx !== current) {
+        current = idx;
+        dots.forEach(function (d) {
+          d.classList.toggle('swipeable-gallery__dot--active',
+            parseInt(d.dataset.dot, 10) === current
+          );
+        });
+      }
+    }, 80);
+  }, { passive: true });
+
+  /* Touch swipe fallback (for browsers where scroll-snap isn't smooth) */
+  var touchStartX = 0;
+
+  track.addEventListener('touchstart', function (e) {
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+
+  track.addEventListener('touchend', function (e) {
+    var diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      goTo(diff > 0 ? current + 1 : current - 1);
+    }
+  }, { passive: true });
+
+  /* Keyboard support when focused inside gallery */
+  gallery.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft')  goTo(current - 1);
+    if (e.key === 'ArrowRight') goTo(current + 1);
+  });
+}());
+</script>

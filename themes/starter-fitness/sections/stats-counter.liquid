@@ -1,0 +1,277 @@
+<section
+  class="zn-stats"
+  data-section-id="{{ section.id }}"
+>
+  <div class="zn-stats__container">
+
+    {% if section.settings.heading != blank %}
+      <p class="zn-stats__heading-label">{{ section.settings.heading }}</p>
+    {% endif %}
+
+    <div class="zn-stats__grid">
+      {% for block in section.blocks %}
+        {% if block.type == 'stat' %}
+          <div class="zn-stats__item" {{ block.shopify_attributes }} data-stat>
+            <div class="zn-stats__number-wrap">
+              <span
+                class="zn-stats__number"
+                data-target="{{ block.settings.number }}"
+                data-suffix="{{ block.settings.suffix }}"
+              >0</span>
+              {% if block.settings.suffix != blank %}
+                <span class="zn-stats__suffix" aria-hidden="true">{{ block.settings.suffix }}</span>
+              {% endif %}
+            </div>
+            {% if block.settings.label != blank %}
+              <p class="zn-stats__label">{{ block.settings.label }}</p>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+{% stylesheet %}
+  /* === Zenith Stats Counter === */
+
+  .zn-stats {
+    background-color: #141414;
+    border-top: 1px solid #2A2A2A;
+    border-bottom: 1px solid #2A2A2A;
+    padding: 64px 0;
+  }
+
+  .zn-stats__container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .zn-stats__heading-label {
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(240, 240, 240, 0.4);
+    margin: 0 0 40px;
+  }
+
+  .zn-stats__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px 24px;
+  }
+
+  @media (min-width: 768px) {
+    .zn-stats__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .zn-stats__item {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .zn-stats__item.zn-stats__item--visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .zn-stats__number-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+  }
+
+  .zn-stats__number {
+    font-family: 'Syne', var(--font-heading, sans-serif);
+    font-weight: 800;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    line-height: 1;
+    background: linear-gradient(135deg, #00D4AA, #00A885);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+  }
+
+  .zn-stats__suffix {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    line-height: 1;
+    background: linear-gradient(135deg, #FF6B6B, #e85555);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .zn-stats__label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: rgba(240, 240, 240, 0.55);
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+
+  /* Stagger delays */
+
+  .zn-stats__item:nth-child(1) { transition-delay: 0ms; }
+  .zn-stats__item:nth-child(2) { transition-delay: 100ms; }
+  .zn-stats__item:nth-child(3) { transition-delay: 200ms; }
+  .zn-stats__item:nth-child(4) { transition-delay: 300ms; }
+  .zn-stats__item:nth-child(5) { transition-delay: 400ms; }
+  .zn-stats__item:nth-child(6) { transition-delay: 500ms; }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    'use strict';
+
+    var section = document.querySelector('.zn-stats[data-section-id="{{ section.id }}"]');
+    if (!section) return;
+
+    var items = section.querySelectorAll('[data-stat]');
+    if (!items.length) return;
+
+    var animated = false;
+
+    function easeOut(t) {
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    function animateCounter(el) {
+      var numEl = el.querySelector('[data-target]');
+      if (!numEl) return;
+
+      var target = parseInt(numEl.getAttribute('data-target'), 10);
+      if (isNaN(target)) return;
+
+      var duration = 1800;
+      var start = null;
+
+      function step(timestamp) {
+        if (!start) start = timestamp;
+        var elapsed = timestamp - start;
+        var progress = Math.min(elapsed / duration, 1);
+        var easedProgress = easeOut(progress);
+        var current = Math.round(easedProgress * target);
+
+        numEl.textContent = current.toLocaleString();
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          numEl.textContent = target.toLocaleString();
+        }
+      }
+
+      requestAnimationFrame(step);
+    }
+
+    function runAnimation() {
+      if (animated) return;
+      animated = true;
+
+      items.forEach(function (item) {
+        item.classList.add('zn-stats__item--visible');
+        animateCounter(item);
+      });
+    }
+
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            runAnimation();
+            observer.disconnect();
+          }
+        });
+      }, { threshold: 0.3 });
+
+      observer.observe(section);
+    } else {
+      runAnimation();
+    }
+
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.stats_counter.name",
+  "tag": "section",
+  "class": "zenith-stats-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.stats_counter.settings.heading.label",
+      "default": "By the numbers"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "t:sections.stats_counter.blocks.stat.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "number",
+          "label": "t:sections.stats_counter.blocks.stat.settings.number.label",
+          "default": "10000"
+        },
+        {
+          "type": "text",
+          "id": "suffix",
+          "label": "t:sections.stats_counter.blocks.stat.settings.suffix.label",
+          "info": "t:sections.stats_counter.blocks.stat.settings.suffix.info",
+          "default": "+"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.stats_counter.blocks.stat.settings.label.label",
+          "default": "Happy athletes"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.stats_counter.name",
+      "blocks": [
+        {
+          "type": "stat",
+          "settings": { "number": "10000", "suffix": "+", "label": "Happy athletes" }
+        },
+        {
+          "type": "stat",
+          "settings": { "number": "500", "suffix": "+", "label": "Products in range" }
+        },
+        {
+          "type": "stat",
+          "settings": { "number": "98", "suffix": "%", "label": "Satisfaction rate" }
+        },
+        {
+          "type": "stat",
+          "settings": { "number": "15", "suffix": "K", "label": "5-star reviews" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

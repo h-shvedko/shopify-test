@@ -1,0 +1,181 @@
+{% doc %}
+  Renders a fixed bottom navigation tab bar, visible on mobile only (hidden
+  on desktop via media query). Four tabs: Home, Search, Cart (with badge),
+  Account. Active tab is highlighted in teal. Dark surface background with
+  subtle top border.
+
+  Parameters: none — infers current page from request.path.
+
+  Usage:
+    {% render 'bottom-tab-bar' %}
+{% enddoc %}
+
+{%- liquid
+  assign home_label    = 'bottom_nav.home' | t
+  assign search_label  = 'bottom_nav.search' | t
+  assign cart_label    = 'bottom_nav.cart' | t
+  assign account_label = 'bottom_nav.account' | t
+
+  assign current_path = request.path
+
+  assign is_home    = false
+  assign is_search  = false
+  assign is_cart    = false
+  assign is_account = false
+
+  if current_path == '/'
+    assign is_home = true
+  endif
+  if current_path contains '/search'
+    assign is_search = true
+  endif
+  if current_path contains '/cart'
+    assign is_cart = true
+  endif
+  if current_path contains '/account'
+    assign is_account = true
+  endif
+-%}
+
+<style>
+  .bottom-tab-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 800;
+    background-color: var(--color-surface, #141414);
+    border-top: 1px solid var(--color-border, #2A2A2A);
+    height: 56px;
+    align-items: stretch;
+  }
+
+  @media (min-width: 768px) {
+    .bottom-tab-bar {
+      display: none;
+    }
+  }
+
+  .bottom-tab-bar__tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    text-decoration: none;
+    color: var(--color-text-muted, #9A9A9A);
+    font-size: 0.625rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    transition: color var(--transition-fast, 150ms ease);
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .bottom-tab-bar__tab:focus-visible {
+    outline: 2px solid var(--color-accent, #00D4AA);
+    outline-offset: -2px;
+  }
+
+  .bottom-tab-bar__tab--active {
+    color: var(--color-accent, #00D4AA);
+  }
+
+  .bottom-tab-bar__tab--active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 25%;
+    right: 25%;
+    height: 2px;
+    background-color: var(--color-accent, #00D4AA);
+    border-radius: 0 0 2px 2px;
+  }
+
+  .bottom-tab-bar__icon-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bottom-tab-bar__badge {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    min-width: 16px;
+    height: 16px;
+    background-color: var(--color-secondary, #FF6B6B);
+    color: #fff;
+    font-size: 0.5625rem;
+    font-weight: 700;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    line-height: 1;
+  }
+
+  .bottom-tab-bar__badge[data-cart-count="0"] {
+    display: none;
+  }
+</style>
+
+<nav class="bottom-tab-bar" aria-label="{{ 'bottom_nav.label' | t }}">
+  <a
+    href="{{ routes.root_url }}"
+    class="bottom-tab-bar__tab{% if is_home %} bottom-tab-bar__tab--active{% endif %}"
+    aria-label="{{ home_label }}"
+    {% if is_home %}aria-current="page"{% endif %}
+  >
+    <span class="bottom-tab-bar__icon-wrap">
+      {% render 'icon', name: 'home', size: 22 %}
+    </span>
+    <span>{{ home_label }}</span>
+  </a>
+
+  <a
+    href="{{ routes.search_url }}"
+    class="bottom-tab-bar__tab{% if is_search %} bottom-tab-bar__tab--active{% endif %}"
+    aria-label="{{ search_label }}"
+    {% if is_search %}aria-current="page"{% endif %}
+  >
+    <span class="bottom-tab-bar__icon-wrap">
+      {% render 'icon', name: 'search', size: 22 %}
+    </span>
+    <span>{{ search_label }}</span>
+  </a>
+
+  <a
+    href="{{ routes.cart_url }}"
+    class="bottom-tab-bar__tab{% if is_cart %} bottom-tab-bar__tab--active{% endif %}"
+    aria-label="{{ cart_label }}"
+    {% if is_cart %}aria-current="page"{% endif %}
+  >
+    <span class="bottom-tab-bar__icon-wrap">
+      {% render 'icon', name: 'cart', size: 22 %}
+      <span
+        class="bottom-tab-bar__badge"
+        data-cart-count="{{ cart.item_count }}"
+        aria-label="{{ 'header.cart_count' | t: count: cart.item_count }}"
+      >{{ cart.item_count }}</span>
+    </span>
+    <span>{{ cart_label }}</span>
+  </a>
+
+  <a
+    href="{{ routes.account_url }}"
+    class="bottom-tab-bar__tab{% if is_account %} bottom-tab-bar__tab--active{% endif %}"
+    aria-label="{{ account_label }}"
+    {% if is_account %}aria-current="page"{% endif %}
+  >
+    <span class="bottom-tab-bar__icon-wrap">
+      {% render 'icon', name: 'user', size: 22 %}
+    </span>
+    <span>{{ account_label }}</span>
+  </a>
+</nav>

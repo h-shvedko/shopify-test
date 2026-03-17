@@ -1,0 +1,70 @@
+{% doc %}
+  Renders a star rating display with teal-coloured filled stars.
+
+  @param {number} rating - Numeric rating value between 0 and 5. Required.
+  @param {boolean} [show_count] - Show the review count alongside the stars. Default: false.
+  @param {number} [count] - Number of reviews. Only used when show_count is true.
+
+  Usage:
+    {% render 'star-rating', rating: 4.5 %}
+    {% render 'star-rating', rating: product_rating, show_count: true, count: review_count %}
+{% enddoc %}
+
+{%- liquid
+  assign rating_value  = rating | default: 0 | plus: 0
+  assign full_stars    = rating_value | floor
+  assign remainder     = rating_value | minus: full_stars
+  assign has_half      = false
+  if remainder >= 0.25
+    if remainder < 0.75
+      assign has_half = true
+    endif
+  endif
+  assign empty_stars   = 5 | minus: full_stars
+  if has_half == true
+    assign empty_stars = empty_stars | minus: 1
+  endif
+
+  assign aria_label    = 'accessibility.star_rating' | t: rating: rating_value
+-%}
+
+<style>
+  .star-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .star-rating__stars {
+    display: flex;
+    align-items: center;
+    gap: 0.1rem;
+    color: var(--color-accent, #00D4AA);
+  }
+
+  .star-rating__count {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted, #9A9A9A);
+    line-height: 1;
+  }
+</style>
+
+<div class="star-rating" role="img" aria-label="{{ aria_label }}">
+  <span class="star-rating__stars" aria-hidden="true">
+    {%- for i in (1..full_stars) -%}
+      {% render 'icon', name: 'star', size: 14 %}
+    {%- endfor -%}
+    {%- if has_half -%}
+      {% render 'icon', name: 'star-half', size: 14 %}
+    {%- endif -%}
+    {%- for i in (1..empty_stars) -%}
+      {% render 'icon', name: 'star-empty', size: 14 %}
+    {%- endfor -%}
+  </span>
+  {%- if show_count == true -%}
+    <span class="star-rating__count">
+      ({{ count | default: 0 }})
+    </span>
+  {%- endif -%}
+</div>

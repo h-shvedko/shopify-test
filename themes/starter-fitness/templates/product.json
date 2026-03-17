@@ -1,0 +1,32 @@
+{
+  "sections": {
+    "main": {
+      "type": "product-detail",
+      "settings": {
+        "show_vendor": true,
+        "show_sku": false,
+        "show_quantity": true,
+        "show_share_buttons": true,
+        "show_buy_now": true,
+        "media_layout": "stacked",
+        "enable_zoom": true,
+        "show_badges": true
+      }
+    },
+    "recently_viewed": {
+      "type": "recently-viewed",
+      "settings": {
+        "heading": "Pick up where you left off",
+        "products_to_show": 4
+      }
+    },
+    "related": {
+      "type": "related-products",
+      "settings": {
+        "heading": "Complete your routine",
+        "products_count": 4
+      }
+    }
+  },
+  "order": ["main", "recently_viewed", "related"]
+}

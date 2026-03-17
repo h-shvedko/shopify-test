@@ -1,0 +1,131 @@
+{% doc %}
+  Renders a Zenith-styled button or anchor element.
+
+  @param {string} label - Visible button text. Required.
+  @param {string} [url] - When provided, renders an <a> tag instead of <button>.
+  @param {string} [style] - Visual style variant. One of: primary (teal, default),
+      secondary (dark surface + teal border), coral (coral gradient), ghost
+      (transparent + border). Default: primary.
+  @param {string} [size] - Size variant. One of: sm, md (default), lg.
+  @param {string} [type] - HTML button type attribute (button/submit/reset).
+      Only used when no url is provided. Default: button.
+  @param {boolean} [full_width] - Stretches button to full container width. Default: false.
+
+  Usage:
+    {% render 'button', label: 'Shop now', url: '/collections/all' %}
+    {% render 'button', label: 'Add to cart', style: 'coral', type: 'submit' %}
+    {% render 'button', label: 'Learn more', style: 'ghost', size: 'sm' %}
+{% enddoc %}
+
+{%- liquid
+  assign btn_style = style | default: 'primary'
+  assign btn_size  = size  | default: 'md'
+  assign btn_type  = type  | default: 'button'
+
+  assign btn_classes = 'btn btn--' | append: btn_style | append: ' btn--' | append: btn_size
+  if full_width == true
+    assign btn_classes = btn_classes | append: ' btn--full'
+  endif
+-%}
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    border: 2px solid transparent;
+    border-radius: var(--border-radius, 8px);
+    cursor: pointer;
+    transition: background-color var(--transition-base, 250ms ease),
+                border-color var(--transition-base, 250ms ease),
+                box-shadow var(--transition-base, 250ms ease),
+                transform var(--transition-fast, 150ms ease);
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--color-accent, #00D4AA);
+    outline-offset: 3px;
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  /* Sizes */
+  .btn--sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+  }
+  .btn--md {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9375rem;
+  }
+  .btn--lg {
+    padding: 1rem 2rem;
+    font-size: 1.0625rem;
+  }
+
+  .btn--full {
+    width: 100%;
+  }
+
+  /* Primary — teal fill */
+  .btn--primary {
+    background-color: var(--color-accent, #00D4AA);
+    color: var(--color-text-inverse, #0A0A0A);
+    border-color: var(--color-accent, #00D4AA);
+  }
+  .btn--primary:hover {
+    background-color: var(--color-accent-dark, #00A888);
+    border-color: var(--color-accent-dark, #00A888);
+    box-shadow: var(--glow-accent, 0 0 20px rgba(0,212,170,0.25));
+  }
+
+  /* Secondary — dark surface with teal border */
+  .btn--secondary {
+    background-color: var(--color-surface, #141414);
+    color: var(--color-accent, #00D4AA);
+    border-color: var(--color-accent, #00D4AA);
+  }
+  .btn--secondary:hover {
+    background-color: var(--color-accent, #00D4AA);
+    color: var(--color-text-inverse, #0A0A0A);
+    box-shadow: var(--glow-accent, 0 0 20px rgba(0,212,170,0.25));
+  }
+
+  /* Coral — coral gradient fill */
+  .btn--coral {
+    background: var(--gradient-coral, linear-gradient(135deg, #FF6B6B, #FF8E53));
+    color: #FFFFFF;
+    border-color: transparent;
+  }
+  .btn--coral:hover {
+    box-shadow: var(--glow-coral, 0 0 20px rgba(255,107,107,0.3));
+    filter: brightness(1.08);
+  }
+
+  /* Ghost — transparent */
+  .btn--ghost {
+    background-color: transparent;
+    color: var(--color-text, #F0F0F0);
+    border-color: var(--color-border, #2A2A2A);
+  }
+  .btn--ghost:hover {
+    border-color: var(--color-accent, #00D4AA);
+    color: var(--color-accent, #00D4AA);
+  }
+</style>
+
+{%- if url != blank -%}
+  <a href="{{ url }}" class="{{ btn_classes }}">{{ label }}</a>
+{%- else -%}
+  <button type="{{ btn_type }}" class="{{ btn_classes }}">{{ label }}</button>
+{%- endif -%}

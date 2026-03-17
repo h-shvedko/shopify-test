@@ -1,0 +1,14 @@
+{
+  "sections": {
+    "main": {
+      "type": "not-found",
+      "settings": {
+        "heading": "Page not found",
+        "message": "The page you are looking for does not exist or has been moved.",
+        "button_label": "Back to home",
+        "button_url": "/"
+      }
+    }
+  },
+  "order": ["main"]
+}

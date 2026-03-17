@@ -1,0 +1,460 @@
+{% doc %}
+  Renders a Zenith fitness product card with dark surface, teal glow border on
+  hover, swipeable images, quick-add overlay, compare checkbox, and badge.
+
+  @param {product} product - Shopify product object. Required.
+  @param {boolean} [show_vendor] - Show vendor/brand name. Default: false.
+  @param {boolean} [show_badge] - Show sale/new/sold-out badge overlay. Default: true.
+  @param {boolean} [show_quick_add] - Show quick-add to cart button on hover. Default: true.
+  @param {boolean} [show_compare] - Show compare checkbox in top-right corner. Default: false.
+  @param {boolean} [enable_swipe] - Enable touch-swipe through product images. Default: true.
+
+  Dispatches custom events:
+    - compare:toggle — { detail: { productId, productTitle, productImage, checked } }
+    - quickview:open — { detail: { productHandle } }
+
+  Usage:
+    {% render 'product-card', product: product %}
+    {% render 'product-card', product: product, show_vendor: true, show_compare: true %}
+{% enddoc %}
+
+{%- liquid
+  assign do_show_badge      = true
+  if show_badge == false
+    assign do_show_badge = false
+  endif
+
+  assign do_show_quick_add  = true
+  if show_quick_add == false
+    assign do_show_quick_add = false
+  endif
+
+  assign do_show_vendor     = false
+  if show_vendor == true
+    assign do_show_vendor = true
+  endif
+
+  assign do_show_compare    = false
+  if show_compare == true
+    assign do_show_compare = true
+  endif
+
+  assign do_enable_swipe    = true
+  if enable_swipe == false
+    assign do_enable_swipe = false
+  endif
+
+  assign first_variant = product.selected_or_first_available_variant
+  assign on_sale       = false
+  if first_variant.compare_at_price > first_variant.price
+    assign on_sale = true
+  endif
+
+  assign quick_add_label = 'products.quick_add' | t
+  assign compare_label   = 'products.compare' | t
+-%}
+
+<style>
+  .product-card {
+    background-color: var(--color-surface, #141414);
+    border-radius: var(--border-radius, 8px);
+    border: 1px solid var(--color-border, #2A2A2A);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transition: border-color var(--transition-base, 250ms ease),
+                box-shadow var(--transition-base, 250ms ease),
+                transform var(--transition-base, 250ms ease);
+  }
+
+  .product-card:hover {
+    border-color: var(--color-accent, #00D4AA);
+    box-shadow: var(--shadow-card-hover, 0 8px 32px rgba(0,0,0,0.6), 0 0 20px rgba(0,212,170,0.25));
+    transform: translateY(-2px);
+  }
+
+  /* Image wrapper */
+  .product-card__images {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background-color: var(--color-surface-raised, #1E1E1E);
+  }
+
+  .product-card__swipe-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.35s ease;
+  }
+
+  .product-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    flex-shrink: 0;
+    display: block;
+  }
+
+  /* Dot indicators */
+  .product-card__dots {
+    position: absolute;
+    bottom: 0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.3rem;
+    z-index: 2;
+  }
+
+  .product-card__dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: rgba(240, 240, 240, 0.4);
+    transition: background-color var(--transition-fast, 150ms ease);
+  }
+
+  .product-card__dot--active {
+    background-color: var(--color-accent, #00D4AA);
+  }
+
+  /* Badge overlay */
+  .product-card__badge {
+    position: absolute;
+    top: 0.625rem;
+    left: 0.625rem;
+    z-index: 3;
+  }
+
+  /* Compare checkbox */
+  .product-card__compare {
+    position: absolute;
+    top: 0.625rem;
+    right: 0.625rem;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .product-card__compare-input {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--color-border, #2A2A2A);
+    border-radius: 3px;
+    background-color: rgba(10, 10, 10, 0.7);
+    cursor: pointer;
+    transition: border-color var(--transition-fast, 150ms ease),
+                background-color var(--transition-fast, 150ms ease);
+    backdrop-filter: blur(4px);
+  }
+
+  .product-card__compare-input:checked {
+    background-color: var(--color-accent, #00D4AA);
+    border-color: var(--color-accent, #00D4AA);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230A0A0A' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .product-card__compare-input:focus-visible {
+    outline: 2px solid var(--color-accent, #00D4AA);
+    outline-offset: 2px;
+  }
+
+  /* Quick-add overlay */
+  .product-card__quick-add {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.75rem;
+    background: linear-gradient(to top, rgba(10,10,10,0.9) 0%, transparent 100%);
+    transform: translateY(100%);
+    transition: transform var(--transition-base, 250ms ease);
+    z-index: 2;
+  }
+
+  .product-card:hover .product-card__quick-add,
+  .product-card:focus-within .product-card__quick-add {
+    transform: translateY(0);
+  }
+
+  .product-card__quick-add-btn {
+    width: 100%;
+    padding: 0.625rem 1rem;
+    background-color: var(--color-accent, #00D4AA);
+    color: var(--color-text-inverse, #0A0A0A);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-weight: 600;
+    font-size: 0.875rem;
+    letter-spacing: 0.03em;
+    border: none;
+    border-radius: var(--border-radius, 8px);
+    cursor: pointer;
+    transition: background-color var(--transition-fast, 150ms ease),
+                box-shadow var(--transition-fast, 150ms ease);
+  }
+
+  .product-card__quick-add-btn:hover {
+    background-color: var(--color-accent-dark, #00A888);
+    box-shadow: var(--glow-accent, 0 0 20px rgba(0,212,170,0.25));
+  }
+
+  .product-card__quick-add-btn:disabled {
+    background-color: var(--color-surface-raised, #1E1E1E);
+    color: var(--color-text-muted, #9A9A9A);
+    cursor: not-allowed;
+  }
+
+  /* Info section */
+  .product-card__info {
+    padding: 0.875rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    flex: 1;
+  }
+
+  .product-card__vendor {
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #9A9A9A);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .product-card__title {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--color-text, #F0F0F0);
+    line-height: 1.35;
+    text-decoration: none;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .product-card__title:hover {
+    color: var(--color-accent, #00D4AA);
+  }
+
+  .product-card__price-row {
+    margin-top: auto;
+    padding-top: 0.375rem;
+  }
+</style>
+
+<article
+  class="product-card"
+  data-product-id="{{ product.id }}"
+  data-product-handle="{{ product.handle }}"
+>
+  <div class="product-card__images">
+    {%- if do_show_badge -%}
+      {%- if product.available == false -%}
+        {%- assign sold_out_text = 'products.sold_out' | t -%}
+        <div class="product-card__badge">{% render 'badge', text: sold_out_text, type: 'sold_out' %}</div>
+      {%- elsif on_sale -%}
+        {%- assign sale_text = 'products.sale' | t -%}
+        <div class="product-card__badge">{% render 'badge', text: sale_text, type: 'sale' %}</div>
+      {%- elsif product.tags contains 'new' -%}
+        {%- assign new_text = 'products.new' | t -%}
+        <div class="product-card__badge">{% render 'badge', text: new_text, type: 'new' %}</div>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- if do_show_compare -%}
+      <label class="product-card__compare" aria-label="{{ compare_label }}">
+        <input
+          type="checkbox"
+          class="product-card__compare-input"
+          data-compare-id="{{ product.id }}"
+          data-compare-title="{{ product.title | escape }}"
+          data-compare-image="{{ product.featured_image | image_url: width: 100 }}"
+          aria-label="{{ compare_label }}: {{ product.title | escape }}"
+        >
+      </label>
+    {%- endif -%}
+
+    <div
+      class="product-card__swipe-track"
+      data-swipe-track
+      {%- if do_enable_swipe %} data-swipe-enabled="true"{% endif %}
+    >
+      {%- for image in product.images limit: 5 -%}
+        <img
+          src="{{ image | image_url: width: 600 }}"
+          alt="{{ image.alt | default: product.title | escape }}"
+          width="600"
+          height="750"
+          loading="lazy"
+          class="product-card__image"
+        >
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'product-card__image' }}
+      {%- endfor -%}
+    </div>
+
+    {%- if product.images.size > 1 -%}
+      <div class="product-card__dots" data-dots aria-hidden="true">
+        {%- for image in product.images limit: 5 -%}
+          <span class="product-card__dot{% if forloop.first %} product-card__dot--active{% endif %}"></span>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    {%- if do_show_quick_add -%}
+      <div class="product-card__quick-add">
+        {%- if product.available -%}
+          {%- if product.variants.size == 1 -%}
+            <button
+              type="button"
+              class="product-card__quick-add-btn"
+              data-quick-add
+              data-variant-id="{{ first_variant.id }}"
+            >
+              {{ quick_add_label }}
+            </button>
+          {%- else -%}
+            <button
+              type="button"
+              class="product-card__quick-add-btn"
+              data-quickview-trigger
+              data-product-handle="{{ product.handle }}"
+            >
+              {{ quick_add_label }}
+            </button>
+          {%- endif -%}
+        {%- else -%}
+          {%- assign sold_out_label = 'products.sold_out' | t -%}
+          <button type="button" class="product-card__quick-add-btn" disabled>{{ sold_out_label }}</button>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="product-card__info">
+    {%- if do_show_vendor -%}
+      <p class="product-card__vendor">{{ product.vendor }}</p>
+    {%- endif -%}
+    <a href="{{ product.url }}" class="product-card__title">{{ product.title }}</a>
+    <div class="product-card__price-row">
+      {% render 'price', product: product %}
+    </div>
+  </div>
+</article>
+
+<script>
+(function () {
+  'use strict';
+
+  function initProductCard(card) {
+    var track   = card.querySelector('[data-swipe-track]');
+    var dotsEl  = card.querySelector('[data-dots]');
+    var enabled = track && track.dataset.swipeEnabled === 'true';
+
+    /* ── Swipeable images ── */
+    if (enabled && track) {
+      var images  = track.querySelectorAll('.product-card__image');
+      var dots    = dotsEl ? dotsEl.querySelectorAll('.product-card__dot') : [];
+      var total   = images.length;
+      var current = 0;
+      var startX  = 0;
+      var isDragging = false;
+
+      if (total <= 1) return;
+
+      function goTo(index) {
+        if (index < 0) index = total - 1;
+        if (index >= total) index = 0;
+        current = index;
+        track.style.transform = 'translateX(-' + (current * 100) + '%)';
+        dots.forEach(function (d, i) {
+          d.classList.toggle('product-card__dot--active', i === current);
+        });
+      }
+
+      track.addEventListener('touchstart', function (e) {
+        startX    = e.touches[0].clientX;
+        isDragging = true;
+      }, { passive: true });
+
+      track.addEventListener('touchend', function (e) {
+        if (!isDragging) return;
+        isDragging = false;
+        var diff = startX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 40) {
+          goTo(diff > 0 ? current + 1 : current - 1);
+        }
+      }, { passive: true });
+    }
+
+    /* ── Quick-add (single variant) ── */
+    var quickAddBtn = card.querySelector('[data-quick-add]');
+    if (quickAddBtn) {
+      quickAddBtn.addEventListener('click', function () {
+        var variantId = quickAddBtn.dataset.variantId;
+        if (!variantId) return;
+        quickAddBtn.disabled = true;
+        var originalText = quickAddBtn.textContent;
+
+        fetch('/cart/add.js', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ id: variantId, quantity: 1 })
+        })
+        .then(function (res) { return res.json(); })
+        .then(function () {
+          return fetch('/cart.js');
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (cartData) {
+          var badges = document.querySelectorAll('[data-cart-count]');
+          badges.forEach(function (b) { b.textContent = cartData.item_count; });
+          quickAddBtn.textContent = document.documentElement.lang === 'en'
+            ? 'Added!'
+            : quickAddBtn.dataset.addedLabel || 'Added!';
+          setTimeout(function () {
+            quickAddBtn.textContent = originalText;
+            quickAddBtn.disabled = false;
+          }, 1800);
+        })
+        .catch(function () {
+          quickAddBtn.disabled = false;
+        });
+      });
+    }
+
+    /* ── Quick-view trigger (multi-variant) ── */
+    var qvTrigger = card.querySelector('[data-quickview-trigger]');
+    if (qvTrigger) {
+      qvTrigger.addEventListener('click', function () {
+        document.dispatchEvent(new CustomEvent('quickview:open', {
+          detail: { productHandle: qvTrigger.dataset.productHandle }
+        }));
+      });
+    }
+
+    /* ── Compare checkbox ── */
+    var compareInput = card.querySelector('[data-compare-id]');
+    if (compareInput) {
+      compareInput.addEventListener('change', function () {
+        document.dispatchEvent(new CustomEvent('compare:toggle', {
+          detail: {
+            productId:    compareInput.dataset.compareId,
+            productTitle: compareInput.dataset.compareTitle,
+            productImage: compareInput.dataset.compareImage,
+            checked:      compareInput.checked
+          }
+        }));
+      });
+    }
+  }
+
+  document.querySelectorAll('.product-card').forEach(initProductCard);
+}());
+</script>
