@@ -1,0 +1,249 @@
+<section class="customer-order section-padding">
+  <div class="container">
+    <div class="customer-order__back">
+      <a href="{{ routes.account_url }}" class="customer-order__back-link">
+        &larr; {{ 'customer.back_to_account' | t }}
+      </a>
+    </div>
+
+    <h1 class="customer-order__title">{{ 'customer.order_number' | t: number: order.name }}</h1>
+    <p class="customer-order__date">
+      {{ 'customer.order_placed' | t }}: {{ order.created_at | date: "%B %d, %Y" }}
+    </p>
+
+    <div class="customer-order__table-wrap">
+      <table class="customer-order__items">
+        <thead>
+          <tr>
+            <th>{{ 'customer.order_product' | t }}</th>
+            <th>{{ 'customer.order_quantity' | t }}</th>
+            <th>{{ 'customer.order_total' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for line_item in order.line_items %}
+            <tr>
+              <td class="customer-order__product-cell">
+                <span class="customer-order__product-title">{{ line_item.title }}</span>
+                {% if line_item.variant.title != 'Default Title' %}
+                  <span class="customer-order__product-variant">{{ line_item.variant.title }}</span>
+                {% endif %}
+              </td>
+              <td>{{ line_item.quantity }}</td>
+              <td>{{ line_item.final_line_price | money }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="customer-order__summary">
+      <div class="customer-order__total-row">
+        <span>{{ 'cart.subtotal' | t }}</span>
+        <span>{{ order.subtotal_price | money }}</span>
+      </div>
+      {% for shipping_method in order.shipping_methods %}
+        <div class="customer-order__total-row">
+          <span>{{ 'cart.shipping' | t }}</span>
+          <span>{{ shipping_method.price | money }}</span>
+        </div>
+      {% endfor %}
+      {% if order.tax_price > 0 %}
+        <div class="customer-order__total-row">
+          <span>{{ 'cart.tax' | t }}</span>
+          <span>{{ order.tax_price | money }}</span>
+        </div>
+      {% endif %}
+      <div class="customer-order__total-row customer-order__total-row--total">
+        <span>{{ 'customer.order_total' | t }}</span>
+        <span>{{ order.total_price | money }}</span>
+      </div>
+    </div>
+
+    {% if order.shipping_address %}
+      <div class="customer-order__addresses">
+        <div class="customer-order__address-card">
+          <h3 class="customer-order__address-title">{{ 'customer.shipping_address' | t }}</h3>
+          <address class="customer-order__address">
+            {{ order.shipping_address | format_address }}
+          </address>
+        </div>
+        {% if order.billing_address %}
+          <div class="customer-order__address-card">
+            <h3 class="customer-order__address-title">{{ 'customer.billing_address' | t }}</h3>
+            <address class="customer-order__address">
+              {{ order.billing_address | format_address }}
+            </address>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .customer-order {
+    padding-top: 48px;
+    padding-bottom: 60px;
+  }
+
+  .customer-order__back {
+    margin-bottom: 20px;
+  }
+
+  .customer-order__back-link {
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .customer-order__back-link:hover {
+    text-decoration: underline;
+  }
+
+  .customer-order__title {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    color: var(--color-text);
+    margin-bottom: 8px;
+    font-size: 1.75rem;
+  }
+
+  .customer-order__date {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    font-family: var(--font-body);
+    margin-bottom: 32px;
+  }
+
+  .customer-order__table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+    margin-bottom: 28px;
+  }
+
+  .customer-order__items {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+    font-family: var(--font-body);
+  }
+
+  .customer-order__items thead {
+    background: #f0ebe0;
+  }
+
+  .customer-order__items th {
+    padding: 14px 16px;
+    text-align: left;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+  }
+
+  .customer-order__items td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    vertical-align: middle;
+  }
+
+  .customer-order__items tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .customer-order__product-title {
+    display: block;
+    font-family: var(--font-heading);
+    font-weight: 600;
+  }
+
+  .customer-order__product-variant {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+  }
+
+  .customer-order__summary {
+    max-width: 340px;
+    margin-left: auto;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    background: var(--color-background);
+    margin-bottom: 32px;
+  }
+
+  .customer-order__total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 0.9375rem;
+    font-family: var(--font-body);
+    color: var(--color-text);
+  }
+
+  .customer-order__total-row--total {
+    border-top: 2px solid var(--color-border);
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 1.0625rem;
+    padding-top: 14px;
+    margin-top: 6px;
+    color: var(--color-text);
+  }
+
+  .customer-order__addresses {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 32px;
+  }
+
+  .customer-order__address-card {
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    background: var(--color-background);
+  }
+
+  .customer-order__address-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--color-text);
+    margin-bottom: 12px;
+  }
+
+  .customer-order__address {
+    font-style: normal;
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+
+  @media (min-width: 768px) {
+    .customer-order__addresses {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.customer_order.name",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Customer order"
+    }
+  ]
+}
+{% endschema %}

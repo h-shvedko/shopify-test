@@ -1,0 +1,360 @@
+{%- liquid
+  assign card_pos_class = 'hero-banner__card--center'
+  if section.settings.card_position == 'left'
+    assign card_pos_class = 'hero-banner__card--left'
+  endif
+  if section.settings.card_position == 'right'
+    assign card_pos_class = 'hero-banner__card--right'
+  endif
+-%}
+
+<section
+  class="hero-banner"
+  data-section-id="{{ section.id }}"
+  data-reveal-section
+>
+
+  {%- comment -%} Background image {%- endcomment -%}
+  <div class="hero-banner__bg">
+    {% if section.settings.image %}
+      {{
+        section.settings.image
+        | image_url: width: 1920
+        | image_tag:
+          class: 'hero-banner__bg-img hero-banner__bg-img--desktop',
+          loading: 'eager',
+          fetchpriority: 'high',
+          alt: section.settings.image.alt | escape
+      }}
+    {% else %}
+      <div class="hero-banner__bg-placeholder" aria-hidden="true"></div>
+    {% endif %}
+
+    {% if section.settings.mobile_image %}
+      {{
+        section.settings.mobile_image
+        | image_url: width: 800
+        | image_tag:
+          class: 'hero-banner__bg-img hero-banner__bg-img--mobile',
+          loading: 'eager',
+          fetchpriority: 'high',
+          alt: section.settings.mobile_image.alt | escape
+      }}
+    {% endif %}
+  </div>
+
+  {%- comment -%} Overlay card {%- endcomment -%}
+  <div class="container hero-banner__container">
+    <div class="hero-banner__card {{ card_pos_class }} reveal" data-reveal>
+      {% if section.settings.heading != blank %}
+        <h1 class="hero-banner__heading">{{ section.settings.heading | escape }}</h1>
+      {% endif %}
+
+      {% if section.settings.subheading != blank %}
+        <p class="hero-banner__subheading">{{ section.settings.subheading | escape }}</p>
+      {% endif %}
+
+      {% if section.settings.button_text != blank %}
+        <a
+          href="{{ section.settings.button_url | default: routes.collections_url }}"
+          class="hero-banner__btn btn--hero"
+        >
+          {{ section.settings.button_text | escape }}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+</section>
+
+{% stylesheet %}
+  /* ============================================================
+     PawHaven Hero Banner
+  ============================================================ */
+
+  .hero-banner {
+    position: relative;
+    min-height: 520px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  @media (min-width: 768px) {
+    .hero-banner {
+      min-height: 620px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-banner {
+      min-height: 680px;
+    }
+  }
+
+  /* Background */
+
+  .hero-banner__bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-color: #D8EFE7;
+  }
+
+  .hero-banner__bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .hero-banner__bg-img--mobile {
+    display: block;
+  }
+
+  .hero-banner__bg-img--desktop {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .hero-banner__bg-img--mobile {
+      display: none;
+    }
+
+    .hero-banner__bg-img--desktop {
+      display: block;
+    }
+  }
+
+  .hero-banner__bg-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #D8EFE7 0%, #F5F0E8 100%);
+  }
+
+  /* Container */
+
+  .hero-banner__container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 60px 20px;
+  }
+
+  @media (min-width: 768px) {
+    .hero-banner__container {
+      padding: 80px 32px;
+    }
+  }
+
+  /* Card positions on desktop */
+
+  .hero-banner__card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 36px 32px;
+    box-shadow: 0 16px 48px rgba(28, 25, 23, 0.12);
+    max-width: 480px;
+    width: 100%;
+  }
+
+  .hero-banner__card--center {
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .hero-banner__card--left {
+    margin-right: auto;
+    text-align: left;
+  }
+
+  .hero-banner__card--right {
+    margin-left: auto;
+    text-align: left;
+  }
+
+  @media (max-width: 639px) {
+    .hero-banner__card {
+      /* On mobile the card always stacks below — we still center it */
+      max-width: 100%;
+      text-align: center;
+    }
+  }
+
+  /* Card content */
+
+  .hero-banner__heading {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 2rem;
+    color: #1C1917;
+    margin: 0 0 14px;
+    line-height: 1.2;
+  }
+
+  @media (min-width: 768px) {
+    .hero-banner__heading {
+      font-size: 2.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-banner__heading {
+      font-size: 3rem;
+    }
+  }
+
+  .hero-banner__subheading {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.0625rem;
+    color: #5C5753;
+    line-height: 1.6;
+    margin: 0 0 24px;
+  }
+
+  /* CTA button */
+
+  .btn--hero {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background-color: #059669;
+    color: #ffffff;
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(5, 150, 105, 0.3);
+  }
+
+  .btn--hero:hover {
+    background-color: #047857;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.35);
+    text-decoration: none;
+    color: #ffffff;
+  }
+
+  .btn--hero:focus-visible {
+    outline: 2px solid #059669;
+    outline-offset: 3px;
+  }
+
+  .btn--hero svg {
+    transition: transform 0.2s ease;
+  }
+
+  .btn--hero:hover svg {
+    transform: translateX(3px);
+  }
+
+  /* ---- Scroll reveal ---- */
+
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  [data-reveal].is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    'use strict';
+
+    /* Scroll reveal using IntersectionObserver */
+    var revealEls = document.querySelectorAll('[data-reveal]');
+    if (!revealEls.length) return;
+
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-revealed');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+
+      revealEls.forEach(function (el) {
+        observer.observe(el);
+      });
+    } else {
+      /* Fallback for older browsers */
+      revealEls.forEach(function (el) {
+        el.classList.add('is-revealed');
+      });
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.hero_banner.name",
+  "tag": "div",
+  "class": "hero-banner-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.hero_banner.settings.image.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "t:sections.hero_banner.settings.mobile_image.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hero_banner.settings.heading.label",
+      "default": "Everything your pet deserves"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "t:sections.hero_banner.settings.subheading.label",
+      "default": "Natural, wholesome supplies for dogs, cats, and more — made with love."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "t:sections.hero_banner.settings.button_text.label",
+      "default": "Shop now"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "t:sections.hero_banner.settings.button_url.label"
+    },
+    {
+      "type": "select",
+      "id": "card_position",
+      "label": "t:sections.hero_banner.settings.card_position.label",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "t:sections.hero_banner.settings.card_position.options.left" },
+        { "value": "center", "label": "t:sections.hero_banner.settings.card_position.options.center" },
+        { "value": "right", "label": "t:sections.hero_banner.settings.card_position.options.right" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hero_banner.name"
+    }
+  ]
+}
+{% endschema %}

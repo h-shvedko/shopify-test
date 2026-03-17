@@ -1,0 +1,60 @@
+{% doc %}
+  Renders the price display for a product, handling sale prices, price ranges,
+  and sold-out states. Shows compare-at price with strikethrough when on sale.
+
+  @param {product} product - Shopify product object. Required.
+
+  Usage:
+    {% render 'price', product: product %}
+{% enddoc %}
+
+<style>
+  .price {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--color-text, #1C1917);
+  }
+
+  .price--sale {
+    color: var(--color-primary, #059669);
+  }
+
+  .price--sold-out {
+    color: var(--color-text-secondary, #78716C);
+  }
+
+  .price__compare {
+    display: inline-block;
+    text-decoration: line-through;
+    color: var(--color-text-secondary, #78716C);
+    font-weight: 400;
+    font-size: 0.875rem;
+    margin-left: 6px;
+    font-family: var(--font-body);
+  }
+
+  .price__wrapper {
+    display: inline-flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+</style>
+
+<div class="price__wrapper">
+  {%- if product.available -%}
+    {%- if product.price_varies -%}
+      <span class="price">
+        {{- 'products.from_price' | t: price: product.price_min | money -}}
+      </span>
+    {%- elsif product.compare_at_price > product.price -%}
+      <span class="price price--sale">{{ product.price | money }}</span>
+      <span class="price__compare">{{ product.compare_at_price | money }}</span>
+    {%- else -%}
+      <span class="price">{{ product.price | money }}</span>
+    {%- endif -%}
+  {%- else -%}
+    <span class="price price--sold-out">{{ 'products.sold_out' | t }}</span>
+  {%- endif -%}
+</div>

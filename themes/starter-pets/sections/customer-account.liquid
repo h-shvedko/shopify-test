@@ -1,0 +1,219 @@
+<section class="customer-account section-padding">
+  <div class="container">
+    <div class="customer-account__header">
+      <div>
+        <h1 class="customer-account__title">{{ 'customer.account_title' | t }}</h1>
+        <p class="customer-account__welcome">{{ 'customer.welcome' | t: name: customer.first_name }}</p>
+      </div>
+      <a href="{{ routes.account_logout_url }}" class="customer-account__logout">
+        {{ 'customer.logout' | t }}
+      </a>
+    </div>
+
+    <h2 class="customer-account__subtitle">{{ 'customer.order_history' | t }}</h2>
+
+    {% if customer.orders.size > 0 %}
+      <div class="customer-account__table-wrap">
+        <table class="customer-account__orders">
+          <thead>
+            <tr>
+              <th>{{ 'customer.order_number' | t: number: '' }}</th>
+              <th>{{ 'customer.order_date' | t }}</th>
+              <th>{{ 'customer.order_total' | t }}</th>
+              <th>{{ 'customer.order_status' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in customer.orders %}
+              <tr>
+                <td>
+                  <a href="{{ order.customer_url }}" class="customer-account__order-link">
+                    {{ order.name }}
+                  </a>
+                </td>
+                <td>{{ order.created_at | date: "%B %d, %Y" }}</td>
+                <td>{{ order.total_price | money }}</td>
+                <td>
+                  <span class="customer-account__status">{{ order.financial_status_label }}</span>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="customer-account__no-orders">
+        <div class="customer-account__no-orders-icon" aria-hidden="true">📦</div>
+        <p>{{ 'customer.no_orders' | t }}</p>
+        <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary customer-account__shop-btn">
+          {{ 'customer.start_shopping' | t }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .customer-account {
+    padding-top: 48px;
+    padding-bottom: 60px;
+  }
+
+  .customer-account__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+
+  .customer-account__title {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    color: var(--color-text);
+    margin-bottom: 6px;
+    font-size: 2rem;
+  }
+
+  .customer-account__welcome {
+    color: var(--color-text-secondary);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  .customer-account__logout {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: #dc2626;
+    text-decoration: underline;
+    white-space: nowrap;
+    padding-top: 4px;
+  }
+
+  .customer-account__logout:hover {
+    opacity: 0.8;
+  }
+
+  .customer-account__subtitle {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--color-text);
+    margin-bottom: 20px;
+  }
+
+  .customer-account__no-orders {
+    text-align: center;
+    padding: 48px 0;
+    color: var(--color-text-secondary);
+    font-family: var(--font-body);
+  }
+
+  .customer-account__no-orders-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  .customer-account__no-orders p {
+    margin-bottom: 24px;
+    font-size: 1rem;
+  }
+
+  .customer-account__shop-btn {
+    background: var(--color-primary);
+    color: #fff;
+    border-radius: 12px;
+    padding: 12px 28px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s ease;
+  }
+
+  .customer-account__shop-btn:hover {
+    background: #047857;
+  }
+
+  .customer-account__table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+  }
+
+  .customer-account__orders {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+    font-family: var(--font-body);
+  }
+
+  .customer-account__orders thead {
+    background: #f0ebe0;
+  }
+
+  .customer-account__orders th {
+    padding: 14px 16px;
+    text-align: left;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+  }
+
+  .customer-account__orders td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    vertical-align: middle;
+  }
+
+  .customer-account__orders tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .customer-account__orders tbody tr:hover {
+    background: #faf7f2;
+  }
+
+  .customer-account__order-link {
+    color: var(--color-primary);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .customer-account__order-link:hover {
+    text-decoration: underline;
+  }
+
+  .customer-account__status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    background: #e8f5ee;
+    border: 1px solid #b7e2ca;
+    color: #047857;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.customer_account.name",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Customer account"
+    }
+  ]
+}
+{% endschema %}

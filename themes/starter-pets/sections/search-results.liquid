@@ -1,0 +1,379 @@
+{% paginate search.results by section.settings.products_per_page %}
+<section class="search-results section-padding">
+  <div class="container">
+    <h1 class="search-results__heading">{{ 'search.title' | t }}</h1>
+
+    <form action="{{ routes.search_url }}" method="get" class="search-results__form" role="search">
+      <label for="search-q" class="visually-hidden">{{ 'search.placeholder' | t }}</label>
+      <div class="search-results__input-wrap">
+        <svg class="search-results__input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input
+          type="search"
+          id="search-q"
+          name="q"
+          class="search-results__input"
+          value="{{ search.terms | escape }}"
+          placeholder="{{ 'search.placeholder' | t }}"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+        >
+      </div>
+      <button type="submit" class="btn btn--primary search-results__submit">
+        {{ 'general.search' | t }}
+      </button>
+    </form>
+
+    {% if search.performed %}
+      {% if search.results_count > 0 %}
+        <p class="search-results__count">
+          {{ 'search.results_count' | t: count: search.results_count, query: search.terms }}
+        </p>
+        <div class="search-results__grid">
+          {% for item in search.results %}
+            {% if item.object_type == 'product' %}
+              <div class="search-results__product-card">
+                <a href="{{ item.url }}" class="search-results__card-link">
+                  <div class="search-results__card-image">
+                    {% if item.featured_image %}
+                      {{ item.featured_image | image_url: width: 400 | image_tag: loading: 'lazy', alt: item.title, width: 400, height: 400 }}
+                    {% else %}
+                      <div class="search-results__card-placeholder" aria-hidden="true">🐾</div>
+                    {% endif %}
+                  </div>
+                  <div class="search-results__card-info">
+                    <h3 class="search-results__card-title">{{ item.title }}</h3>
+                    <p class="search-results__card-price">{{ item.price | money }}</p>
+                  </div>
+                </a>
+              </div>
+            {% else %}
+              <div class="search-results__article">
+                <h3 class="search-results__article-title">
+                  <a href="{{ item.url }}">{{ item.title }}</a>
+                </h3>
+                <p class="search-results__article-excerpt">
+                  {{ item.content | strip_html | truncate: 150 }}
+                </p>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        {% if paginate.pages > 1 %}
+          <nav class="search-results__pagination" aria-label="{{ 'pagination.label' | t }}">
+            {% if paginate.previous %}
+              <a href="{{ paginate.previous.url }}" class="search-results__page-link" aria-label="{{ 'pagination.previous' | t }}">&larr; {{ 'pagination.previous' | t }}</a>
+            {% endif %}
+            {% for part in paginate.parts %}
+              {% if part.is_link %}
+                <a href="{{ part.url }}" class="search-results__page-link">{{ part.title }}</a>
+              {% else %}
+                {% if part.title == paginate.current_page %}
+                  <span class="search-results__page-link search-results__page-link--active" aria-current="page">{{ part.title }}</span>
+                {% else %}
+                  <span class="search-results__page-ellipsis">{{ part.title }}</span>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            {% if paginate.next %}
+              <a href="{{ paginate.next.url }}" class="search-results__page-link" aria-label="{{ 'pagination.next' | t }}">{{ 'pagination.next' | t }} &rarr;</a>
+            {% endif %}
+          </nav>
+        {% endif %}
+
+      {% else %}
+        <div class="search-results__no-results">
+          <div class="search-results__no-results-icon" aria-hidden="true">🔍</div>
+          <p>{{ 'search.no_results' | t: query: search.terms }}</p>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</section>
+{% endpaginate %}
+
+{% stylesheet %}
+  .search-results {
+    padding-top: 48px;
+    padding-bottom: 60px;
+  }
+
+  .search-results__heading {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    color: var(--color-text);
+    margin-bottom: 28px;
+    font-size: 2rem;
+  }
+
+  .search-results__form {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+
+  .search-results__input-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .search-results__input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-secondary);
+    pointer-events: none;
+  }
+
+  .search-results__input {
+    width: 100%;
+    padding: 12px 16px 12px 44px;
+    border: 1.5px solid var(--color-border);
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: var(--font-body);
+    color: var(--color-text);
+    background: var(--color-background);
+    transition: border-color 0.2s ease;
+  }
+
+  .search-results__input::placeholder {
+    color: var(--color-text-secondary);
+  }
+
+  .search-results__input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+
+  .search-results__input:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  .search-results__submit {
+    border-radius: 12px;
+    padding: 12px 24px;
+    white-space: nowrap;
+    font-family: var(--font-heading);
+    font-weight: 700;
+  }
+
+  .search-results__count {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    font-family: var(--font-body);
+    margin-bottom: 24px;
+  }
+
+  .search-results__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .search-results__product-card {
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--color-background);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  .search-results__product-card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+
+  .search-results__card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .search-results__card-image {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: #f0ebe0;
+  }
+
+  .search-results__card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  .search-results__product-card:hover .search-results__card-image img {
+    transform: scale(1.04);
+  }
+
+  .search-results__card-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+  }
+
+  .search-results__card-info {
+    padding: 16px;
+  }
+
+  .search-results__card-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.9375rem;
+    color: var(--color-text);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .search-results__card-price {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--color-primary);
+    margin: 0;
+  }
+
+  .search-results__article {
+    padding: 20px;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: var(--color-background);
+  }
+
+  .search-results__article-title {
+    margin-bottom: 8px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .search-results__article-title a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .search-results__article-title a:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .search-results__article-excerpt {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+    font-family: var(--font-body);
+  }
+
+  .search-results__no-results {
+    text-align: center;
+    padding: 60px 0;
+    color: var(--color-text-secondary);
+    font-size: 1.0625rem;
+    font-family: var(--font-body);
+  }
+
+  .search-results__no-results-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  .search-results__pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+  }
+
+  .search-results__page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border: 1.5px solid var(--color-border);
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    color: var(--color-text);
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .search-results__page-link:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: #f0faf4;
+  }
+
+  .search-results__page-link--active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+    cursor: default;
+  }
+
+  .search-results__page-ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    color: var(--color-text-secondary);
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+  }
+
+  @media (min-width: 768px) {
+    .search-results__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .search-results__heading {
+      font-size: 2.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .search-results__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.search_results.name",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "t:sections.search_results.settings.products_per_page.label",
+      "min": 4,
+      "max": 24,
+      "step": 4,
+      "default": 12
+    }
+  ],
+  "presets": [
+    {
+      "name": "Search results"
+    }
+  ]
+}
+{% endschema %}

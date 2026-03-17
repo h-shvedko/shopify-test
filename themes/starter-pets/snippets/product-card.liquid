@@ -1,0 +1,249 @@
+{% doc %}
+  Renders a product card for PawHaven with earthy/natural aesthetic.
+  Features: rounded card (12px), soft shadow, 1:1 square image with hover
+  scale, quick-add button, and badge overlay in top-left.
+
+  @param {product} product - Shopify product object. Required.
+  @param {boolean} [show_vendor] - Show vendor / brand name below title. Default: false.
+  @param {boolean} [show_badge] - Show sale/new/sold-out badge overlay. Default: true.
+  @param {boolean} [show_quick_add] - Show quick-add to cart button on hover. Default: true.
+
+  Usage:
+    {% render 'product-card', product: product %}
+    {% render 'product-card', product: product, show_vendor: true, show_quick_add: false %}
+{% enddoc %}
+
+{%- liquid
+  assign do_show_badge = true
+  if show_badge == false
+    assign do_show_badge = false
+  endif
+
+  assign do_show_quick_add = true
+  if show_quick_add == false
+    assign do_show_quick_add = false
+  endif
+
+  assign do_show_vendor = false
+  if show_vendor == true
+    assign do_show_vendor = true
+  endif
+-%}
+
+<style>
+  .product-card {
+    background-color: var(--color-surface, #ffffff);
+    border-radius: var(--border-radius, 12px);
+    box-shadow: var(--shadow-soft, 0 2px 8px rgba(0,0,0,0.08));
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+  }
+
+  .product-card:hover {
+    box-shadow: var(--shadow-hover, 0 4px 16px rgba(0,0,0,0.12));
+    transform: translateY(-3px);
+  }
+
+  .product-card__image-wrapper {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background-color: var(--color-background, #F5F0E8);
+  }
+
+  .product-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+  }
+
+  .product-card:hover .product-card__image {
+    transform: scale(1.02);
+  }
+
+  .product-card__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary, #78716C);
+    background-color: var(--color-background, #F5F0E8);
+  }
+
+  .product-card__badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+  }
+
+  .product-card__quick-add {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 2;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .product-card:hover .product-card__quick-add,
+  .product-card:focus-within .product-card__quick-add {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .product-card__quick-add-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: var(--color-primary, #059669);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .product-card__quick-add-btn:hover {
+    background-color: var(--color-primary-dark, #047857);
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.45);
+  }
+
+  .product-card__quick-add-btn:focus-visible {
+    outline: 2px solid var(--color-primary, #059669);
+    outline-offset: 2px;
+  }
+
+  .product-card__body {
+    padding: 14px 16px 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .product-card__vendor {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary, #78716C);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 500;
+  }
+
+  .product-card__title {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .product-card__title a {
+    color: var(--color-text, #1C1917);
+    text-decoration: none;
+  }
+
+  .product-card__title a:hover {
+    color: var(--color-primary, #059669);
+    text-decoration: underline;
+  }
+
+  .product-card__rating {
+    margin-top: 2px;
+  }
+
+  .product-card__price-row {
+    margin-top: auto;
+    padding-top: 8px;
+  }
+</style>
+
+<article class="product-card">
+  <a href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+    <div class="product-card__image-wrapper">
+      {%- if product.featured_image -%}
+        <img
+          class="product-card__image"
+          src="{{ product.featured_image | image_url: width: 600 }}"
+          alt="{{ product.featured_image.alt | escape }}"
+          width="600"
+          height="600"
+          loading="lazy"
+        >
+      {%- else -%}
+        <div class="product-card__placeholder" aria-hidden="true">
+          {{ 'product-1' | placeholder_svg_tag }}
+        </div>
+      {%- endif -%}
+
+      {%- if do_show_badge -%}
+        <div class="product-card__badge">
+          {%- if product.available == false -%}
+            {%- assign sold_out_text = 'badges.sold_out' | t -%}
+            {% render 'badge', text: sold_out_text, type: 'sold_out' %}
+          {%- elsif product.compare_at_price > product.price -%}
+            {%- assign sale_text = 'badges.sale' | t -%}
+            {% render 'badge', text: sale_text, type: 'sale' %}
+          {%- elsif product.tags contains 'new' -%}
+            {%- assign new_text = 'badges.new' | t -%}
+            {% render 'badge', text: new_text, type: 'new' %}
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- if do_show_quick_add -%}
+        {%- if product.available -%}
+          <div class="product-card__quick-add">
+            <form action="{{ routes.cart_add_url }}" method="post">
+              <input type="hidden" name="id" value="{{ product.first_available_variant.id }}">
+              <button
+                type="submit"
+                class="product-card__quick-add-btn"
+                aria-label="{{ 'products.quick_add' | t }}: {{ product.title | escape }}"
+              >
+                {% render 'icon', name: 'plus', size: 20 %}
+              </button>
+            </form>
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+  </a>
+
+  <div class="product-card__body">
+    {%- if do_show_vendor -%}
+      {%- if product.vendor != blank -%}
+        <p class="product-card__vendor">{{ product.vendor }}</p>
+      {%- endif -%}
+    {%- endif -%}
+
+    <h3 class="product-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+
+    {%- if product.metafields.reviews.rating.value != blank -%}
+      <div class="product-card__rating">
+        {% render 'star-rating',
+          rating: product.metafields.reviews.rating.value,
+          show_count: true,
+          count: product.metafields.reviews.rating_count.value
+        %}
+      </div>
+    {%- endif -%}
+
+    <div class="product-card__price-row">
+      {% render 'price', product: product %}
+    </div>
+  </div>
+</article>

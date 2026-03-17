@@ -1,0 +1,1180 @@
+
+{%- comment -%} Announcement bar {%- endcomment -%}
+{% if section.settings.enable_announcement %}
+  {% if section.settings.announcement_text != blank %}
+    <div class="announcement-bar" role="banner" aria-label="{{ 'sections.header.announcement_label' | t }}">
+      <div class="announcement-bar__inner container">
+        <p class="announcement-bar__text">{{ section.settings.announcement_text | escape }}</p>
+      </div>
+    </div>
+  {% endif %}
+{% endif %}
+
+<header
+  class="header{% if section.settings.sticky_header %} header--sticky{% endif %}"
+  data-section-id="{{ section.id }}"
+  data-header
+>
+
+  {%- comment -%} Top row: search | logo | cart + hamburger {%- endcomment -%}
+  <div class="container header__toprow">
+
+    {%- comment -%} Search icon (left) {%- endcomment -%}
+    <a
+      href="{{ routes.search_url }}"
+      class="header__icon header__icon--search"
+      aria-label="{{ 'general.search' | t }}"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </a>
+
+    {%- comment -%} Logo (center) {%- endcomment -%}
+    <a href="{{ routes.root_url }}" class="header__logo" aria-label="{{ shop.name }}">
+      {% if section.settings.logo %}
+        {{
+          section.settings.logo
+          | image_url: width: section.settings.logo_width
+          | image_tag:
+            alt: shop.name,
+            width: section.settings.logo_width,
+            loading: 'eager',
+            fetchpriority: 'high'
+        }}
+      {% else %}
+        <span class="header__logo-text">{{ shop.name }}</span>
+      {% endif %}
+    </a>
+
+    {%- comment -%} Right: cart + hamburger {%- endcomment -%}
+    <div class="header__actions">
+
+      {%- comment -%} Cart button with mini dropdown trigger {%- endcomment -%}
+      <button
+        class="header__icon header__icon--cart"
+        aria-label="{{ 'general.cart' | t }}"
+        aria-expanded="false"
+        aria-controls="mini-cart-{{ section.id }}"
+        data-cart-toggle
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span
+          class="header__cart-badge{% if cart.item_count == 0 %} header__cart-badge--empty{% endif %}"
+          data-cart-count
+        >{{ cart.item_count }}</span>
+      </button>
+
+      {%- comment -%} Mobile hamburger {%- endcomment -%}
+      <button
+        class="header__hamburger"
+        aria-label="{{ 'accessibility.open_menu' | t }}"
+        aria-expanded="false"
+        aria-controls="mobile-drawer-{{ section.id }}"
+        data-menu-toggle
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+
+  {%- comment -%} Navigation bar (desktop) {%- endcomment -%}
+  <nav class="header__nav" aria-label="{{ 'sections.header.nav_aria_label' | t }}">
+    <div class="container header__nav-inner">
+      {% for link in section.settings.menu.links %}
+        {% if link.links.size > 0 %}
+          <div class="header__nav-item header__nav-item--has-dropdown" data-mega-menu>
+            <button
+              class="header__nav-link header__nav-link--btn"
+              aria-haspopup="true"
+              aria-expanded="false"
+              data-mega-trigger
+            >
+              {{ link.title }}
+              <svg class="header__nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="header__mega-panel" role="region" aria-label="{{ link.title | escape }}">
+              <div class="container header__mega-inner">
+                {% for child in link.links %}
+                  <a href="{{ child.url }}" class="header__mega-link">
+                    {{ child.title }}
+                  </a>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <a
+            href="{{ link.url }}"
+            class="header__nav-link{% if link.active %} header__nav-link--active{% endif %}"
+            {% if link.current %}aria-current="page"{% endif %}
+          >{{ link.title }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </nav>
+
+  {%- comment -%} Mini cart dropdown {%- endcomment -%}
+  <div
+    class="mini-cart"
+    id="mini-cart-{{ section.id }}"
+    role="dialog"
+    aria-label="{{ 'sections.header.mini_cart_label' | t }}"
+    aria-modal="false"
+    hidden
+    data-mini-cart
+  >
+    <div class="mini-cart__header">
+      <span class="mini-cart__title">{{ 'sections.header.mini_cart_title' | t }}</span>
+      <button class="mini-cart__close" aria-label="{{ 'accessibility.close' | t }}" data-cart-close>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="mini-cart__body" data-mini-cart-body>
+      {% if cart.item_count > 0 %}
+        {% for item in cart.items %}
+          <div class="mini-cart__item" data-item-key="{{ item.key }}">
+            {% if item.image %}
+              {%- assign item_alt = item.title | escape -%}
+              {{ item.image | image_url: width: 80 | image_tag: class: 'mini-cart__item-img', alt: item_alt, width: 80, height: 80 }}
+            {% endif %}
+            <div class="mini-cart__item-info">
+              <a href="{{ item.url }}" class="mini-cart__item-title">{{ item.title }}</a>
+              <p class="mini-cart__item-price">{{ item.final_line_price | money }}</p>
+              <div class="mini-cart__item-qty">
+                <button class="mini-cart__qty-btn" data-qty-decrease data-key="{{ item.key }}" aria-label="{{ 'sections.header.decrease_qty' | t }}">&#8722;</button>
+                <span class="mini-cart__qty-num">{{ item.quantity }}</span>
+                <button class="mini-cart__qty-btn" data-qty-increase data-key="{{ item.key }}" aria-label="{{ 'sections.header.increase_qty' | t }}">&#43;</button>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="mini-cart__empty">{{ 'sections.header.cart_empty' | t }}</p>
+      {% endif %}
+    </div>
+
+    <div class="mini-cart__footer">
+      <div class="mini-cart__subtotal">
+        <span>{{ 'sections.header.subtotal' | t }}</span>
+        <span data-cart-subtotal>{{ cart.total_price | money }}</span>
+      </div>
+      <a href="{{ routes.cart_url }}" class="mini-cart__checkout-btn btn btn--primary">
+        {{ 'sections.header.view_cart' | t }}
+      </a>
+      <a href="{{ routes.checkout_url }}" class="mini-cart__checkout-btn mini-cart__checkout-btn--secondary btn btn--secondary">
+        {{ 'sections.header.checkout' | t }}
+      </a>
+    </div>
+  </div>
+
+  {%- comment -%} Mini cart backdrop {%- endcomment -%}
+  <div class="header__backdrop" data-backdrop hidden></div>
+
+</header>
+
+{%- comment -%} Mobile slide-out drawer {%- endcomment -%}
+<dialog
+  class="mobile-drawer"
+  id="mobile-drawer-{{ section.id }}"
+  aria-label="{{ 'sections.header.mobile_menu_label' | t }}"
+  data-mobile-drawer
+>
+  <div class="mobile-drawer__inner">
+    <div class="mobile-drawer__header">
+      <a href="{{ routes.root_url }}" class="mobile-drawer__logo">{{ shop.name }}</a>
+      <button
+        class="mobile-drawer__close"
+        aria-label="{{ 'accessibility.close_menu' | t }}"
+        data-drawer-close
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <nav class="mobile-drawer__nav" aria-label="{{ 'sections.header.mobile_nav_label' | t }}">
+      {% for link in section.settings.menu.links %}
+        {% if link.links.size > 0 %}
+          <details class="mobile-drawer__details">
+            <summary class="mobile-drawer__link mobile-drawer__link--summary">
+              {{ link.title }}
+              <svg class="mobile-drawer__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="mobile-drawer__sub">
+              {% for child in link.links %}
+                <a href="{{ child.url }}" class="mobile-drawer__sub-link">{{ child.title }}</a>
+              {% endfor %}
+            </div>
+          </details>
+        {% else %}
+          <a
+            href="{{ link.url }}"
+            class="mobile-drawer__link{% if link.active %} mobile-drawer__link--active{% endif %}"
+            {% if link.current %}aria-current="page"{% endif %}
+          >{{ link.title }}</a>
+        {% endif %}
+      {% endfor %}
+    </nav>
+
+    <div class="mobile-drawer__footer">
+      <a href="{{ routes.cart_url }}" class="mobile-drawer__cart-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        {{ 'general.cart' | t }}
+        {% if cart.item_count > 0 %}
+          <span class="mobile-drawer__cart-count">({{ cart.item_count }})</span>
+        {% endif %}
+      </a>
+    </div>
+  </div>
+</dialog>
+
+{% stylesheet %}
+  /* ============================================================
+     PawHaven Header
+  ============================================================ */
+
+  /* Announcement bar */
+
+  .announcement-bar {
+    background-color: #059669;
+    color: #ffffff;
+    text-align: center;
+    padding: 8px 0;
+    font-size: 0.875rem;
+  }
+
+  .announcement-bar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .announcement-bar__text {
+    margin: 0;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  /* Header shell */
+
+  .header {
+    background-color: #F5F0E8;
+    border-bottom: 1px solid #E7E0D6;
+    position: relative;
+    z-index: 200;
+  }
+
+  .header--sticky {
+    position: sticky;
+    top: 0;
+  }
+
+  /* Top row */
+
+  .header__toprow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+  }
+
+  /* Logo */
+
+  .header__logo {
+    text-decoration: none;
+    color: #1C1917;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .header__logo img {
+    height: auto;
+    display: block;
+  }
+
+  .header__logo:hover {
+    text-decoration: none;
+    opacity: 0.85;
+  }
+
+  .header__logo-text {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: #059669;
+    line-height: 1;
+  }
+
+  /* Icons */
+
+  .header__icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #1C1917;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 6px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: color 0.2s ease, background-color 0.2s ease;
+  }
+
+  .header__icon:hover {
+    color: #059669;
+    background-color: rgba(5, 150, 105, 0.08);
+    text-decoration: none;
+  }
+
+  .header__icon:focus-visible {
+    outline: 2px solid #059669;
+    outline-offset: 2px;
+  }
+
+  /* Cart badge */
+
+  .header__cart-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #D97706;
+    color: #ffffff;
+    font-size: 0.625rem;
+    font-weight: 700;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .header__cart-badge--empty {
+    display: none;
+  }
+
+  /* Actions group */
+
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Desktop nav — hidden on mobile */
+
+  .header__nav {
+    display: none;
+    border-top: 1px solid #E7E0D6;
+  }
+
+  .header__nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .header__nav-item {
+    position: relative;
+  }
+
+  .header__nav-link {
+    display: block;
+    padding: 12px 16px;
+    color: #1C1917;
+    text-decoration: none;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .header__nav-link--btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.9375rem;
+  }
+
+  .header__nav-link:hover,
+  .header__nav-link--active,
+  .header__nav-link[aria-current="page"] {
+    color: #059669;
+    text-decoration: none;
+  }
+
+  .header__nav-chevron {
+    transition: transform 0.2s ease;
+  }
+
+  .header__nav-item--has-dropdown:hover .header__nav-chevron,
+  .header__nav-link--btn[aria-expanded="true"] .header__nav-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Mega menu panel */
+
+  .header__mega-panel {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 220px;
+    background-color: #ffffff;
+    border: 1px solid #E7E0D6;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(28, 25, 23, 0.1);
+    padding: 12px;
+    z-index: 300;
+  }
+
+  .header__nav-item--has-dropdown:hover .header__mega-panel,
+  .header__mega-panel.is-open {
+    display: block;
+  }
+
+  .header__mega-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .header__mega-link {
+    display: block;
+    padding: 10px 14px;
+    color: #1C1917;
+    text-decoration: none;
+    font-size: 0.9375rem;
+    font-family: 'Quicksand', sans-serif;
+    border-radius: 8px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .header__mega-link:hover {
+    background-color: rgba(5, 150, 105, 0.08);
+    color: #059669;
+    text-decoration: none;
+  }
+
+  /* Hamburger — visible on mobile only */
+
+  .header__hamburger {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #1C1917;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 12px;
+    transition: color 0.2s ease, background-color 0.2s ease;
+  }
+
+  .header__hamburger:hover {
+    color: #059669;
+    background-color: rgba(5, 150, 105, 0.08);
+  }
+
+  /* ============================================================
+     Mini cart dropdown
+  ============================================================ */
+
+  .mini-cart {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 360px;
+    background-color: #ffffff;
+    border: 1px solid #E7E0D6;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(28, 25, 23, 0.12);
+    z-index: 400;
+    overflow: hidden;
+  }
+
+  .mini-cart[hidden] {
+    display: none;
+  }
+
+  .mini-cart__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #E7E0D6;
+  }
+
+  .mini-cart__title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    color: #1C1917;
+  }
+
+  .mini-cart__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #1C1917;
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    border-radius: 8px;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .mini-cart__close:hover {
+    color: #059669;
+    background-color: rgba(5, 150, 105, 0.08);
+  }
+
+  .mini-cart__body {
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .mini-cart__empty {
+    margin: 0;
+    color: #6B6560;
+    font-size: 0.9375rem;
+    text-align: center;
+    padding: 16px 0;
+  }
+
+  .mini-cart__item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .mini-cart__item-img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+    border: 1px solid #E7E0D6;
+  }
+
+  .mini-cart__item-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .mini-cart__item-title {
+    display: block;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: #1C1917;
+    text-decoration: none;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mini-cart__item-title:hover {
+    color: #059669;
+    text-decoration: none;
+  }
+
+  .mini-cart__item-price {
+    margin: 0 0 8px;
+    font-size: 0.875rem;
+    color: #1C1917;
+    font-weight: 600;
+  }
+
+  .mini-cart__item-qty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mini-cart__qty-btn {
+    background: none;
+    border: 1px solid #E7E0D6;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #1C1917;
+    font-size: 1rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .mini-cart__qty-btn:hover {
+    border-color: #059669;
+    color: #059669;
+  }
+
+  .mini-cart__qty-num {
+    font-size: 0.875rem;
+    font-weight: 600;
+    min-width: 20px;
+    text-align: center;
+  }
+
+  .mini-cart__footer {
+    padding: 16px 20px;
+    border-top: 1px solid #E7E0D6;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .mini-cart__subtotal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #1C1917;
+  }
+
+  .mini-cart__checkout-btn {
+    display: block;
+    text-align: center;
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+    cursor: pointer;
+  }
+
+  .mini-cart__checkout-btn:hover {
+    text-decoration: none;
+    opacity: 0.9;
+  }
+
+  .mini-cart__checkout-btn.btn--primary {
+    background-color: #059669;
+    color: #ffffff;
+    border: none;
+  }
+
+  .mini-cart__checkout-btn--secondary.btn--secondary {
+    background-color: transparent;
+    color: #059669;
+    border: 2px solid #059669;
+  }
+
+  /* Backdrop (behind mini cart, closes on click) */
+
+  .header__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 199;
+    background: transparent;
+  }
+
+  .header__backdrop[hidden] {
+    display: none;
+  }
+
+  /* ============================================================
+     Mobile drawer
+  ============================================================ */
+
+  .mobile-drawer {
+    border: none;
+    padding: 0;
+    margin: 0;
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(320px, 90vw);
+    max-height: 100%;
+    height: 100%;
+    background-color: #F5F0E8;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    z-index: 500;
+    box-shadow: 4px 0 24px rgba(28, 25, 23, 0.15);
+    border-radius: 0 12px 12px 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .mobile-drawer[open] {
+    transform: translateX(0);
+  }
+
+  .mobile-drawer::backdrop {
+    background-color: rgba(28, 25, 23, 0.45);
+    backdrop-filter: blur(2px);
+  }
+
+  .mobile-drawer__inner {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  .mobile-drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #E7E0D6;
+  }
+
+  .mobile-drawer__logo {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: #059669;
+    text-decoration: none;
+  }
+
+  .mobile-drawer__logo:hover {
+    text-decoration: none;
+    opacity: 0.85;
+  }
+
+  .mobile-drawer__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #1C1917;
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    border-radius: 8px;
+    transition: color 0.15s ease;
+  }
+
+  .mobile-drawer__close:hover {
+    color: #059669;
+  }
+
+  .mobile-drawer__nav {
+    flex: 1;
+    padding: 8px 0;
+  }
+
+  .mobile-drawer__link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    color: #1C1917;
+    text-decoration: none;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    border-bottom: 1px solid #E7E0D6;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .mobile-drawer__link:hover,
+  .mobile-drawer__link--active,
+  .mobile-drawer__link[aria-current="page"] {
+    color: #059669;
+    background-color: rgba(5, 150, 105, 0.05);
+    text-decoration: none;
+  }
+
+  .mobile-drawer__details > .mobile-drawer__link--summary {
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .mobile-drawer__details > .mobile-drawer__link--summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .mobile-drawer__chevron {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  .mobile-drawer__details[open] .mobile-drawer__chevron {
+    transform: rotate(180deg);
+  }
+
+  .mobile-drawer__sub {
+    background-color: rgba(5, 150, 105, 0.04);
+    border-bottom: 1px solid #E7E0D6;
+  }
+
+  .mobile-drawer__sub-link {
+    display: block;
+    padding: 12px 20px 12px 36px;
+    color: #1C1917;
+    text-decoration: none;
+    font-size: 0.9375rem;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    border-bottom: 1px solid #E7E0D6;
+    transition: color 0.15s ease;
+  }
+
+  .mobile-drawer__sub-link:hover {
+    color: #059669;
+    text-decoration: none;
+  }
+
+  .mobile-drawer__footer {
+    padding: 20px;
+    border-top: 1px solid #E7E0D6;
+    margin-top: auto;
+  }
+
+  .mobile-drawer__cart-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #1C1917;
+    text-decoration: none;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: color 0.15s ease;
+  }
+
+  .mobile-drawer__cart-link:hover {
+    color: #059669;
+    text-decoration: none;
+  }
+
+  .mobile-drawer__cart-count {
+    color: #6B6560;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  /* ============================================================
+     Desktop breakpoint
+  ============================================================ */
+
+  @media (min-width: 1024px) {
+    .header__nav {
+      display: block;
+    }
+
+    .header__hamburger {
+      display: none;
+    }
+
+    .mini-cart {
+      right: 0;
+      left: auto;
+    }
+  }
+
+  /* Container width helper */
+
+  .header .container,
+  .announcement-bar .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  @media (min-width: 768px) {
+    .header .container,
+    .announcement-bar .container {
+      padding: 0 32px;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    'use strict';
+
+    var sectionId = '{{ section.id }}';
+    var header = document.querySelector('.header[data-section-id="' + sectionId + '"]');
+    if (!header) return;
+
+    /* ---- Mobile drawer ---- */
+    var hamburger = header.querySelector('[data-menu-toggle]');
+    var drawer = document.getElementById('mobile-drawer-' + sectionId);
+    var drawerClose = drawer ? drawer.querySelector('[data-drawer-close]') : null;
+
+    function openDrawer() {
+      if (!drawer) return;
+      drawer.showModal();
+      hamburger.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+      if (!drawer) return;
+      drawer.close();
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+
+    if (hamburger) {
+      hamburger.addEventListener('click', openDrawer);
+    }
+
+    if (drawerClose) {
+      drawerClose.addEventListener('click', closeDrawer);
+    }
+
+    if (drawer) {
+      drawer.addEventListener('click', function (e) {
+        if (e.target === drawer) closeDrawer();
+      });
+
+      drawer.addEventListener('close', function () {
+        if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      });
+    }
+
+    /* ---- Mini cart ---- */
+    var cartToggle = header.querySelector('[data-cart-toggle]');
+    var miniCart = document.getElementById('mini-cart-' + sectionId);
+    var cartClose = miniCart ? miniCart.querySelector('[data-cart-close]') : null;
+    var backdrop = header.querySelector('[data-backdrop]');
+
+    function openMiniCart() {
+      if (!miniCart) return;
+      miniCart.removeAttribute('hidden');
+      if (backdrop) backdrop.removeAttribute('hidden');
+      cartToggle.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeMiniCart() {
+      if (!miniCart) return;
+      miniCart.setAttribute('hidden', '');
+      if (backdrop) backdrop.setAttribute('hidden', '');
+      cartToggle.setAttribute('aria-expanded', 'false');
+    }
+
+    if (cartToggle) {
+      cartToggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var isOpen = !miniCart.hasAttribute('hidden');
+        if (isOpen) {
+          closeMiniCart();
+        } else {
+          openMiniCart();
+        }
+      });
+    }
+
+    if (cartClose) {
+      cartClose.addEventListener('click', closeMiniCart);
+    }
+
+    if (backdrop) {
+      backdrop.addEventListener('click', closeMiniCart);
+    }
+
+    /* ---- Mini cart quantity updates via AJAX ---- */
+    function updateCartItemQty(key, qty) {
+      fetch('/cart/change.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ id: key, quantity: qty })
+      })
+      .then(function (r) { return r.json(); })
+      .then(function (cart) {
+        refreshMiniCartBody(cart);
+        updateCartBadge(cart.item_count, cart.total_price);
+      })
+      .catch(function (err) { console.error('Cart update error', err); });
+    }
+
+    function refreshMiniCartBody(cart) {
+      var body = miniCart ? miniCart.querySelector('[data-mini-cart-body]') : null;
+      if (!body) return;
+
+      if (cart.item_count === 0) {
+        body.innerHTML = '<p class="mini-cart__empty">{{ "sections.header.cart_empty" | t }}</p>';
+      } else {
+        var html = '';
+        cart.items.forEach(function (item) {
+          var imgHtml = item.image
+            ? '<img src="' + item.image + '" alt="" class="mini-cart__item-img" width="64" height="64" loading="lazy">'
+            : '';
+          html += '<div class="mini-cart__item" data-item-key="' + item.key + '">';
+          html += imgHtml;
+          html += '<div class="mini-cart__item-info">';
+          html += '<a href="' + item.url + '" class="mini-cart__item-title">' + item.title + '</a>';
+          html += '<p class="mini-cart__item-price">' + formatMoney(item.final_line_price) + '</p>';
+          html += '<div class="mini-cart__item-qty">';
+          html += '<button class="mini-cart__qty-btn" data-qty-decrease data-key="' + item.key + '" aria-label="{{ "sections.header.decrease_qty" | t }}">\u2212</button>';
+          html += '<span class="mini-cart__qty-num">' + item.quantity + '</span>';
+          html += '<button class="mini-cart__qty-btn" data-qty-increase data-key="' + item.key + '" aria-label="{{ "sections.header.increase_qty" | t }}">+</button>';
+          html += '</div></div></div>';
+        });
+        body.innerHTML = html;
+      }
+
+      bindQtyButtons();
+
+      var subtotalEl = miniCart.querySelector('[data-cart-subtotal]');
+      if (subtotalEl) subtotalEl.textContent = formatMoney(cart.total_price);
+    }
+
+    function formatMoney(cents) {
+      return (window.Shopify && window.Shopify.formatMoney)
+        ? window.Shopify.formatMoney(cents)
+        : '$' + (cents / 100).toFixed(2);
+    }
+
+    function bindQtyButtons() {
+      if (!miniCart) return;
+      miniCart.querySelectorAll('[data-qty-decrease]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var itemEl = btn.closest('[data-item-key]');
+          var key = btn.getAttribute('data-key');
+          var qtyEl = itemEl ? itemEl.querySelector('.mini-cart__qty-num') : null;
+          var current = qtyEl ? parseInt(qtyEl.textContent, 10) : 1;
+          updateCartItemQty(key, Math.max(0, current - 1));
+        });
+      });
+
+      miniCart.querySelectorAll('[data-qty-increase]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var itemEl = btn.closest('[data-item-key]');
+          var key = btn.getAttribute('data-key');
+          var qtyEl = itemEl ? itemEl.querySelector('.mini-cart__qty-num') : null;
+          var current = qtyEl ? parseInt(qtyEl.textContent, 10) : 1;
+          updateCartItemQty(key, current + 1);
+        });
+      });
+    }
+
+    bindQtyButtons();
+
+    /* ---- Cart badge update ---- */
+    function updateCartBadge(count, totalPrice) {
+      var badge = header.querySelector('[data-cart-count]');
+      if (badge) {
+        badge.textContent = count;
+        if (count > 0) {
+          badge.classList.remove('header__cart-badge--empty');
+        } else {
+          badge.classList.add('header__cart-badge--empty');
+        }
+      }
+
+      var drawerCount = drawer ? drawer.querySelector('.mobile-drawer__cart-count') : null;
+      if (drawerCount) drawerCount.textContent = count > 0 ? '(' + count + ')' : '';
+    }
+
+    document.addEventListener('cart:updated', function (e) {
+      if (e.detail) {
+        updateCartBadge(e.detail.item_count, e.detail.total_price);
+      }
+    });
+
+    /* ---- Sticky scroll class ---- */
+    {% if section.settings.sticky_header %}
+    var lastScroll = 0;
+    window.addEventListener('scroll', function () {
+      var current = window.scrollY;
+      if (current > 80) {
+        header.classList.add('header--scrolled');
+      } else {
+        header.classList.remove('header--scrolled');
+      }
+      lastScroll = current;
+    }, { passive: true });
+    {% endif %}
+
+    /* ---- Mega menu keyboard support ---- */
+    header.querySelectorAll('[data-mega-menu]').forEach(function (item) {
+      var trigger = item.querySelector('[data-mega-trigger]');
+      var panel = item.querySelector('.header__mega-panel');
+      if (!trigger || !panel) return;
+
+      trigger.addEventListener('click', function () {
+        var expanded = trigger.getAttribute('aria-expanded') === 'true';
+        trigger.setAttribute('aria-expanded', String(!expanded));
+        panel.classList.toggle('is-open', !expanded);
+      });
+
+      item.addEventListener('mouseleave', function () {
+        trigger.setAttribute('aria-expanded', 'false');
+        panel.classList.remove('is-open');
+      });
+    });
+
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.header.name",
+  "tag": "div",
+  "class": "header-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "t:sections.header.settings.logo.label"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "t:sections.header.settings.logo_width.label",
+      "default": 140,
+      "min": 60,
+      "max": 220,
+      "step": 10,
+      "unit": "px"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "t:sections.header.settings.menu.label",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_announcement",
+      "label": "t:sections.header.settings.enable_announcement.label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "announcement_text",
+      "label": "t:sections.header.settings.announcement_text.label",
+      "default": "Free shipping on orders over $50 — happy tails guaranteed!"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_header",
+      "label": "t:sections.header.settings.sticky_header.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.header.name"
+    }
+  ]
+}
+{% endschema %}

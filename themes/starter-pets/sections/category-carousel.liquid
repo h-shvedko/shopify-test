@@ -1,0 +1,451 @@
+<section
+  class="category-carousel"
+  data-section-id="{{ section.id }}"
+  data-reveal
+>
+  {%- comment -%} Section header {%- endcomment -%}
+  {% if section.settings.heading != blank %}
+    <div class="category-carousel__header container">
+      <h2 class="category-carousel__heading">{{ section.settings.heading | escape }}</h2>
+      {% if section.settings.subheading != blank %}
+        <p class="category-carousel__subheading">{{ section.settings.subheading | escape }}</p>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {%- comment -%} Track + arrows wrapper {%- endcomment -%}
+  <div class="category-carousel__outer">
+    {%- comment -%} Previous arrow {%- endcomment -%}
+    <button
+      class="category-carousel__arrow category-carousel__arrow--prev"
+      aria-label="{{ 'sections.category_carousel.prev' | t }}"
+      data-carousel-prev
+      {% if section.blocks.size <= 4 %}hidden{% endif %}
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+
+    {%- comment -%} Scrollable track {%- endcomment -%}
+    <div
+      class="category-carousel__track"
+      role="list"
+      aria-label="{{ 'sections.category_carousel.track_label' | t }}"
+      data-carousel-track
+    >
+      {% for block in section.blocks %}
+        {% if block.type == 'category' %}
+          <a
+            href="{{ block.settings.link | default: routes.collections_url }}"
+            class="category-carousel__card"
+            role="listitem"
+            {{ block.shopify_attributes }}
+          >
+            <div class="category-carousel__img-wrap">
+              {% if block.settings.image %}
+                {%- assign cat_alt = block.settings.title | escape -%}
+              {{
+                  block.settings.image
+                  | image_url: width: 300
+                  | image_tag:
+                    class: 'category-carousel__img',
+                    alt: cat_alt,
+                    width: 120,
+                    height: 120,
+                    loading: 'lazy'
+                }}
+              {% else %}
+                <div class="category-carousel__img-placeholder" aria-hidden="true">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10 12a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/><path d="M2 8.5C2 7.12 3.12 6 4.5 6H6l2-2h8l2 2h1.5C20.88 6 22 7.12 22 8.5V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.5z"/></svg>
+                </div>
+              {% endif %}
+            </div>
+            {% if block.settings.title != blank %}
+              <span class="category-carousel__label">{{ block.settings.title | escape }}</span>
+            {% endif %}
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {%- comment -%} Next arrow {%- endcomment -%}
+    <button
+      class="category-carousel__arrow category-carousel__arrow--next"
+      aria-label="{{ 'sections.category_carousel.next' | t }}"
+      data-carousel-next
+      {% if section.blocks.size <= 4 %}hidden{% endif %}
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+
+</section>
+
+{% stylesheet %}
+  /* ============================================================
+     PawHaven Category Carousel
+  ============================================================ */
+
+  .category-carousel {
+    padding: 60px 0;
+    background-color: #F5F0E8;
+  }
+
+  .category-carousel .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  @media (min-width: 768px) {
+    .category-carousel .container {
+      padding: 0 32px;
+    }
+  }
+
+  /* Section header */
+
+  .category-carousel__header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .category-carousel__heading {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 2rem;
+    color: #1C1917;
+    margin: 0 0 10px;
+    line-height: 1.2;
+  }
+
+  @media (min-width: 768px) {
+    .category-carousel__heading {
+      font-size: 2.25rem;
+    }
+  }
+
+  .category-carousel__subheading {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.0625rem;
+    color: #5C5753;
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  /* Outer: positions arrows + track */
+
+  .category-carousel__outer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0 20px;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 768px) {
+    .category-carousel__outer {
+      padding: 0 32px;
+    }
+  }
+
+  /* Arrows */
+
+  .category-carousel__arrow {
+    flex-shrink: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background-color: #ffffff;
+    border: 1px solid #E7E0D6;
+    border-radius: 50%;
+    cursor: pointer;
+    color: #1C1917;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(28, 25, 23, 0.1);
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .category-carousel__arrow--prev {
+    left: 0;
+  }
+
+  .category-carousel__arrow--next {
+    right: 0;
+  }
+
+  .category-carousel__arrow:hover {
+    background-color: #059669;
+    color: #ffffff;
+    border-color: #059669;
+  }
+
+  .category-carousel__arrow:focus-visible {
+    outline: 2px solid #059669;
+    outline-offset: 2px;
+  }
+
+  @media (min-width: 768px) {
+    .category-carousel__arrow {
+      display: flex;
+    }
+
+    .category-carousel__arrow[hidden] {
+      display: none;
+    }
+  }
+
+  /* Scrollable track */
+
+  .category-carousel__track {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px 4px;
+    flex: 1;
+    /* Hide scrollbar visually while keeping scroll functionality */
+    scrollbar-width: none;
+  }
+
+  .category-carousel__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .category-carousel__track {
+      padding: 16px 12px;
+    }
+  }
+
+  /* Category card */
+
+  .category-carousel__card {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: #1C1917;
+    width: 110px;
+    transition: transform 0.25s ease;
+  }
+
+  @media (min-width: 480px) {
+    .category-carousel__card {
+      width: 130px;
+    }
+  }
+
+  .category-carousel__card:hover {
+    transform: translateY(-4px);
+    text-decoration: none;
+    color: #059669;
+  }
+
+  .category-carousel__card:focus-visible {
+    outline: 2px solid #059669;
+    outline-offset: 4px;
+    border-radius: 8px;
+  }
+
+  /* Circular image */
+
+  .category-carousel__img-wrap {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #E7E0D6;
+    border: 3px solid #ffffff;
+    box-shadow: 0 4px 16px rgba(28, 25, 23, 0.1);
+    flex-shrink: 0;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  @media (min-width: 480px) {
+    .category-carousel__img-wrap {
+      width: 110px;
+      height: 110px;
+    }
+  }
+
+  .category-carousel__card:hover .category-carousel__img-wrap {
+    border-color: #059669;
+    box-shadow: 0 6px 20px rgba(5, 150, 105, 0.2);
+  }
+
+  .category-carousel__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .category-carousel__img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8C8580;
+  }
+
+  /* Label */
+
+  .category-carousel__label {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-align: center;
+    line-height: 1.3;
+    color: inherit;
+  }
+
+  /* Scroll reveal */
+
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+
+  [data-reveal].is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    'use strict';
+
+    var sectionId = '{{ section.id }}';
+    var section = document.querySelector('.category-carousel[data-section-id="' + sectionId + '"]');
+    if (!section) return;
+
+    /* ---- Arrow navigation ---- */
+    var track = section.querySelector('[data-carousel-track]');
+    var prevBtn = section.querySelector('[data-carousel-prev]');
+    var nextBtn = section.querySelector('[data-carousel-next]');
+
+    function getScrollAmount() {
+      var card = track ? track.querySelector('.category-carousel__card') : null;
+      if (!card) return 240;
+      var style = window.getComputedStyle(track);
+      var gap = parseInt(style.gap || style.columnGap || '24', 10);
+      return (card.offsetWidth + gap) * 3;
+    }
+
+    if (prevBtn && track) {
+      prevBtn.addEventListener('click', function () {
+        track.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
+      });
+    }
+
+    if (nextBtn && track) {
+      nextBtn.addEventListener('click', function () {
+        track.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
+      });
+    }
+
+    /* ---- Touch swipe (native scroll-snap handles this — arrow visibility update) ---- */
+    if (track) {
+      track.addEventListener('scroll', function () {
+        var atStart = track.scrollLeft <= 4;
+        var atEnd = track.scrollLeft + track.offsetWidth >= track.scrollWidth - 4;
+
+        if (prevBtn) prevBtn.style.opacity = atStart ? '0.4' : '1';
+        if (nextBtn) nextBtn.style.opacity = atEnd ? '0.4' : '1';
+      }, { passive: true });
+    }
+
+    /* ---- Scroll reveal ---- */
+    if ('IntersectionObserver' in window) {
+      var revealEl = section.hasAttribute('data-reveal') ? section : null;
+      if (revealEl) {
+        var obs = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-revealed');
+              obs.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1 });
+        obs.observe(revealEl);
+      }
+    } else {
+      section.classList.add('is-revealed');
+    }
+
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.category_carousel.name",
+  "tag": "div",
+  "class": "category-carousel-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.category_carousel.settings.heading.label",
+      "default": "Shop by category"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "t:sections.category_carousel.settings.subheading.label",
+      "default": "Find everything your furry family member needs"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "t:sections.category_carousel.blocks.category.name",
+      "limit": 10,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.category_carousel.blocks.category.settings.image.label"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.category_carousel.blocks.category.settings.title.label",
+          "default": "Category"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.category_carousel.blocks.category.settings.link.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.category_carousel.name",
+      "blocks": [
+        { "type": "category", "settings": { "title": "Dogs" } },
+        { "type": "category", "settings": { "title": "Cats" } },
+        { "type": "category", "settings": { "title": "Birds" } },
+        { "type": "category", "settings": { "title": "Small pets" } },
+        { "type": "category", "settings": { "title": "Fish & aquatic" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

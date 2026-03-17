@@ -1,0 +1,67 @@
+{% doc %}
+  Renders a small badge/label element for PawHaven product cards.
+
+  @param {string} text - Text content to display inside the badge. Required.
+  @param {string} [type] - Badge variant. One of: sale, new, sold_out, custom.
+      - sale: amber background (#D97706), white text
+      - new: emerald background (#059669), white text
+      - sold_out: stone background (#78716C), white text
+      - custom: sand background, dark bark text
+      Default: "custom".
+  @param {boolean} [small] - When true, applies reduced padding. Default: false.
+
+  Usage:
+    {% render 'badge', text: 'Sale', type: 'sale' %}
+    {% render 'badge', text: 'New arrival', type: 'new' %}
+    {% render 'badge', text: 'Sold out', type: 'sold_out' %}
+    {% render 'badge', text: 'Vet approved', type: 'custom' %}
+{% enddoc %}
+
+<style>
+  .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 100px;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+
+  .badge--sm {
+    padding: 2px 8px;
+    font-size: 0.6875rem;
+  }
+
+  .badge--sale {
+    background-color: var(--color-secondary, #D97706);
+    color: #ffffff;
+  }
+
+  .badge--new {
+    background-color: var(--color-primary, #059669);
+    color: #ffffff;
+  }
+
+  .badge--sold-out {
+    background-color: var(--color-text-secondary, #78716C);
+    color: #ffffff;
+  }
+
+  .badge--custom {
+    background-color: var(--color-background, #F5F0E8);
+    color: var(--color-text, #1C1917);
+    border: 1px solid var(--color-border, #E7E0D6);
+  }
+</style>
+
+{%- liquid
+  assign badge_modifier = type | default: 'custom'
+  assign badge_class = 'badge badge--' | append: badge_modifier
+  if small
+    assign badge_class = badge_class | append: ' badge--sm'
+  endif
+-%}
+
+<span class="{{ badge_class }}">{{ text }}</span>

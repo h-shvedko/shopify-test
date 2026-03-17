@@ -1,0 +1,94 @@
+<section class="customer-form section-padding">
+  <div class="container">
+    <div class="customer-form__wrapper">
+      <div class="customer-form__icon" aria-hidden="true">🐾</div>
+      <h1 class="customer-form__title">{{ 'customer.register_title' | t }}</h1>
+
+      {% form 'create_customer' %}
+        {{ form.errors | default_errors }}
+
+        <div class="customer-form__row">
+          <div class="customer-form__field">
+            <label class="customer-form__label" for="customer-first-name">{{ 'customer.first_name' | t }}</label>
+            <input
+              class="customer-form__input"
+              type="text"
+              id="customer-first-name"
+              name="customer[first_name]"
+              autocomplete="given-name"
+            >
+          </div>
+
+          <div class="customer-form__field">
+            <label class="customer-form__label" for="customer-last-name">{{ 'customer.last_name' | t }}</label>
+            <input
+              class="customer-form__input"
+              type="text"
+              id="customer-last-name"
+              name="customer[last_name]"
+              autocomplete="family-name"
+            >
+          </div>
+        </div>
+
+        <div class="customer-form__field">
+          <label class="customer-form__label" for="customer-email">{{ 'customer.email' | t }}</label>
+          <input
+            class="customer-form__input"
+            type="email"
+            id="customer-email"
+            name="customer[email]"
+            autocomplete="email"
+            required
+          >
+        </div>
+
+        <div class="customer-form__field">
+          <label class="customer-form__label" for="customer-password">{{ 'customer.password' | t }}</label>
+          <input
+            class="customer-form__input"
+            type="password"
+            id="customer-password"
+            name="customer[password]"
+            autocomplete="new-password"
+            required
+          >
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full-width customer-form__submit">
+          {{ 'customer.submit_register' | t }}
+        </button>
+      {% endform %}
+
+      <div class="customer-form__links">
+        <a href="{{ routes.account_login_url }}" class="customer-form__link">{{ 'customer.already_have_account' | t }}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .customer-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 480px) {
+    .customer-form__row {
+      grid-template-columns: 1fr;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.customer_register.name",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Customer register"
+    }
+  ]
+}
+{% endschema %}

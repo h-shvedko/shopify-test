@@ -1,0 +1,218 @@
+{%- liquid
+  assign bg_color = section.settings.background_color | default: '#059669'
+-%}
+
+<section
+  class="ctab"
+  style="
+    --ctab-bg: {{ bg_color }};
+    {% if section.settings.image %}--ctab-has-image: 1;{% endif %}
+  "
+>
+  {% if section.settings.image %}
+    {%- assign ctab_alt = section.settings.image.alt | escape -%}
+    {{ section.settings.image
+      | image_url: width: 1920
+      | image_tag:
+        class: 'ctab__bg-image',
+        loading: 'lazy',
+        alt: ctab_alt,
+        width: 1920,
+        height: 700
+    }}
+    <div class="ctab__overlay" aria-hidden="true"></div>
+  {% endif %}
+
+  <div class="container ctab__container">
+    <div class="ctab__card">
+      {% if section.settings.eyebrow != blank %}
+        <p class="ctab__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {% endif %}
+
+      {% if section.settings.heading != blank %}
+        <h2 class="ctab__heading">{{ section.settings.heading | escape }}</h2>
+      {% endif %}
+
+      {% if section.settings.subheading != blank %}
+        <p class="ctab__subheading">{{ section.settings.subheading | escape }}</p>
+      {% endif %}
+
+      {% if section.settings.button_text != blank %}
+        <a
+          href="{{ section.settings.button_url | default: '/collections/all' }}"
+          class="ctab__btn"
+        >
+          {{ section.settings.button_text | escape }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .ctab {
+    position: relative;
+    background-color: var(--ctab-bg, #059669);
+    padding: 72px 0;
+    overflow: hidden;
+    color: #ffffff;
+  }
+
+  .ctab__bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .ctab__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.42);
+    z-index: 1;
+  }
+
+  .ctab__container {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+  }
+
+  .ctab__card {
+    background: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 20px;
+    padding: 48px 40px;
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  }
+
+  .ctab__eyebrow {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0 0 12px;
+  }
+
+  .ctab__heading {
+    font-family: var(--font-heading, 'Nunito', sans-serif);
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 16px;
+    line-height: 1.15;
+  }
+
+  .ctab__subheading {
+    font-size: 1.0625rem;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0 0 32px;
+    line-height: 1.6;
+  }
+
+  .ctab__btn {
+    display: inline-block;
+    padding: 14px 36px;
+    border-radius: 24px;
+    background: var(--color-secondary, #D97706);
+    color: #ffffff;
+    font-weight: 700;
+    font-family: var(--font-heading, 'Nunito', sans-serif);
+    font-size: 1rem;
+    text-decoration: none;
+    border: none;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+  }
+
+  .ctab__btn:hover {
+    background: #b45309;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(217, 119, 6, 0.5);
+  }
+
+  .ctab__btn:active {
+    transform: translateY(0);
+  }
+
+  .ctab__btn:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 599px) {
+    .ctab__card {
+      padding: 36px 24px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .ctab {
+      padding: 100px 0;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.cta_banner.name",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.cta_banner.settings.image.label"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:sections.cta_banner.settings.background_color.label",
+      "default": "#059669"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.cta_banner.settings.eyebrow.label",
+      "default": "New arrivals"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.cta_banner.settings.heading.label",
+      "default": "Treat your pet to something special"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "t:sections.cta_banner.settings.subheading.label",
+      "default": "Discover our latest collection of natural, eco-friendly pet supplies."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "t:sections.cta_banner.settings.button_text.label",
+      "default": "Shop now"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "t:sections.cta_banner.settings.button_url.label",
+      "default": "/collections/all"
+    }
+  ],
+  "presets": [
+    {
+      "name": "CTA banner"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,134 @@
+{% doc %}
+  Renders pagination controls for a paginated collection, search result, or blog.
+  Uses rounded pill-style buttons matching the PawHaven friendly aesthetic.
+
+  @param {paginate} paginate - Shopify paginate object from a {% paginate %} block. Required.
+
+  Usage:
+    {% paginate collection.products by 12 %}
+      {% for product in collection.products %}...{% endfor %}
+      {% render 'pagination', paginate: paginate %}
+    {% endpaginate %}
+{% enddoc %}
+
+<style>
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 48px;
+    flex-wrap: wrap;
+  }
+
+  .pagination__item {
+    min-width: 44px;
+    height: 44px;
+    padding-inline: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100px;
+    text-decoration: none;
+    color: var(--color-text, #1C1917);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.9375rem;
+    border: 2px solid transparent;
+    background: var(--color-surface, #ffffff);
+    box-shadow: var(--shadow-soft);
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease,
+      border-color 0.15s ease, box-shadow 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .pagination__item:hover {
+    background-color: var(--color-background, #F5F0E8);
+    border-color: var(--color-border, #E7E0D6);
+    box-shadow: var(--shadow-hover);
+    text-decoration: none;
+  }
+
+  .pagination__item--current {
+    background-color: var(--color-primary, #059669);
+    color: #ffffff;
+    border-color: var(--color-primary, #059669);
+    box-shadow: var(--shadow-soft);
+    pointer-events: none;
+  }
+
+  .pagination__item--current:hover {
+    background-color: var(--color-primary, #059669);
+  }
+
+  .pagination__item--gap {
+    pointer-events: none;
+    color: var(--color-text-secondary, #78716C);
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .pagination__item:focus-visible {
+    outline: 2px solid var(--color-primary, #059669);
+    outline-offset: 2px;
+  }
+</style>
+
+{%- if paginate.pages > 1 -%}
+  <nav class="pagination" aria-label="{{ 'general.pagination.label' | t }}">
+    {%- if paginate.previous -%}
+      <a
+        href="{{ paginate.previous.url }}"
+        class="pagination__item"
+        aria-label="{{ 'general.pagination.previous' | t }}"
+        rel="prev"
+      >
+        {% render 'icon', name: 'chevron-left', size: 18 %}
+      </a>
+    {%- else -%}
+      <span class="pagination__item" aria-hidden="true" style="opacity:0.4;pointer-events:none;">
+        {% render 'icon', name: 'chevron-left', size: 18 %}
+      </span>
+    {%- endif -%}
+
+    {%- for part in paginate.parts -%}
+      {%- if part.is_link -%}
+        <a
+          href="{{ part.url }}"
+          class="pagination__item"
+          aria-label="{{ 'general.pagination.page' | t: number: part.title }}"
+        >
+          {{ part.title }}
+        </a>
+      {%- elsif part.title == paginate.current_page -%}
+        <span
+          class="pagination__item pagination__item--current"
+          aria-current="page"
+          aria-label="{{ 'general.pagination.current_page' | t: number: part.title }}"
+        >
+          {{ part.title }}
+        </span>
+      {%- else -%}
+        <span class="pagination__item pagination__item--gap" aria-hidden="true">
+          {{ part.title }}
+        </span>
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- if paginate.next -%}
+      <a
+        href="{{ paginate.next.url }}"
+        class="pagination__item"
+        aria-label="{{ 'general.pagination.next' | t }}"
+        rel="next"
+      >
+        {% render 'icon', name: 'chevron-right', size: 18 %}
+      </a>
+    {%- else -%}
+      <span class="pagination__item" aria-hidden="true" style="opacity:0.4;pointer-events:none;">
+        {% render 'icon', name: 'chevron-right', size: 18 %}
+      </span>
+    {%- endif -%}
+  </nav>
+{%- endif -%}

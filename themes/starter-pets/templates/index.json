@@ -1,0 +1,68 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero-banner",
+      "settings": {
+        "heading": "Natural supplies for happy pets",
+        "subtitle": "Earthy, wholesome products your furry family will love",
+        "button_label_1": "Shop now",
+        "button_url_1": "shopify://collections/all",
+        "button_label_2": "Learn more",
+        "button_url_2": ""
+      }
+    },
+    "categories": {
+      "type": "category-carousel",
+      "settings": {}
+    },
+    "featured": {
+      "type": "featured-collection",
+      "settings": {
+        "heading": "Our favourite picks",
+        "products_count": 4,
+        "show_view_all": true
+      }
+    },
+    "brand": {
+      "type": "brand-story",
+      "settings": {}
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "blocks": {
+        "testimonial_1": {
+          "type": "testimonial",
+          "settings": {
+            "text": "Our golden retriever absolutely loves the organic treats. Will order again!",
+            "author": "Sarah K.",
+            "rating": 5
+          }
+        },
+        "testimonial_2": {
+          "type": "testimonial",
+          "settings": {
+            "text": "Fast shipping and the toy lasted longer than any other brand. Highly recommend!",
+            "author": "Mike T.",
+            "rating": 5
+          }
+        }
+      },
+      "block_order": ["testimonial_1", "testimonial_2"],
+      "settings": {
+        "heading": "Happy pet parents"
+      }
+    },
+    "newsletter": {
+      "type": "newsletter-cta",
+      "settings": {}
+    }
+  },
+  "order": [
+    "hero",
+    "categories",
+    "featured",
+    "brand",
+    "testimonials",
+    "newsletter"
+  ]
+}

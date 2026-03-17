@@ -1,0 +1,83 @@
+{% doc %}
+  Renders an amber star rating display with filled and empty stars.
+
+  @param {number} rating - Rating value between 0 and 5. Required.
+  @param {boolean} [show_count] - Whether to show the review count. Default: false.
+  @param {number} [count] - Number of reviews to display alongside stars. Optional.
+
+  Usage:
+    {% render 'star-rating', rating: 4.5, show_count: true, count: 128 %}
+    {% render 'star-rating', rating: 4 %}
+{% enddoc %}
+
+<style>
+  .star-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .star-rating__star {
+    color: var(--color-secondary, #D97706);
+    flex-shrink: 0;
+  }
+
+  .star-rating__star--empty {
+    color: var(--color-border, #E7E0D6);
+  }
+
+  .star-rating__count {
+    margin-left: 6px;
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary, #78716C);
+    line-height: 1;
+  }
+</style>
+
+{%- liquid
+  assign rating_int = rating | floor
+  assign rating_remainder = rating | minus: rating_int
+-%}
+
+<div
+  class="star-rating"
+  role="img"
+  aria-label="{{ 'accessibility.star_rating' | t: rating: rating }}"
+>
+  {%- assign next_int = rating_int | plus: 1 -%}
+  {%- for i in (1..5) -%}
+    {%- if i <= rating_int -%}
+      <svg class="star-rating__star" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+    {%- else -%}
+      {%- if i == next_int -%}
+        {%- if rating_remainder >= 0.5 -%}
+          <svg class="star-rating__star" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="star-half-{{ rating | replace: '.', '-' }}">
+                <stop offset="50%" stop-color="var(--color-secondary, #D97706)"/>
+                <stop offset="50%" stop-color="var(--color-border, #E7E0D6)"/>
+              </linearGradient>
+            </defs>
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="url(#star-half-{{ rating | replace: '.', '-' }})"/>
+          </svg>
+        {%- else -%}
+          <svg class="star-rating__star star-rating__star--empty" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        {%- endif -%}
+      {%- else -%}
+        <svg class="star-rating__star star-rating__star--empty" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- if show_count -%}
+    {%- if count != blank -%}
+      <span class="star-rating__count">({{ count }})</span>
+    {%- endif -%}
+  {%- endif -%}
+</div>

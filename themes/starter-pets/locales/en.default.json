@@ -1,0 +1,387 @@
+{
+  "general": {
+    "skip_to_content": "Skip to content",
+    "search": "Search",
+    "menu": "Menu",
+    "close": "Close",
+    "open": "Open",
+    "loading": "Loading...",
+    "cart": "Cart",
+    "account": "Account",
+    "no_results": "No results found",
+    "gift_card_title": "Gift card",
+    "gift_card_expired": "This gift card has expired",
+    "add_to_apple_wallet": "Add to Apple Wallet",
+    "meta": {
+      "tagged": "Tagged with {{ tag }}",
+      "page": "Page {{ page }}"
+    },
+    "free_shipping_remaining": "Add {{ amount }} more for free shipping!",
+    "free_shipping_achieved": "You've unlocked free shipping!",
+    "pagination": {
+      "label": "Pagination",
+      "next": "Next page",
+      "previous": "Previous page",
+      "page": "Page {{ number }}",
+      "current_page": "Page {{ number }}, current page"
+    }
+  },
+  "header": {
+    "navigation": "Main navigation",
+    "search_placeholder": "Search for your furry friend...",
+    "announcement_text": "Free shipping on orders over $50 — your pet deserves the best!",
+    "cart_count": "{{ count }} items",
+    "view_cart": "View cart",
+    "cart_empty": "Your cart is empty"
+  },
+  "hero": {
+    "heading": "Everything your pet needs, delivered with love",
+    "subheading": "Natural, wholesome supplies for happy, healthy pets",
+    "cta_button": "Shop now"
+  },
+  "categories": {
+    "heading": "Shop by pet",
+    "subheading": "Find exactly what your furry, feathered, or scaly friend needs",
+    "view_all": "View all categories"
+  },
+  "products": {
+    "add_to_cart": "Add to cart",
+    "sold_out": "Sold out",
+    "sale": "Sale",
+    "from_price": "From {{ price }}",
+    "view_details": "View details",
+    "quick_add": "Quick add",
+    "new": "New",
+    "quantity": "Quantity",
+    "remove": "Remove",
+    "variant": "{{ variant }}",
+    "compare_at": "Was {{ price }}",
+    "added_to_cart": "Added to cart!",
+    "reviews_count": "{{ count }} reviews",
+    "tax_included": "Tax included",
+    "sort_by": "Sort by",
+    "sort_featured": "Featured",
+    "sort_best_selling": "Best selling",
+    "sort_price_asc": "Price, low to high",
+    "sort_price_desc": "Price, high to low",
+    "sort_newest": "Newest",
+    "sort_title_asc": "A\u2013Z",
+    "sort_title_desc": "Z\u2013A",
+    "showing_count": "{{ count }} products",
+    "view_all": "View all products",
+    "browse_all": "Browse all products",
+    "in_stock": "In stock",
+    "low_stock": "Only {{ count }} left",
+    "out_of_stock": "Out of stock",
+    "description": "Description",
+    "details": "Details",
+    "no_description": "No description available.",
+    "shipping_returns": "Shipping & returns",
+    "shipping_description": "We ship all orders within 1\u20132 business days. Free standard shipping on orders over $50. Returns accepted within 30 days of delivery.",
+    "no_products": "No products found",
+    "product_type": "Type",
+    "vendor": "Brand",
+    "sku": "SKU",
+    "share": "Share",
+    "share_facebook": "Share on Facebook",
+    "share_twitter": "Share on X",
+    "thumbnail_list": "Product images",
+    "view_image": "View image {{ index }}",
+    "trust_free_shipping": "Free shipping over $50",
+    "trust_secure_checkout": "Secure checkout",
+    "trust_pet_approved": "Pet approved"
+  },
+  "product": {
+    "description_tab": "Description",
+    "details_tab": "Details",
+    "shipping_tab": "Shipping & returns",
+    "related_heading": "You might also love",
+    "share": "Share this product"
+  },
+  "collection": {
+    "filter": "Filter",
+    "sort": "Sort by",
+    "sort_options": {
+      "featured": "Featured",
+      "price_asc": "Price, low to high",
+      "price_desc": "Price, high to low",
+      "newest": "Newest arrivals",
+      "best_selling": "Best selling"
+    },
+    "products_count": "{{ count }} products",
+    "empty": "No products found. Try adjusting your filters."
+  },
+  "cart": {
+    "title": "Your cart",
+    "empty": "Your cart is empty — let's find something your pet will love!",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "shipping_at_checkout": "Calculated at checkout",
+    "tax": "Tax",
+    "total": "Total",
+    "checkout": "Proceed to checkout",
+    "continue_shopping": "Continue shopping",
+    "remove": "Remove",
+    "remove_item": "Remove item",
+    "quantity": "Quantity",
+    "update": "Update cart",
+    "note_label": "Add a note to your order",
+    "taxes_note": "Taxes and shipping calculated at checkout"
+  },
+  "customer": {
+    "login": "Log in",
+    "login_title": "Welcome back",
+    "register": "Create account",
+    "register_title": "Join PawHaven",
+    "account": "My account",
+    "account_title": "My account",
+    "orders": "Order history",
+    "order_history": "Order history",
+    "logout": "Log out",
+    "email": "Email address",
+    "password": "Password",
+    "first_name": "First name",
+    "last_name": "Last name",
+    "forgot_password": "Forgot your password?",
+    "create_account": "Create an account",
+    "already_have_account": "Already have an account? Sign in",
+    "welcome": "Welcome, {{ name }}!",
+    "submit_login": "Sign in",
+    "submit_register": "Create account",
+    "order_number": "Order #{{ number }}",
+    "order_date": "Date",
+    "order_placed": "Order placed",
+    "order_status": "Status",
+    "order_total": "Total",
+    "order_product": "Product",
+    "order_quantity": "Qty",
+    "no_orders": "You haven't placed any orders yet.",
+    "start_shopping": "Start shopping",
+    "back_to_account": "Back to account",
+    "shipping_address": "Shipping address",
+    "billing_address": "Billing address"
+  },
+  "newsletter": {
+    "heading": "Join the pack",
+    "subheading": "Get pet care tips, exclusive offers, and new product alerts delivered to your inbox",
+    "email_placeholder": "Your email address",
+    "placeholder": "Your email address",
+    "subscribe_button": "Subscribe",
+    "subscribe": "Subscribe",
+    "success_message": "Welcome to the pack! Check your inbox for a special treat."
+  },
+  "testimonials": {
+    "heading": "Happy pets, happy parents",
+    "rating_aria": "{{ rating }} out of 5 stars",
+    "previous": "Previous testimonial",
+    "next": "Next testimonial",
+    "pet_owner": "{{ name }}\u2019s parent"
+  },
+  "brand_story": {
+    "heading": "Made with love for pets"
+  },
+  "footer": {
+    "quick_links": "Quick links",
+    "customer_care": "Customer care",
+    "newsletter_heading": "Stay in the loop",
+    "newsletter_sub": "Get pet care tips, new arrivals, and exclusive deals straight to your inbox.",
+    "newsletter_placeholder": "Your email address",
+    "subscribe": "Subscribe",
+    "copyright": "\u00a9 {{ year }} {{ shop }}. All rights reserved.",
+    "social_heading": "Follow our pack",
+    "social_label": "Follow us on social media",
+    "payment_methods": "Accepted payment methods",
+    "instagram": "Follow us on Instagram",
+    "facebook": "Follow us on Facebook",
+    "tiktok": "Follow us on TikTok",
+    "youtube": "Follow us on YouTube"
+  },
+  "accessibility": {
+    "skip_to_content": "Skip to content",
+    "close": "Close",
+    "close_menu": "Close menu",
+    "open_menu": "Open menu",
+    "star_rating": "{{ rating }} out of 5 stars",
+    "increase_quantity": "Increase quantity",
+    "decrease_quantity": "Decrease quantity",
+    "open_cart": "Open cart",
+    "remove_item": "Remove {{ title }} from cart"
+  },
+  "cta_banner": {
+    "heading": "Treat your pet to something special",
+    "subheading": "Shop our curated collection of natural, premium pet supplies",
+    "button_text": "Shop now"
+  },
+  "not_found": {
+    "heading": "Oops! This page ran away",
+    "subheading": "The page you're looking for seems to have chased a squirrel. Let's get you back on track.",
+    "button_text": "Back to home"
+  },
+  "search": {
+    "title": "Search",
+    "heading": "Search results",
+    "placeholder": "Search for your furry friend...",
+    "no_results": "No results for \"{{ query }}\". Try a different search term.",
+    "results_count": "{{ count }} results for \"{{ query }}\""
+  },
+  "featured_collection": {
+    "heading": "Our favourites",
+    "view_all": "View all products",
+    "no_collection": "Select a collection to display products."
+  },
+  "collections": {
+    "heading": "All collections",
+    "products_count": "{{ count }} products",
+    "select_collection": "Select a collection in the theme editor."
+  },
+  "pagination": {
+    "label": "Pagination",
+    "previous": "Previous page",
+    "next": "Next page",
+    "page": "Page {{ number }}",
+    "current_page": "Page {{ number }}, current page"
+  },
+  "gift_card": {
+    "title": "Gift card",
+    "code_label": "Gift card code",
+    "copy": "Copy code",
+    "copied": "Copied!",
+    "balance": "Balance: {{ balance }}",
+    "balance_label": "Gift card balance",
+    "expiry": "Expires {{ expiry }}",
+    "expired": "This gift card has expired",
+    "shop": "Shop now",
+    "print": "Print gift card",
+    "add_to_apple_wallet": "Add to Apple Wallet",
+    "qr_alt": "Scan to redeem gift card",
+    "qr_label": "Scan at checkout",
+    "copy_code": "Copy gift card code"
+  },
+  "badges": {
+    "sale": "Sale",
+    "new": "New",
+    "sold_out": "Sold out",
+    "bestseller": "Bestseller"
+  },
+  "sections": {
+    "header": {
+      "nav_aria_label": "Main navigation",
+      "mobile_menu_aria_label": "Mobile menu",
+      "mobile_nav_aria_label": "Mobile navigation",
+      "announcement_label": "Announcement",
+      "mobile_menu_label": "Mobile menu",
+      "mobile_nav_label": "Mobile navigation",
+      "mini_cart_label": "Mini cart",
+      "mini_cart_title": "Your cart",
+      "cart_empty": "Your cart is empty",
+      "subtotal": "Subtotal",
+      "view_cart": "View cart",
+      "checkout": "Checkout",
+      "decrease_qty": "Decrease quantity",
+      "increase_qty": "Increase quantity"
+    },
+    "footer": {
+      "social_label": "Follow us on social media",
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "youtube": "YouTube",
+      "newsletter_heading": "Stay in the loop",
+      "newsletter_sub": "Get pet care tips, new arrivals, and exclusive deals straight to your inbox.",
+      "newsletter_placeholder": "Your email address",
+      "subscribe": "Subscribe",
+      "payment_methods": "Accepted payment methods",
+      "copyright": "\u00a9 {{ year }} {{ shop }}. All rights reserved."
+    },
+    "hero_banner": {
+      "name": "Hero banner"
+    },
+    "category_carousel": {
+      "prev": "Previous categories",
+      "next": "Next categories",
+      "track_label": "Product categories"
+    },
+    "brand_story": {
+      "name": "Brand story"
+    },
+    "product_grid": {
+      "name": "Product grid",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "products_per_page": { "label": "Products per page" },
+        "columns_desktop": { "label": "Columns on desktop" }
+      }
+    },
+    "product_detail": {
+      "name": "Product detail",
+      "settings": {
+        "enable_vendor": { "label": "Show vendor" },
+        "enable_share": { "label": "Show share buttons" },
+        "enable_trust_badges": { "label": "Show trust badges" }
+      }
+    },
+    "featured_collection": {
+      "name": "Featured collection",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "subheading": { "label": "Subheading" },
+        "collection": { "label": "Collection" },
+        "products_to_show": { "label": "Products to show" },
+        "show_view_all": { "label": "Show \"View all\" button" }
+      }
+    },
+    "related_products": {
+      "name": "Related products",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "products_to_show": { "label": "Products to show" }
+      }
+    },
+    "testimonials": {
+      "name": "Testimonials",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "subheading": { "label": "Subheading" }
+      },
+      "blocks": {
+        "testimonial": {
+          "name": "Testimonial",
+          "settings": {
+            "quote": { "label": "Quote" },
+            "author": { "label": "Author name" },
+            "pet_name": { "label": "Pet name or role" },
+            "image": { "label": "Photo" },
+            "rating": { "label": "Star rating" }
+          }
+        }
+      }
+    },
+    "newsletter_cta": {
+      "name": "Newsletter CTA",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "subheading": { "label": "Subheading" },
+        "privacy_note": { "label": "Privacy note" }
+      }
+    },
+    "cta_banner": {
+      "name": "CTA banner",
+      "settings": {
+        "image": { "label": "Background image" },
+        "background_color": { "label": "Background color" },
+        "eyebrow": { "label": "Eyebrow text" },
+        "heading": { "label": "Heading" },
+        "subheading": { "label": "Subheading" },
+        "button_text": { "label": "Button text" },
+        "button_url": { "label": "Button URL" }
+      }
+    },
+    "collections_list": {
+      "name": "Collections list",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "subheading": { "label": "Subheading" }
+      }
+    }
+  }
+}

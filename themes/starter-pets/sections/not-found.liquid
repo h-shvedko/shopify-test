@@ -1,0 +1,124 @@
+<section class="not-found section-padding">
+  <div class="container not-found__content">
+    <div class="not-found__paw" aria-hidden="true">🐾</div>
+    <h1 class="not-found__heading">{{ section.settings.heading }}</h1>
+    <p class="not-found__subheading">{{ section.settings.message }}</p>
+    <a href="{{ section.settings.button_url | default: '/' }}" class="btn btn--primary not-found__btn">
+      {{ section.settings.button_label }}
+    </a>
+  </div>
+</section>
+
+{% stylesheet %}
+  .not-found {
+    padding-top: 60px;
+    padding-bottom: 60px;
+  }
+
+  .not-found__content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .not-found__paw {
+    font-size: 5rem;
+    line-height: 1;
+    animation: paw-bounce 1.8s ease-in-out infinite;
+  }
+
+  @keyframes paw-bounce {
+    0%, 100% { transform: translateY(0) rotate(-10deg); }
+    50% { transform: translateY(-12px) rotate(10deg); }
+  }
+
+  .not-found__heading {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 5rem;
+    color: var(--color-primary);
+    line-height: 1;
+    margin: 0;
+  }
+
+  .not-found__subheading {
+    color: var(--color-text-secondary);
+    font-size: 1.125rem;
+    font-family: var(--font-body);
+    max-width: 480px;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .not-found__btn {
+    background: var(--color-primary);
+    color: #fff;
+    border-radius: 12px;
+    padding: 14px 32px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+
+  .not-found__btn:hover {
+    background: #047857;
+    transform: translateY(-1px);
+  }
+
+  @media (min-width: 768px) {
+    .not-found {
+      padding-top: 100px;
+      padding-bottom: 100px;
+    }
+
+    .not-found__heading {
+      font-size: 7rem;
+    }
+
+    .not-found__paw {
+      font-size: 6rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.not_found.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.not_found.settings.heading.label",
+      "default": "404"
+    },
+    {
+      "type": "textarea",
+      "id": "message",
+      "label": "t:sections.not_found.settings.message.label",
+      "default": "Oops! This page wandered off. Let's get you back on the trail."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.not_found.settings.button_label.label",
+      "default": "Back to home"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "t:sections.not_found.settings.button_url.label",
+      "default": "/"
+    }
+  ],
+  "presets": [
+    {
+      "name": "404 page"
+    }
+  ]
+}
+{% endschema %}

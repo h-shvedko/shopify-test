@@ -1,0 +1,36 @@
+{% doc %}
+  Renders a styled button or anchor element for PawHaven.
+
+  @param {string} label - Visible button text. Required.
+  @param {string} [url] - If provided, renders an <a> tag; otherwise renders a <button>.
+  @param {string} [style] - Visual style. One of: primary, secondary, amber, ghost.
+      Default: "primary".
+  @param {string} [size] - Size modifier. One of: default, small. Default: "default".
+  @param {string} [type] - HTML type attribute for <button> elements. Default: "button".
+  @param {boolean} [full_width] - When true, spans full container width. Default: false.
+
+  Usage:
+    {% render 'button', label: 'Shop now', url: '/collections/all' %}
+    {% render 'button', label: 'Add to cart', style: 'primary', type: 'submit' %}
+    {% render 'button', label: 'Learn more', style: 'secondary', url: '/pages/about' %}
+    {% render 'button', label: 'Quick add', style: 'amber', size: 'small' %}
+{% enddoc %}
+
+{%- liquid
+  assign btn_style = style | default: 'primary'
+  assign btn_type  = type  | default: 'button'
+
+  assign btn_class = 'btn btn--' | append: btn_style
+  if size == 'small'
+    assign btn_class = btn_class | append: ' btn--small'
+  endif
+  if full_width
+    assign btn_class = btn_class | append: ' btn--full-width'
+  endif
+-%}
+
+{%- if url != blank -%}
+  <a href="{{ url }}" class="{{ btn_class }}">{{ label }}</a>
+{%- else -%}
+  <button type="{{ btn_type }}" class="{{ btn_class }}">{{ label }}</button>
+{%- endif -%}
