@@ -57,9 +57,11 @@
                 </div>
                 <div class="cart-item__info">
                   <a href="{{ item.url }}" class="cart-item__title">{{ item.product.title }}</a>
-                  {%- if item.variant.title != 'Default Title' -%}
-                    <p class="cart-item__variant">{{ item.variant.title }}</p>
-                  {%- endif -%}
+                  {%- unless item.variant.title == 'Default Title' -%}
+                    {%- unless item.variant.title == item.product.title -%}
+                      <p class="cart-item__variant">{{ item.variant.title }}</p>
+                    {%- endunless -%}
+                  {%- endunless -%}
                   {%- if item.properties.size > 0 -%}
                     {%- for p in item.properties -%}
                       {%- unless p.last == blank -%}

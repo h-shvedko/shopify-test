@@ -170,9 +170,11 @@
 >
   <div class="recently-viewed__container">
     <header class="recently-viewed__header">
-      <h2 class="recently-viewed__heading">
-        {{ section.settings.heading | default: 'products.recently_viewed_heading' | t }}
-      </h2>
+      {%- if section.settings.heading != blank -%}
+        <h2 class="recently-viewed__heading">{{ section.settings.heading }}</h2>
+      {%- else -%}
+        <h2 class="recently-viewed__heading">{{ 'products.recently_viewed_heading' | t }}</h2>
+      {%- endif -%}
     </header>
     <div class="recently-viewed__track" role="list" data-rv-track></div>
   </div>

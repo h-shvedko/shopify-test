@@ -1,8 +1,12 @@
 {%- liquid
   assign collection_obj = collections[section.settings.collection]
   assign view_all_label = 'featured_collection.view_all' | t
-  assign heading_text   = section.settings.heading | default: 'featured_collection.heading' | t
 -%}
+{%- if section.settings.heading != blank -%}
+  {%- assign heading_text = section.settings.heading -%}
+{%- else -%}
+  {%- assign heading_text = 'featured_collection.heading' | t -%}
+{%- endif -%}
 
 {% stylesheet %}
   .featured-collection {

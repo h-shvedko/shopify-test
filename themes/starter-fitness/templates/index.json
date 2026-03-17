@@ -70,37 +70,33 @@
         "stat_1": {
           "type": "stat",
           "settings": {
-            "value": "10000",
+            "number": "10000",
             "suffix": "+",
-            "label": "Members worldwide",
-            "icon": "users"
+            "label": "Members worldwide"
           }
         },
         "stat_2": {
           "type": "stat",
           "settings": {
-            "value": "500000",
+            "number": "500000",
             "suffix": "+",
-            "label": "Workouts completed",
-            "icon": "activity"
+            "label": "Workouts completed"
           }
         },
         "stat_3": {
           "type": "stat",
           "settings": {
-            "value": "50",
+            "number": "50",
             "suffix": "+",
-            "label": "Countries reached",
-            "icon": "globe"
+            "label": "Countries reached"
           }
         },
         "stat_4": {
           "type": "stat",
           "settings": {
-            "value": "98",
+            "number": "98",
             "suffix": "%",
-            "label": "Satisfaction rate",
-            "icon": "star"
+            "label": "Satisfaction rate"
           }
         }
       },

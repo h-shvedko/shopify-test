@@ -162,7 +162,11 @@
   }
 {% endstylesheet %}
 
-{%- assign rp_heading = section.settings.heading | default: 'related_products.heading' | t -%}
+{%- if section.settings.heading != blank -%}
+  {%- assign rp_heading = section.settings.heading -%}
+{%- else -%}
+  {%- assign rp_heading = 'related_products.heading' | t -%}
+{%- endif -%}
 
 {%- if recommendations.performed -%}
   {%- if recommendations.products_count > 0 -%}
