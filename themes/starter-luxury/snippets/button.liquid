@@ -1,0 +1,35 @@
+{% doc %}
+  Renders a styled button or anchor element using the theme's .btn classes.
+
+  @param {string} label - Button text
+  @param {string} [url] - If provided, renders an anchor tag; otherwise renders a button
+  @param {string} [style] - Visual style: 'primary' (default), 'secondary', or 'link'
+  @param {string} [size] - Size modifier: 'small', 'large', or omit for default
+  @param {string} [type] - Button type attribute when rendering button. Default: 'button'
+  @param {boolean} [full_width] - If true, adds .btn--full for 100% width
+
+  @example
+  {% render 'button', label: btn_label, url: btn_url, style: 'primary' %}
+{% enddoc %}
+
+{%- liquid
+  assign btn_style = style | default: 'primary'
+  assign btn_type = type | default: 'button'
+  assign btn_classes = 'btn btn--' | append: btn_style
+  if size != blank
+    assign btn_classes = btn_classes | append: ' btn--' | append: size
+  endif
+  if full_width
+    assign btn_classes = btn_classes | append: ' btn--full'
+  endif
+-%}
+
+{%- if url != blank -%}
+  <a href="{{ url }}" class="{{ btn_classes }}">
+    {{- label | escape -}}
+  </a>
+{%- else -%}
+  <button type="{{ btn_type }}" class="{{ btn_classes }}">
+    {{- label | escape -}}
+  </button>
+{%- endif -%}

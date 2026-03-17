@@ -1,0 +1,309 @@
+{%- liquid
+  assign overlay_alpha = section.settings.overlay_opacity | divided_by: 100.0
+  assign min_height = section.settings.min_height | default: 80
+  assign text_align = section.settings.text_alignment | default: 'center'
+-%}
+
+<section
+  class="patina-hero"
+  data-section-id="{{ section.id }}"
+  style="--hero-min-height: {{ min_height }}vh; --hero-text-align: {{ text_align }};"
+>
+  {%- comment -%} Background image — mobile/desktop {%- endcomment -%}
+  {%- if section.settings.mobile_image != blank -%}
+    {{
+      section.settings.mobile_image
+      | image_url: width: 800
+      | image_tag:
+        class: 'patina-hero__bg-img patina-hero__bg-img--mobile',
+        loading: 'eager',
+        fetchpriority: 'high',
+        alt: section.settings.mobile_image.alt | escape
+    }}
+  {%- endif -%}
+
+  {%- if section.settings.image != blank -%}
+    {{
+      section.settings.image
+      | image_url: width: 2400
+      | image_tag:
+        class: 'patina-hero__bg-img patina-hero__bg-img--desktop',
+        loading: 'eager',
+        fetchpriority: 'high',
+        alt: section.settings.image.alt | escape
+    }}
+  {%- else -%}
+    <div class="patina-hero__bg-placeholder" aria-hidden="true"></div>
+  {%- endif -%}
+
+  {%- comment -%} Overlay {%- endcomment -%}
+  <div class="patina-hero__overlay" style="opacity: {{ overlay_alpha }};" aria-hidden="true"></div>
+
+  {%- comment -%} Content {%- endcomment -%}
+  <div class="patina-hero__content container">
+    {%- if section.settings.heading != blank -%}
+      <h1 class="patina-hero__heading">{{ section.settings.heading | escape }}</h1>
+    {%- endif -%}
+
+    {%- if section.settings.subheading != blank -%}
+      <p class="patina-hero__subheading">{{ section.settings.subheading | escape }}</p>
+    {%- endif -%}
+
+    {%- if section.settings.button_text != blank -%}
+      {%- assign btn_url = section.settings.button_url | default: '/collections/all' -%}
+      <div class="patina-hero__actions">
+        <a href="{{ btn_url }}" class="patina-hero__btn">
+          {{ section.settings.button_text | escape }}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+
+</section>
+
+{% stylesheet %}
+  /* ---- Hero banner ---- */
+
+  .patina-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: var(--hero-min-height, 80vh);
+    overflow: hidden;
+    background-color: var(--color-text);
+  }
+
+  /* Background images */
+
+  .patina-hero__bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .patina-hero__bg-img--mobile {
+    display: block;
+  }
+
+  .patina-hero__bg-img--desktop {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .patina-hero__bg-img--mobile {
+      display: none;
+    }
+    .patina-hero__bg-img--desktop {
+      display: block;
+    }
+  }
+
+  /* When only desktop image is provided, show it on all sizes */
+  .patina-hero__bg-img--desktop:only-child,
+  .patina-hero:not(:has(.patina-hero__bg-img--mobile)) .patina-hero__bg-img--desktop {
+    display: block;
+  }
+
+  .patina-hero__bg-placeholder {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #3a2015 0%, #2c1810 100%);
+  }
+
+  /* Overlay */
+
+  .patina-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background-color: #2C1810;
+    z-index: 1;
+  }
+
+  /* Content */
+
+  .patina-hero__content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    padding-top: 80px;
+    padding-bottom: 80px;
+    text-align: var(--hero-text-align, center);
+  }
+
+  .patina-hero__heading {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    line-height: 1.1;
+    color: #FAF7F2;
+    margin: 0 0 24px;
+    letter-spacing: 0.01em;
+  }
+
+  .patina-hero__subheading {
+    font-family: var(--font-body);
+    font-size: clamp(0.875rem, 1.5vw, 1.0625rem);
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(250, 247, 242, 0.72);
+    margin: 0 0 40px;
+    max-width: 520px;
+  }
+
+  /* Center subheading when text-align is center */
+  .patina-hero__content[style*="center"] .patina-hero__subheading {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .patina-hero__actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* Align actions to match text-align */
+  .patina-hero__content {
+    --_justify: flex-start;
+  }
+
+  /* Outlined CTA button — cream border on dark bg */
+  .patina-hero__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 40px;
+    font-family: var(--font-body);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #FAF7F2;
+    background-color: transparent;
+    border: 1px solid rgba(250, 247, 242, 0.7);
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    transition: background-color var(--transition-base), border-color var(--transition-base), color var(--transition-base);
+    white-space: nowrap;
+  }
+
+  .patina-hero__btn:hover {
+    background-color: #FAF7F2;
+    border-color: #FAF7F2;
+    color: var(--color-text);
+    opacity: 1;
+    text-decoration: none;
+  }
+
+  .patina-hero__btn:focus-visible {
+    outline: 1px solid #FAF7F2;
+    outline-offset: 3px;
+  }
+
+  /* Text alignment variants */
+  .patina-hero[style*="--hero-text-align: left"] .patina-hero__actions {
+    justify-content: flex-start;
+  }
+
+  .patina-hero[style*="--hero-text-align: center"] .patina-hero__actions {
+    justify-content: center;
+  }
+
+  .patina-hero[style*="--hero-text-align: right"] .patina-hero__actions {
+    justify-content: flex-end;
+  }
+
+  @media (min-width: 1024px) {
+    .patina-hero__content {
+      padding-top: 120px;
+      padding-bottom: 120px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hero_banner.name",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.hero_banner.settings.image.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "t:sections.hero_banner.settings.mobile_image.label",
+      "info": "t:sections.hero_banner.settings.mobile_image.info"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hero_banner.settings.heading.label",
+      "default": "Worn with time, remembered always"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "t:sections.hero_banner.settings.subheading.label",
+      "default": "Fine jewelry for every chapter of your story"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "t:sections.hero_banner.settings.button_text.label",
+      "default": "Explore the collection"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "t:sections.hero_banner.settings.button_url.label",
+      "default": "/collections/all"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:sections.hero_banner.settings.text_alignment.label",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "t:sections.hero_banner.settings.text_alignment.options.left" },
+        { "value": "center", "label": "t:sections.hero_banner.settings.text_alignment.options.center" },
+        { "value": "right", "label": "t:sections.hero_banner.settings.text_alignment.options.right" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "t:sections.hero_banner.settings.overlay_opacity.label",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "min_height",
+      "label": "t:sections.hero_banner.settings.min_height.label",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "default": 80,
+      "unit": "vh"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hero_banner.name"
+    }
+  ]
+}
+{% endschema %}

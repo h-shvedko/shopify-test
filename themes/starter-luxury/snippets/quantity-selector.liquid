@@ -1,0 +1,168 @@
+{% doc %}
+  Renders a quantity selector input with increment and decrement buttons.
+
+  @param {number} [value] - Initial quantity value. Default: 1
+  @param {string} [name] - Input name attribute. Default: 'quantity'
+  @param {number} [min] - Minimum allowed quantity. Default: 1
+  @param {number} [max] - Maximum allowed quantity. Default: 99
+
+  @example
+  {% render 'quantity-selector', value: 1, name: 'quantity', min: 1 %}
+{% enddoc %}
+
+<style>
+  .quantity-selector {
+    display: inline-flex;
+    align-items: stretch;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    height: 2.75rem;
+  }
+
+  .quantity-selector__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 100%;
+    background: none;
+    border: none;
+    border-radius: 0;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: background-color 200ms ease, color 200ms ease;
+    flex-shrink: 0;
+  }
+
+  .quantity-selector__btn:hover {
+    background-color: var(--color-border);
+  }
+
+  .quantity-selector__btn:focus-visible {
+    outline: 1px solid var(--color-primary);
+    outline-offset: -1px;
+  }
+
+  .quantity-selector__btn[disabled] {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .quantity-selector__input {
+    width: 3rem;
+    min-width: 0;
+    border: none;
+    border-left: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border);
+    border-radius: 0;
+    background: transparent;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    color: var(--color-text);
+    -moz-appearance: textfield;
+    padding: 0;
+  }
+
+  .quantity-selector__input::-webkit-inner-spin-button,
+  .quantity-selector__input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .quantity-selector__input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+</style>
+
+{%- liquid
+  assign qty_value = value | default: 1
+  assign qty_name  = name  | default: 'quantity'
+  assign qty_min   = min   | default: 1
+  assign qty_max   = max   | default: 99
+  assign decrease_label = 'products.quantity' | t
+-%}
+
+<div class="quantity-selector" data-quantity-selector>
+  <button
+    type="button"
+    class="quantity-selector__btn quantity-selector__btn--decrease"
+    aria-label="{{ decrease_label }}"
+    data-quantity-decrement
+    {%- if qty_value <= qty_min %} disabled{%- endif -%}
+  >
+    {% render 'icon', name: 'minus', size: 16 %}
+  </button>
+
+  <input
+    type="number"
+    class="quantity-selector__input"
+    id="qty-{{ qty_name }}"
+    name="{{ qty_name }}"
+    value="{{ qty_value }}"
+    min="{{ qty_min }}"
+    max="{{ qty_max }}"
+    aria-label="{{ decrease_label }}"
+    data-quantity-input
+  >
+
+  <button
+    type="button"
+    class="quantity-selector__btn quantity-selector__btn--increase"
+    aria-label="{{ decrease_label }}"
+    data-quantity-increment
+    {%- if qty_value >= qty_max %} disabled{%- endif -%}
+  >
+    {% render 'icon', name: 'plus', size: 16 %}
+  </button>
+</div>
+
+<script>
+  (function () {
+    document.querySelectorAll('[data-quantity-selector]').forEach(function (selector) {
+      var input = selector.querySelector('[data-quantity-input]');
+      var decBtn = selector.querySelector('[data-quantity-decrement]');
+      var incBtn = selector.querySelector('[data-quantity-increment]');
+
+      if (!input) return;
+
+      var min = parseInt(input.min, 10) || 1;
+      var max = parseInt(input.max, 10) || 99;
+
+      function updateButtons(val) {
+        if (decBtn) decBtn.disabled = val <= min;
+        if (incBtn) incBtn.disabled = val >= max;
+      }
+
+      if (decBtn) {
+        decBtn.addEventListener('click', function () {
+          var current = parseInt(input.value, 10) || min;
+          var next = Math.max(min, current - 1);
+          input.value = next;
+          updateButtons(next);
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+      }
+
+      if (incBtn) {
+        incBtn.addEventListener('click', function () {
+          var current = parseInt(input.value, 10) || min;
+          var next = Math.min(max, current + 1);
+          input.value = next;
+          updateButtons(next);
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+      }
+
+      input.addEventListener('change', function () {
+        var val = parseInt(input.value, 10);
+        if (isNaN(val)) val = min;
+        val = Math.max(min, Math.min(max, val));
+        input.value = val;
+        updateButtons(val);
+      });
+    });
+  })();
+</script>

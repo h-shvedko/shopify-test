@@ -1,0 +1,76 @@
+{% doc %}
+  Renders formatted product price with optional compare-at (strikethrough) price.
+  Displays sale pricing when the product has a compare_at_price greater than price.
+
+  Parameters:
+    product {Object} Required. A Shopify product object.
+
+  Usage:
+    {% render 'price', product: product %}
+{% enddoc %}
+
+<style>
+  .price {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+
+  .price__current {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--color-text);
+    letter-spacing: 0.02em;
+  }
+
+  .price__current--sale {
+    color: var(--color-primary);
+  }
+
+  .price__compare {
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: var(--color-text-secondary);
+    text-decoration: line-through;
+    text-decoration-color: var(--color-text-secondary);
+  }
+
+  .price__range-prefix {
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+</style>
+
+{%- liquid
+  assign on_sale = false
+  if product.compare_at_price > product.price
+    assign on_sale = true
+  endif
+
+  assign price_varies = product.price_varies
+-%}
+
+<div class="price">
+  {%- if price_varies -%}
+    {%- assign from_label = 'products.from_price' | t: price: product.price_min | money -%}
+    <span class="price__current{% if on_sale %} price__current--sale{% endif %}">
+      {{- from_label -}}
+    </span>
+  {%- else -%}
+    <span class="price__current{% if on_sale %} price__current--sale{% endif %}">
+      {{- product.price | money -}}
+    </span>
+  {%- endif -%}
+
+  {%- if on_sale -%}
+    {%- assign compare_label = 'products.compare_at' | t: price: product.compare_at_price | money -%}
+    <span class="price__compare" aria-label="{{ compare_label }}">
+      {{- product.compare_at_price | money -}}
+    </span>
+  {%- endif -%}
+</div>

@@ -1,0 +1,324 @@
+{%- paginate search.results by section.settings.results_per_page -%}
+<section class="search-results section">
+  <div class="container">
+
+    <div class="search-results__header">
+      <h1 class="search-results__title">{{ 'search.heading' | t }}</h1>
+
+      <form action="{{ routes.search_url }}" method="get" role="search" class="search-results__form">
+        <input type="hidden" name="type" value="product">
+        <label for="search-input" class="visually-hidden">{{ 'search.placeholder' | t }}</label>
+        <div class="search-results__input-wrap">
+          <input
+            id="search-input"
+            class="search-results__input"
+            type="search"
+            name="q"
+            value="{{ search.terms | escape }}"
+            placeholder="{{ 'search.placeholder' | t }}"
+            autocomplete="off"
+          >
+          <button type="submit" class="btn btn--primary search-results__submit" aria-label="{{ 'search.heading' | t }}">
+            {{ 'search.heading' | t }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    {%- if search.performed -%}
+      {%- if search.results_count > 0 -%}
+        <p class="search-results__count">
+          {{ 'search.results_count' | t: count: search.results_count, terms: search.terms }}
+        </p>
+
+        <div class="search-results__grid">
+          {%- for item in search.results -%}
+            {%- if item.object_type == 'product' -%}
+              <article class="search-results__card">
+                <a href="{{ item.url }}" class="search-results__card-image-link" aria-label="{{ item.title }}">
+                  {%- if item.featured_image -%}
+                    {{- item.featured_image | image_url: width: 480 | image_tag:
+                      loading: 'lazy',
+                      alt: item.featured_image.alt | default: item.title,
+                      class: 'search-results__card-img'
+                    -}}
+                  {%- else -%}
+                    <div class="search-results__card-img search-results__card-img--placeholder"></div>
+                  {%- endif -%}
+                </a>
+                <div class="search-results__card-body">
+                  <a href="{{ item.url }}" class="search-results__card-title">{{ item.title }}</a>
+                  <p class="search-results__card-price">
+                    {%- if item.compare_at_price > item.price -%}
+                      <s class="search-results__price-was">{{ item.compare_at_price | money }}</s>
+                    {%- endif -%}
+                    {{ item.price | money }}
+                  </p>
+                </div>
+              </article>
+            {%- else -%}
+              <article class="search-results__page-card">
+                <h3 class="search-results__page-title">
+                  <a href="{{ item.url }}">{{ item.title }}</a>
+                </h3>
+                {%- if item.content != blank -%}
+                  <p class="search-results__page-excerpt">
+                    {{ item.content | strip_html | truncate: 160 }}
+                  </p>
+                {%- endif -%}
+              </article>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        {%- if paginate.pages > 1 -%}
+          <nav class="search-results__pagination" aria-label="{{ 'general.pagination.label' | t }}">
+            {%- if paginate.previous -%}
+              <a href="{{ paginate.previous.url }}" class="btn btn--secondary btn--small">
+                {{ 'general.pagination.previous' | t }}
+              </a>
+            {%- endif -%}
+            <span class="search-results__page-info">
+              {{ 'general.pagination.page' | t: number: paginate.current_page }}
+            </span>
+            {%- if paginate.next -%}
+              <a href="{{ paginate.next.url }}" class="btn btn--secondary btn--small">
+                {{ 'general.pagination.next' | t }}
+              </a>
+            {%- endif -%}
+          </nav>
+        {%- endif -%}
+
+      {%- else -%}
+        <div class="search-results__empty">
+          <p class="search-results__no-results">
+            {{ 'search.no_results' | t: terms: search.terms }}
+          </p>
+          <a href="{{ routes.root_url }}" class="btn btn--secondary">
+            {{ 'not_found.button_text' | t }}
+          </a>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+
+  </div>
+</section>
+{%- endpaginate -%}
+
+{% stylesheet %}
+  .search-results__header {
+    margin-bottom: var(--space-12);
+  }
+
+  .search-results__title {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-weight: 300;
+    margin-bottom: var(--space-8);
+  }
+
+  .search-results__form {
+    max-width: 560px;
+  }
+
+  .search-results__input-wrap {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--color-border);
+  }
+
+  .search-results__input {
+    flex: 1;
+    padding: var(--space-3) var(--space-4);
+    border: none;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 0.9375rem;
+    font-weight: 300;
+  }
+
+  .search-results__input:focus {
+    outline: none;
+    border-color: none;
+    box-shadow: none;
+  }
+
+  .search-results__input-wrap:focus-within {
+    border-color: var(--color-primary);
+  }
+
+  .search-results__submit {
+    flex-shrink: 0;
+    border-left: 1px solid var(--color-border);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    padding: var(--space-3) var(--space-6);
+  }
+
+  .search-results__count {
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    margin-bottom: var(--space-8);
+  }
+
+  .search-results__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+    margin-bottom: var(--space-12);
+  }
+
+  .search-results__card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .search-results__card-image-link {
+    display: block;
+    overflow: hidden;
+    margin-bottom: var(--space-3);
+    aspect-ratio: 3 / 4;
+  }
+
+  .search-results__card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .search-results__card-img--placeholder {
+    background-color: var(--color-border);
+  }
+
+  .search-results__card-image-link:hover .search-results__card-img {
+    transform: scale(1.03);
+  }
+
+  .search-results__card-body {
+    flex: 1;
+  }
+
+  .search-results__card-title {
+    display: block;
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 1rem;
+    color: var(--color-text);
+    text-decoration: none;
+    margin-bottom: var(--space-1);
+    line-height: 1.3;
+  }
+
+  .search-results__card-title:hover {
+    color: var(--color-primary);
+  }
+
+  .search-results__card-price {
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: var(--color-text);
+    letter-spacing: 0.04em;
+    margin: 0;
+  }
+
+  .search-results__price-was {
+    color: var(--color-text-secondary);
+    text-decoration: line-through;
+    margin-right: var(--space-2);
+    font-size: 0.8125rem;
+  }
+
+  .search-results__page-card {
+    padding: var(--space-6);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  .search-results__page-title {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 1.25rem;
+    margin-bottom: var(--space-2);
+  }
+
+  .search-results__page-title a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .search-results__page-title a:hover {
+    color: var(--color-primary);
+  }
+
+  .search-results__page-excerpt {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .search-results__empty {
+    text-align: center;
+    padding: var(--space-16) 0;
+  }
+
+  .search-results__no-results {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-8);
+  }
+
+  .search-results__pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-6);
+    margin-top: var(--space-12);
+  }
+
+  .search-results__page-info {
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 768px) {
+    .search-results__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .search-results__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.search_results.name",
+  "settings": [
+    {
+      "type": "range",
+      "id": "results_per_page",
+      "label": "t:sections.search_results.settings.results_per_page.label",
+      "min": 4,
+      "max": 24,
+      "step": 4,
+      "default": 12
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.search_results.presets.default"
+    }
+  ]
+}
+{% endschema %}

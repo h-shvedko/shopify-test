@@ -1,0 +1,99 @@
+<section class="customer-auth section">
+  <div class="container">
+    <div class="customer-auth__inner">
+
+      <div class="customer-auth__header">
+        <h1 class="customer-auth__title">{{ 'customer.register' | t }}</h1>
+        <p class="customer-auth__subtitle">{{ 'customer.register_subheading' | t }}</p>
+      </div>
+
+      {%- form 'create_customer' -%}
+        {{ form.errors | default_errors }}
+
+        <div class="customer-auth__row">
+          <div class="customer-auth__field">
+            <label class="customer-auth__label" for="register-first-name">
+              {{ 'customer.first_name' | t }}
+            </label>
+            <input
+              class="customer-auth__input"
+              type="text"
+              id="register-first-name"
+              name="customer[first_name]"
+              autocomplete="given-name"
+              value="{{ form.first_name }}"
+            >
+          </div>
+
+          <div class="customer-auth__field">
+            <label class="customer-auth__label" for="register-last-name">
+              {{ 'customer.last_name' | t }}
+            </label>
+            <input
+              class="customer-auth__input"
+              type="text"
+              id="register-last-name"
+              name="customer[last_name]"
+              autocomplete="family-name"
+              value="{{ form.last_name }}"
+            >
+          </div>
+        </div>
+
+        <div class="customer-auth__field">
+          <label class="customer-auth__label" for="register-email">
+            {{ 'customer.email' | t }}
+          </label>
+          <input
+            class="customer-auth__input"
+            type="email"
+            id="register-email"
+            name="customer[email]"
+            autocomplete="email"
+            required
+            value="{{ form.email }}"
+          >
+        </div>
+
+        <div class="customer-auth__field">
+          <label class="customer-auth__label" for="register-password">
+            {{ 'customer.password' | t }}
+          </label>
+          <input
+            class="customer-auth__input"
+            type="password"
+            id="register-password"
+            name="customer[password]"
+            autocomplete="new-password"
+            required
+          >
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full">
+          {{ 'customer.register' | t }}
+        </button>
+      {%- endform -%}
+
+      <p class="customer-auth__switch">
+        {{ 'customer.have_account' | t }}
+        <a href="{{ routes.account_login_url }}">{{ 'customer.login' | t }}</a>
+      </p>
+
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .customer-auth__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.customer_register.name",
+  "settings": [],
+}
+{% endschema %}

@@ -1,0 +1,477 @@
+<footer class="patina-footer" data-section-id="{{ section.id }}">
+  <div class="patina-footer__main">
+    <div class="container patina-footer__grid">
+
+      {%- comment -%} Column 1: About {%- endcomment -%}
+      <div class="patina-footer__col patina-footer__col--about">
+        {%- if section.settings.logo != blank -%}
+          <a href="{{ routes.root_url }}" class="patina-footer__brand-logo" aria-label="{{ shop.name }}">
+            {{
+              section.settings.logo
+              | image_url: width: 120
+              | image_tag: alt: shop.name, width: 120, loading: 'lazy'
+            }}
+          </a>
+        {%- else -%}
+          <a href="{{ routes.root_url }}" class="patina-footer__brand-name" aria-label="{{ shop.name }}">
+            {{ shop.name }}
+          </a>
+        {%- endif -%}
+
+        {%- if section.settings.about_text != blank -%}
+          <p class="patina-footer__about-text">{{ section.settings.about_text }}</p>
+        {%- endif -%}
+
+        {%- comment -%} Social icons {%- endcomment -%}
+        <div class="patina-footer__social" aria-label="{{ 'sections.footer.social_label' | t }}">
+          {%- if section.settings.instagram_url != blank -%}
+            <a href="{{ section.settings.instagram_url }}" class="patina-footer__social-link" target="_blank" rel="noopener" aria-label="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+              </svg>
+            </a>
+          {%- endif -%}
+          {%- if section.settings.pinterest_url != blank -%}
+            <a href="{{ section.settings.pinterest_url }}" class="patina-footer__social-link" target="_blank" rel="noopener" aria-label="Pinterest">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                <path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
+              </svg>
+            </a>
+          {%- endif -%}
+          {%- if section.settings.facebook_url != blank -%}
+            <a href="{{ section.settings.facebook_url }}" class="patina-footer__social-link" target="_blank" rel="noopener" aria-label="Facebook">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+            </a>
+          {%- endif -%}
+        </div>
+      </div>
+
+      {%- comment -%} Link columns from blocks {%- endcomment -%}
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'link_column' -%}
+          <div class="patina-footer__col" {{ block.shopify_attributes }}>
+            {%- if block.settings.heading != blank -%}
+              <h3 class="patina-footer__col-heading">{{ block.settings.heading }}</h3>
+            {%- endif -%}
+            {%- if block.settings.menu != blank -%}
+              <ul class="patina-footer__links" role="list">
+                {%- for link in block.settings.menu.links -%}
+                  <li>
+                    <a href="{{ link.url }}" class="patina-footer__link">{{ link.title }}</a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- comment -%} Column 4: Newsletter {%- endcomment -%}
+      <div class="patina-footer__col patina-footer__col--newsletter">
+        <h3 class="patina-footer__col-heading">{{ 'sections.footer.newsletter_heading' | t }}</h3>
+        <p class="patina-footer__newsletter-desc">{{ 'sections.footer.newsletter_description' | t }}</p>
+        <form
+          class="patina-footer__newsletter-form"
+          action="{{ routes.root_url }}contact#contact_form"
+          method="post"
+          data-newsletter-form
+        >
+          <input type="hidden" name="form_type" value="customer">
+          <input type="hidden" name="utf8" value="✓">
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <label for="footer-email-{{ section.id }}" class="visually-hidden">
+            {{ 'sections.footer.newsletter_placeholder' | t }}
+          </label>
+          <div class="patina-footer__newsletter-row">
+            <input
+              class="patina-footer__newsletter-input"
+              type="email"
+              id="footer-email-{{ section.id }}"
+              name="contact[email]"
+              placeholder="{{ 'sections.footer.newsletter_placeholder' | t }}"
+              autocomplete="email"
+              required
+              aria-required="true"
+            >
+            <button type="submit" class="patina-footer__newsletter-btn">
+              {{ 'sections.footer.subscribe' | t }}
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  {%- comment -%} Bottom bar {%- endcomment -%}
+  <div class="patina-footer__bottom">
+    <div class="container patina-footer__bottom-inner">
+      <p class="patina-footer__copyright">
+        {%- assign current_year = 'now' | date: '%Y' -%}
+        {{ 'sections.footer.copyright' | t: shop_name: shop.name, year: current_year }}
+      </p>
+      <div class="patina-footer__payment" aria-label="{{ 'sections.footer.payment_label' | t }}">
+        {%- comment -%} Payment icons: rendered inline SVG for reliability {%- endcomment -%}
+        <svg class="patina-footer__payment-icon" viewBox="0 0 38 24" width="38" height="24" role="img" aria-label="Visa">
+          <rect width="38" height="24" rx="3" fill="rgba(250,247,242,0.08)"/>
+          <text x="50%" y="16" text-anchor="middle" font-family="Helvetica,sans-serif" font-size="11" font-weight="700" fill="currentColor" letter-spacing="0">VISA</text>
+        </svg>
+        <svg class="patina-footer__payment-icon" viewBox="0 0 38 24" width="38" height="24" role="img" aria-label="Mastercard">
+          <rect width="38" height="24" rx="3" fill="rgba(250,247,242,0.08)"/>
+          <circle cx="15" cy="12" r="7" fill="#eb001b" opacity="0.85"/>
+          <circle cx="23" cy="12" r="7" fill="#f79e1b" opacity="0.85"/>
+          <path d="M19 6.8a7 7 0 010 10.4A7 7 0 0119 6.8z" fill="#ff5f00" opacity="0.85"/>
+        </svg>
+        <svg class="patina-footer__payment-icon" viewBox="0 0 38 24" width="38" height="24" role="img" aria-label="American Express">
+          <rect width="38" height="24" rx="3" fill="rgba(250,247,242,0.08)"/>
+          <text x="50%" y="16" text-anchor="middle" font-family="Helvetica,sans-serif" font-size="8" font-weight="700" fill="currentColor" letter-spacing="0.5">AMEX</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+{% stylesheet %}
+  /* ---- Footer ---- */
+
+  .patina-footer {
+    background-color: var(--color-footer-bg);
+    color: var(--color-footer-text);
+  }
+
+  /* Main section */
+
+  .patina-footer__main {
+    padding-top: 72px;
+    padding-bottom: 56px;
+  }
+
+  /* Grid */
+
+  .patina-footer__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 48px 32px;
+  }
+
+  @media (min-width: 640px) {
+    .patina-footer__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .patina-footer__grid {
+      grid-template-columns: 1.6fr 1fr 1fr 1.4fr;
+    }
+  }
+
+  /* Brand name */
+
+  .patina-footer__brand-name {
+    display: block;
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 1.5rem;
+    color: var(--color-footer-text);
+    text-decoration: none;
+    margin-bottom: 20px;
+    letter-spacing: 0.02em;
+  }
+
+  .patina-footer__brand-name:hover {
+    opacity: 0.75;
+    text-decoration: none;
+  }
+
+  .patina-footer__brand-logo {
+    display: block;
+    margin-bottom: 20px;
+    text-decoration: none;
+  }
+
+  .patina-footer__brand-logo:hover {
+    opacity: 0.75;
+  }
+
+  .patina-footer__brand-logo img {
+    filter: brightness(0) invert(1);
+  }
+
+  /* About text */
+
+  .patina-footer__about-text {
+    font-size: 0.875rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: rgba(250, 247, 242, 0.65);
+    margin: 0 0 24px;
+  }
+
+  /* Social icons */
+
+  .patina-footer__social {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .patina-footer__social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(250, 247, 242, 0.6);
+    text-decoration: none;
+    transition: color var(--transition-base);
+  }
+
+  .patina-footer__social-link:hover {
+    color: var(--color-primary);
+    opacity: 1;
+    text-decoration: none;
+  }
+
+  /* Column headings */
+
+  .patina-footer__col-heading {
+    font-family: var(--font-body);
+    font-style: normal;
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-footer-text);
+    margin: 0 0 20px;
+  }
+
+  /* Links */
+
+  .patina-footer__links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .patina-footer__link {
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: rgba(250, 247, 242, 0.65);
+    text-decoration: none;
+    transition: color var(--transition-base);
+    line-height: 1.5;
+  }
+
+  .patina-footer__link:hover {
+    color: var(--color-footer-text);
+    opacity: 1;
+    text-decoration: none;
+  }
+
+  /* Newsletter */
+
+  .patina-footer__newsletter-desc {
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: rgba(250, 247, 242, 0.65);
+    margin: 0 0 20px;
+    line-height: 1.6;
+  }
+
+  .patina-footer__newsletter-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  @media (min-width: 480px) {
+    .patina-footer__newsletter-row {
+      flex-direction: row;
+    }
+  }
+
+  .patina-footer__newsletter-input {
+    flex: 1;
+    padding: 11px 16px;
+    background: transparent;
+    border: 1px solid rgba(250, 247, 242, 0.2);
+    border-radius: var(--border-radius);
+    color: var(--color-footer-text);
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 300;
+    outline: none;
+    transition: border-color var(--transition-base);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .patina-footer__newsletter-input::placeholder {
+    color: rgba(250, 247, 242, 0.4);
+  }
+
+  .patina-footer__newsletter-input:focus {
+    border-color: var(--color-primary);
+  }
+
+  .patina-footer__newsletter-btn {
+    padding: 11px 24px;
+    background-color: transparent;
+    color: var(--color-footer-text);
+    border: 1px solid rgba(250, 247, 242, 0.4);
+    border-radius: var(--border-radius);
+    font-family: var(--font-body);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color var(--transition-base), border-color var(--transition-base), color var(--transition-base);
+  }
+
+  .patina-footer__newsletter-btn:hover {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #FAF7F2;
+  }
+
+  .patina-footer__newsletter-btn:focus-visible {
+    outline: 1px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* Bottom bar */
+
+  .patina-footer__bottom {
+    border-top: 1px solid rgba(250, 247, 242, 0.12);
+    padding: 24px 0;
+  }
+
+  .patina-footer__bottom-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .patina-footer__copyright {
+    font-size: 0.75rem;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    color: rgba(250, 247, 242, 0.5);
+    margin: 0;
+  }
+
+  .patina-footer__payment {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .patina-footer__payment-icon {
+    color: rgba(250, 247, 242, 0.6);
+    border-radius: 3px;
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    'use strict';
+    var form = document.querySelector(
+      '.patina-footer[data-section-id="{{ section.id }}"] [data-newsletter-form]'
+    );
+    if (!form) return;
+    form.addEventListener('submit', function () {
+      var btn = form.querySelector('[type="submit"]');
+      if (btn) {
+        btn.disabled = true;
+        btn.style.opacity = '0.6';
+      }
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.footer.name",
+  "tag": "div",
+  "class": "footer-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "t:sections.footer.settings.logo.label"
+    },
+    {
+      "type": "textarea",
+      "id": "about_text",
+      "label": "t:sections.footer.settings.about_text.label",
+      "default": "Fine jewelry crafted to be worn and loved, passed down through generations."
+    },
+    {
+      "type": "header",
+      "content": "t:sections.footer.settings.social_header.content"
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "t:sections.footer.settings.instagram_url.label"
+    },
+    {
+      "type": "url",
+      "id": "pinterest_url",
+      "label": "t:sections.footer.settings.pinterest_url.label"
+    },
+    {
+      "type": "url",
+      "id": "facebook_url",
+      "label": "t:sections.footer.settings.facebook_url.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link_column",
+      "name": "t:sections.footer.blocks.link_column.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.footer.blocks.link_column.settings.heading.label",
+          "default": "Quick links"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "t:sections.footer.blocks.link_column.settings.menu.label",
+          "default": "footer"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 2,
+  "presets": [
+    {
+      "name": "t:sections.footer.name",
+      "blocks": [
+        {
+          "type": "link_column",
+          "settings": {
+            "heading": "Quick links"
+          }
+        },
+        {
+          "type": "link_column",
+          "settings": {
+            "heading": "Customer care"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

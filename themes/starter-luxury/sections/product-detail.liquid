@@ -1,0 +1,586 @@
+<section class="product-detail section-padding">
+  <div class="container product-detail__layout">
+
+    {%- comment -%} Left column: image gallery {%- endcomment -%}
+    <div class="product-detail__media">
+      <div class="product-detail__main-image-wrap" data-main-image-wrap>
+        {% if product.featured_image %}
+          {%- assign featured_alt = product.featured_image.alt | escape -%}
+          {{ product.featured_image
+            | image_url: width: 900
+            | image_tag:
+              loading: 'eager',
+              alt: featured_alt,
+              class: 'product-detail__main-image',
+              width: 900,
+              height: 900,
+              id: 'product-main-image'
+          }}
+        {% else %}
+          <div class="product-detail__image-placeholder" aria-hidden="true">
+            {{ 'product-1' | placeholder_svg_tag }}
+          </div>
+        {% endif %}
+      </div>
+
+      {% if product.images.size > 1 %}
+        <div class="product-detail__thumbnails" role="list" aria-label="{{ 'product_detail.thumbnails_label' | t }}">
+          {% for image in product.images %}
+            <button
+              class="product-detail__thumb{% if forloop.first %} product-detail__thumb--active{% endif %}"
+              data-thumb-btn
+              data-image-url="{{ image | image_url: width: 900 }}"
+              data-image-alt="{{ image.alt | escape }}"
+              role="listitem"
+              aria-label="{{ 'product_detail.thumbnail_label' | t: index: forloop.index }}"
+              aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+            >
+              {%- assign thumb_alt = image.alt | escape -%}
+              {{ image | image_url: width: 120 | image_tag: loading: 'lazy', alt: thumb_alt, width: 120, height: 120 }}
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {%- comment -%} Right column: product info {%- endcomment -%}
+    <div class="product-detail__info">
+      {% if section.settings.enable_vendor %}
+        {% if product.vendor != blank %}
+          <p class="product-detail__vendor">{{ product.vendor }}</p>
+        {% endif %}
+      {% endif %}
+
+      <h1 class="product-detail__title">{{ product.title }}</h1>
+
+      <div class="product-detail__price">
+        {% render 'price', product: product %}
+      </div>
+
+      {%- form 'product', product, data-product-form: '', data-added-message: 'product_detail.added_to_cart' | t -%}
+        {%- comment -%} Variant selector {%- endcomment -%}
+        {% unless product.has_only_default_variant %}
+          {% for option in product.options_with_values %}
+            <div class="product-detail__option">
+              <label class="product-detail__option-label" for="option-{{ forloop.index }}">
+                {{ option.name }}
+              </label>
+              <select
+                id="option-{{ forloop.index }}"
+                class="product-detail__option-select"
+                name="options[{{ option.name | escape }}]"
+                data-option-select
+              >
+                {% for value in option.values %}
+                  <option
+                    value="{{ value | escape }}"
+                    {% if option.selected_value == value %}selected{% endif %}
+                  >{{ value }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          {% endfor %}
+        {% endunless %}
+
+        <input
+          type="hidden"
+          name="id"
+          value="{{ product.selected_or_first_available_variant.id }}"
+          data-variant-id
+        >
+
+        {%- comment -%} Quantity {%- endcomment -%}
+        <div class="product-detail__quantity">
+          {% render 'quantity-selector', value: 1, name: 'quantity' %}
+        </div>
+
+        <button
+          type="submit"
+          class="product-detail__add-btn"
+          {% unless product.available %}disabled{% endunless %}
+        >
+          {% if product.available %}
+            {{ 'product_detail.add_to_cart' | t }}
+          {% else %}
+            {{ 'product_detail.sold_out' | t }}
+          {% endif %}
+        </button>
+      {%- endform -%}
+
+      {%- comment -%} Accordion tabs {%- endcomment -%}
+      <div class="product-detail__tabs">
+        <details class="product-detail__tab" open>
+          <summary class="product-detail__tab-summary">
+            {{ 'product_detail.tab_description' | t }}
+            <span class="product-detail__tab-icon" aria-hidden="true"></span>
+          </summary>
+          <div class="product-detail__tab-body">
+            {% if product.description != blank %}
+              {{ product.description }}
+            {% else %}
+              <p class="product-detail__tab-empty">{{ 'product_detail.no_description' | t }}</p>
+            {% endif %}
+          </div>
+        </details>
+
+        <details class="product-detail__tab">
+          <summary class="product-detail__tab-summary">
+            {{ 'product_detail.tab_shipping' | t }}
+            <span class="product-detail__tab-icon" aria-hidden="true"></span>
+          </summary>
+          <div class="product-detail__tab-body">
+            <p>{{ 'product_detail.shipping_text' | t }}</p>
+          </div>
+        </details>
+
+        {% if section.settings.enable_share %}
+          <details class="product-detail__tab">
+            <summary class="product-detail__tab-summary">
+              {{ 'product_detail.tab_share' | t }}
+              <span class="product-detail__tab-icon" aria-hidden="true"></span>
+            </summary>
+            <div class="product-detail__tab-body">
+              <div class="product-detail__share">
+                <a
+                  href="https://www.facebook.com/sharer/sharer.php?u={{ shop.url | append: product.url | url_encode }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="product-detail__share-link"
+                >{{ 'product_detail.share_facebook' | t }}</a>
+                <a
+                  href="https://pinterest.com/pin/create/button/?url={{ shop.url | append: product.url | url_encode }}&media={{ product.featured_image | image_url: width: 1200 | url_encode }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="product-detail__share-link"
+                >{{ 'product_detail.share_pinterest' | t }}</a>
+              </div>
+            </div>
+          </details>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="product-detail__toast" data-cart-toast aria-live="polite" aria-atomic="true"></div>
+
+{% stylesheet %}
+  .product-detail__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  /* Gallery */
+  .product-detail__main-image-wrap {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+
+  .product-detail__main-image {
+    width: 100%;
+    display: block;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+
+  .product-detail__image-placeholder {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+
+  .product-detail__image-placeholder svg {
+    width: 100%;
+    display: block;
+    aspect-ratio: 1 / 1;
+  }
+
+  .product-detail__thumbnails {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .product-detail__thumb {
+    width: 72px;
+    height: 72px;
+    padding: 0;
+    border: 1px solid var(--color-border);
+    background: none;
+    cursor: pointer;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: border-color 0.2s ease;
+  }
+
+  .product-detail__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .product-detail__thumb--active {
+    border-color: var(--color-primary);
+  }
+
+  .product-detail__thumb:hover {
+    border-color: var(--color-text-secondary);
+  }
+
+  .product-detail__thumb:focus-visible {
+    outline: 1px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* Info column */
+  .product-detail__vendor {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    margin: 0 0 8px;
+  }
+
+  .product-detail__title {
+    font-family: var(--font-heading-family);
+    font-style: italic;
+    font-size: 2rem;
+    color: var(--color-text);
+    margin: 0 0 16px;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+  }
+
+  .product-detail__price {
+    margin-bottom: 24px;
+    font-size: 1.125rem;
+  }
+
+  /* Variant options */
+  .product-detail__option {
+    margin-bottom: 16px;
+  }
+
+  .product-detail__option-label {
+    display: block;
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    margin-bottom: 6px;
+  }
+
+  .product-detail__option-select {
+    width: 100%;
+    padding: 10px 36px 10px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: 0;
+    background: var(--color-surface);
+    font-family: var(--font-body-family);
+    font-size: 0.9375rem;
+    color: var(--color-text);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238B7355' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+  }
+
+  .product-detail__option-select:focus-visible {
+    outline: 1px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* Quantity */
+  .product-detail__quantity {
+    margin-bottom: 16px;
+  }
+
+  /* Add to cart button */
+  .product-detail__add-btn {
+    display: block;
+    width: 100%;
+    padding: 16px 24px;
+    background: var(--color-primary);
+    color: #FAF7F2;
+    border: none;
+    border-radius: 0;
+    font-family: var(--font-body-family);
+    font-size: 0.8125rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    margin-bottom: 32px;
+  }
+
+  .product-detail__add-btn:hover {
+    opacity: 0.85;
+  }
+
+  .product-detail__add-btn:focus-visible {
+    outline: 1px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  .product-detail__add-btn:disabled {
+    background: var(--color-border);
+    color: var(--color-text-secondary);
+    cursor: not-allowed;
+    opacity: 1;
+  }
+
+  /* Tabs (details/summary) */
+  .product-detail__tab {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .product-detail__tab:last-child {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .product-detail__tab-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+
+  .product-detail__tab-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .product-detail__tab-icon {
+    width: 12px;
+    height: 12px;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .product-detail__tab-icon::before,
+  .product-detail__tab-icon::after {
+    content: '';
+    position: absolute;
+    background: var(--color-text-secondary);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .product-detail__tab-icon::before {
+    width: 12px;
+    height: 1px;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+  }
+
+  .product-detail__tab-icon::after {
+    width: 1px;
+    height: 12px;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+  }
+
+  .product-detail__tab[open] .product-detail__tab-icon::after {
+    transform: translateX(-50%) rotate(90deg);
+    opacity: 0;
+  }
+
+  .product-detail__tab-body {
+    padding: 0 0 20px;
+    font-size: 0.9375rem;
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+  }
+
+  .product-detail__tab-empty {
+    margin: 0;
+    font-style: italic;
+  }
+
+  /* Share links */
+  .product-detail__share {
+    display: flex;
+    gap: 20px;
+  }
+
+  .product-detail__share-link {
+    font-size: 0.875rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 1px;
+  }
+
+  .product-detail__share-link:hover {
+    opacity: 0.75;
+  }
+
+  /* Toast */
+  .product-detail__toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--color-text);
+    color: var(--color-background);
+    padding: 12px 28px;
+    font-size: 0.875rem;
+    letter-spacing: 0.04em;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 9999;
+    white-space: nowrap;
+  }
+
+  .product-detail__toast--visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  @media (min-width: 1024px) {
+    .product-detail__layout {
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+    }
+
+    .product-detail__title {
+      font-size: 2.5rem;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    // Thumbnail gallery switcher
+    var thumbBtns = document.querySelectorAll('[data-thumb-btn]');
+    var mainWrap = document.querySelector('[data-main-image-wrap]');
+    var mainImg = mainWrap ? mainWrap.querySelector('img') : null;
+
+    thumbBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var url = btn.dataset.imageUrl;
+        var alt = btn.dataset.imageAlt || '';
+
+        if (mainImg) {
+          mainImg.src = url;
+          mainImg.alt = alt;
+        }
+
+        thumbBtns.forEach(function (b) {
+          b.classList.remove('product-detail__thumb--active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('product-detail__thumb--active');
+        btn.setAttribute('aria-pressed', 'true');
+      });
+    });
+
+    // AJAX add to cart
+    var form = document.querySelector('[data-product-form]');
+    var toast = document.querySelector('[data-cart-toast]');
+    if (!form) return;
+
+    var toastTimer = null;
+
+    function showToast(message) {
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.add('product-detail__toast--visible');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () {
+        toast.classList.remove('product-detail__toast--visible');
+      }, 3000);
+    }
+
+    function updateCartBadge(count) {
+      var badges = document.querySelectorAll('[data-cart-count]');
+      badges.forEach(function (badge) {
+        badge.textContent = count;
+        badge.hidden = count === 0;
+      });
+    }
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      var submitBtn = form.querySelector('.product-detail__add-btn');
+      if (submitBtn) submitBtn.disabled = true;
+
+      var formData = new FormData(form);
+      var body = {};
+      formData.forEach(function (value, key) {
+        body[key] = value;
+      });
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        body: JSON.stringify(body)
+      })
+        .then(function (response) {
+          if (!response.ok) {
+            return response.json().then(function (data) {
+              throw new Error(data.description || 'Could not add to cart');
+            });
+          }
+          return response.json();
+        })
+        .then(function () {
+          return fetch('/cart.js', { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        })
+        .then(function (response) { return response.json(); })
+        .then(function (cart) {
+          updateCartBadge(cart.item_count);
+          document.dispatchEvent(new CustomEvent('cart:updated', { detail: { item_count: cart.item_count } }));
+          showToast(form.dataset.addedMessage || 'Added to cart');
+        })
+        .catch(function (err) {
+          showToast(err.message);
+        })
+        .finally(function () {
+          if (submitBtn) {
+            var variant = form.querySelector('[data-variant-id]');
+            var isAvailable = variant && variant.value;
+            if (isAvailable) submitBtn.disabled = false;
+          }
+        });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.product_detail.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_vendor",
+      "label": "t:sections.product_detail.settings.enable_vendor.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_share",
+      "label": "t:sections.product_detail.settings.enable_share.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product detail"
+    }
+  ]
+}
+{% endschema %}

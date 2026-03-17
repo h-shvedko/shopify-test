@@ -1,0 +1,469 @@
+{
+  "general": {
+    "skip_to_content": "Skip to content",
+    "search": "Search",
+    "menu": "Menu",
+    "close": "Close",
+    "open": "Open",
+    "loading": "Loading...",
+    "no_results": "No results found",
+    "cart": "Cart",
+    "account": "Account",
+    "meta": {
+      "tagged": "Tagged {{ tags }}",
+      "page": "Page {{ page }}"
+    },
+    "pagination": {
+      "label": "Pagination",
+      "next": "Next",
+      "previous": "Previous",
+      "page": "Page {{ number }}"
+    },
+    "gift_card_title": "Gift card",
+    "gift_card_expired": "This gift card has expired",
+    "gift_card_code_label": "Your gift card code",
+    "gift_card_copy": "Copy code",
+    "gift_card_copied": "Copied!",
+    "gift_card_qr_alt": "Scan to redeem",
+    "gift_card_expiry": "Expires {{ date }}",
+    "gift_card_shop": "Shop now",
+    "gift_card_print": "Print",
+    "add_to_apple_wallet": "Add to Apple Wallet"
+  },
+  "header": {
+    "navigation": "Navigation",
+    "search_placeholder": "Search our collection...",
+    "announcement_text": "Complimentary shipping on orders over $150",
+    "cart_count": "Cart ({{ count }})"
+  },
+  "hero": {
+    "heading": "Heirloom pieces, worn daily",
+    "subheading": "Fine jewelry crafted for a lifetime of moments",
+    "cta_button": "Explore the collection"
+  },
+  "lookbook": {
+    "heading": "The lookbook",
+    "subheading": "Styled for every occasion",
+    "view_piece": "View piece"
+  },
+  "brand_story": {
+    "heading": "Our story",
+    "content": "Each piece is crafted with intention, using only ethically sourced materials and time-honored techniques passed down through generations.",
+    "cta_button": "Discover our atelier"
+  },
+  "products": {
+    "add_to_cart": "Add to bag",
+    "sold_out": "Sold out",
+    "sale": "Sale",
+    "from_price": "From {{ price }}",
+    "view_details": "View details",
+    "new_arrival": "New arrival",
+    "quantity": "Quantity",
+    "remove": "Remove",
+    "variant": "Select option",
+    "compare_at": "Was {{ price }}"
+  },
+  "product": {
+    "description_tab": "Description",
+    "details_tab": "Details & materials",
+    "shipping_tab": "Shipping & returns",
+    "related_heading": "You may also love",
+    "share": "Share this piece"
+  },
+  "collection": {
+    "filter": "Filter",
+    "sort": "Sort by",
+    "sort_options": {
+      "featured": "Featured",
+      "price_asc": "Price: low to high",
+      "price_desc": "Price: high to low",
+      "newest": "Newest arrivals",
+      "best_selling": "Best selling"
+    },
+    "products_count": "{{ count }} pieces",
+    "empty": "No pieces found. Try adjusting your filters."
+  },
+  "cart": {
+    "title": "Your bag",
+    "empty": "Your bag is empty",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "checkout": "Proceed to checkout",
+    "continue_shopping": "Continue shopping",
+    "remove_item": "Remove",
+    "update": "Update bag",
+    "note_label": "Order note",
+    "taxes_note": "Taxes and shipping calculated at checkout",
+    "quantity": "Quantity",
+    "free_shipping_remaining": "Add {{ amount }} more for complimentary shipping",
+    "free_shipping_achieved": "You have earned complimentary shipping"
+  },
+  "customer": {
+    "login": "Sign in",
+    "register": "Create account",
+    "account": "My account",
+    "orders": "Order history",
+    "logout": "Sign out",
+    "email": "Email address",
+    "password": "Password",
+    "first_name": "First name",
+    "last_name": "Last name",
+    "forgot_password": "Forgot your password?",
+    "no_account": "Don't have an account?",
+    "have_account": "Already have an account?",
+    "login_subheading": "Welcome back to Patina",
+    "register_subheading": "Create your Patina account",
+    "welcome": "Welcome, {{ name }}",
+    "order_number": "Order {{ number }}",
+    "order_date": "Placed on {{ date }}",
+    "order_status": "Status",
+    "order_total": "Total",
+    "order_number_col": "Order",
+    "order_date_col": "Date",
+    "order_items_col": "Items",
+    "order_product_col": "Product",
+    "order_qty_col": "Qty",
+    "order_price_col": "Unit price",
+    "order_summary": "Order summary",
+    "no_orders": "You haven't placed any orders yet.",
+    "start_shopping": "Explore the collection",
+    "back_to_account": "Back to account",
+    "default_address": "Default address",
+    "no_address": "No address on file.",
+    "manage_addresses": "Manage addresses",
+    "shipping_address": "Shipping address",
+    "billing_address": "Billing address"
+  },
+  "newsletter": {
+    "heading": "Join the inner circle",
+    "subheading": "Be the first to discover new arrivals, private events, and the stories behind each piece.",
+    "email_placeholder": "Your email address",
+    "subscribe_button": "Subscribe",
+    "success_message": "Thank you for joining us."
+  },
+  "testimonials": {
+    "heading": "What our clients say",
+    "rating_label": "{{ rating }} out of 5 stars"
+  },
+  "footer": {
+    "quick_links": "Quick links",
+    "customer_care": "Customer care",
+    "newsletter_heading": "Stay connected",
+    "copyright": "\u00a9 {{ year }} {{ shop }}. All rights reserved.",
+    "social_heading": "Follow us"
+  },
+  "accessibility": {
+    "skip_to_content": "Skip to content",
+    "close_menu": "Close menu",
+    "open_menu": "Open menu",
+    "remove_item": "Remove {{ title }} from cart",
+    "increase_quantity": "Increase quantity",
+    "decrease_quantity": "Decrease quantity"
+  },
+  "cta_banner": {
+    "heading": "Bespoke & custom pieces",
+    "subheading": "Work with our artisans to create something entirely your own",
+    "button_text": "Enquire now"
+  },
+  "not_found": {
+    "heading": "Page not found",
+    "subheading": "The page you are looking for may have moved or no longer exists.",
+    "button_text": "Return home"
+  },
+  "search": {
+    "heading": "Search",
+    "placeholder": "Search our collection...",
+    "no_results": "No results for \u201c{{ terms }}\u201d",
+    "results_count": "{{ count }} results for \u201c{{ terms }}\u201d"
+  },
+  "featured_collection": {
+    "heading": "New arrivals",
+    "view_all": "View all",
+    "view_all_label": "View all pieces in {{ title }}"
+  },
+  "product_grid": {
+    "showing_count": "{{ count }} pieces",
+    "sort_by": "Sort",
+    "sort_featured": "Featured",
+    "sort_best_selling": "Best selling",
+    "sort_price_asc": "Price, low to high",
+    "sort_price_desc": "Price, high to low",
+    "sort_newest": "Newest arrivals",
+    "sort_title_asc": "A\u2013Z",
+    "sort_title_desc": "Z\u2013A",
+    "no_products": "No pieces found in this collection",
+    "view_all": "View all pieces"
+  },
+  "product_detail": {
+    "add_to_cart": "Add to bag",
+    "sold_out": "Sold out",
+    "added_to_cart": "Added to your bag",
+    "tab_description": "Description",
+    "tab_shipping": "Shipping & returns",
+    "tab_share": "Share",
+    "no_description": "No description available.",
+    "shipping_text": "Complimentary shipping on all orders. Returns accepted within 14 days of delivery.",
+    "share_facebook": "Share on Facebook",
+    "share_pinterest": "Save on Pinterest",
+    "thumbnails_label": "Product images",
+    "thumbnail_label": "View image {{ index }}"
+  },
+  "related_products": {
+    "heading": "You may also like"
+  },
+  "newsletter_cta": {
+    "email_label": "Email address",
+    "email_placeholder": "Your email address",
+    "subscribe": "Subscribe",
+    "success": "Thank you for subscribing.",
+    "error": "Please enter a valid email address."
+  },
+  "collections_list": {
+    "explore": "Explore"
+  },
+  "pagination": {
+    "label": "Pagination",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {{ number }}",
+    "current_page": "Page {{ number }}, current"
+  },
+  "badges": {
+    "bestseller": "Bestseller",
+    "sold_out": "Sold out",
+    "new": "New"
+  },
+  "sections": {
+    "header": {
+      "name": "Header",
+      "nav_aria_label": "Main navigation",
+      "mobile_menu_aria_label": "Mobile menu",
+      "mobile_nav_aria_label": "Mobile navigation",
+      "announcement_label": "Announcement",
+      "cart_count": "{{ count }} items in cart",
+      "settings": {
+        "logo": { "label": "Logo image" },
+        "logo_width": { "label": "Logo width" },
+        "menu": { "label": "Navigation menu" },
+        "announcement_header": { "content": "Announcement bar" },
+        "enable_announcement": { "label": "Show announcement bar" },
+        "announcement_text": { "label": "Announcement text" },
+        "behaviour_header": { "content": "Header behaviour" },
+        "sticky_header": { "label": "Sticky header" },
+        "transparent_on_home": { "label": "Transparent on home page" }
+      }
+    },
+    "footer": {
+      "name": "Footer",
+      "newsletter_heading": "Stay connected",
+      "newsletter_description": "Receive stories, new arrivals, and private invitations.",
+      "newsletter_placeholder": "Your email address",
+      "subscribe": "Subscribe",
+      "copyright": "\u00a9 {{ year }} {{ shop_name }}. All rights reserved.",
+      "social_label": "Follow us",
+      "payment_label": "Accepted payment methods",
+      "settings": {
+        "logo": { "label": "Footer logo" },
+        "about_text": { "label": "About text" },
+        "social_header": { "content": "Social media" },
+        "instagram_url": { "label": "Instagram URL" },
+        "pinterest_url": { "label": "Pinterest URL" },
+        "facebook_url": { "label": "Facebook URL" }
+      },
+      "blocks": {
+        "link_column": {
+          "name": "Link column",
+          "settings": {
+            "heading": { "label": "Column heading" },
+            "menu": { "label": "Navigation menu" }
+          }
+        }
+      }
+    },
+    "hero_banner": {
+      "name": "Hero banner",
+      "settings": {
+        "image": { "label": "Background image" },
+        "mobile_image": {
+          "label": "Mobile background image",
+          "info": "Optional. Displayed on screens narrower than 768px."
+        },
+        "heading": { "label": "Heading" },
+        "subheading": { "label": "Subheading" },
+        "button_text": { "label": "Button text" },
+        "button_url": { "label": "Button link" },
+        "text_alignment": {
+          "label": "Text alignment",
+          "options": {
+            "left": "Left",
+            "center": "Center",
+            "right": "Right"
+          }
+        },
+        "overlay_opacity": { "label": "Overlay opacity" },
+        "min_height": { "label": "Minimum height" }
+      }
+    },
+    "lookbook_gallery": {
+      "name": "Lookbook gallery",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "subheading": { "label": "Subheading" }
+      },
+      "blocks": {
+        "image": {
+          "name": "Image",
+          "settings": {
+            "image": { "label": "Image" },
+            "link": { "label": "Link" },
+            "caption": { "label": "Caption" }
+          }
+        }
+      }
+    },
+    "brand_story": {
+      "name": "Brand story",
+      "settings": {
+        "image": { "label": "Primary image" },
+        "secondary_image": {
+          "label": "Secondary image",
+          "info": "Optional. Overlaps the primary image as an accent."
+        },
+        "eyebrow": { "label": "Eyebrow text" },
+        "heading": { "label": "Heading" },
+        "content": { "label": "Content" },
+        "button_text": { "label": "Button text" },
+        "button_url": { "label": "Button link" },
+        "layout": {
+          "label": "Layout",
+          "options": {
+            "image_left": "Image left",
+            "image_right": "Image right"
+          }
+        }
+      }
+    },
+    "product_grid": {
+      "name": "Product grid",
+      "settings": {
+        "products_per_page": { "label": "Products per page" },
+        "columns_desktop": { "label": "Columns on desktop" }
+      }
+    },
+    "product_detail": {
+      "name": "Product detail",
+      "settings": {
+        "enable_vendor": { "label": "Show vendor" },
+        "enable_share": { "label": "Show share links" }
+      }
+    },
+    "featured_collection": {
+      "name": "Featured collection",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "subheading": { "label": "Subheading" },
+        "collection": { "label": "Collection" },
+        "products_to_show": { "label": "Products to show" },
+        "show_view_all": { "label": "Show \u201cView all\u201d link" }
+      }
+    },
+    "related_products": {
+      "name": "Related products",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "products_to_show": { "label": "Products to show" }
+      }
+    },
+    "testimonials": {
+      "name": "Testimonials",
+      "settings": {
+        "heading": { "label": "Section heading" }
+      },
+      "blocks": {
+        "testimonial": {
+          "name": "Testimonial",
+          "settings": {
+            "quote": { "label": "Quote" },
+            "author": { "label": "Author name" },
+            "rating": { "label": "Star rating (0 to hide)" }
+          }
+        }
+      }
+    },
+    "newsletter_cta": {
+      "name": "Newsletter",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "subheading": { "label": "Subheading" }
+      }
+    },
+    "cta_banner": {
+      "name": "CTA banner",
+      "settings": {
+        "image": { "label": "Background image" },
+        "background_color": { "label": "Background color" },
+        "enable_overlay": { "label": "Show dark overlay" },
+        "overlay_opacity": { "label": "Overlay opacity" },
+        "heading": { "label": "Heading" },
+        "subheading": { "label": "Subheading" },
+        "button_label": { "label": "Button label" },
+        "button_url": { "label": "Button link" }
+      }
+    },
+    "collections_list": {
+      "name": "Collections list",
+      "settings": {
+        "heading": { "label": "Heading" }
+      }
+    },
+    "main_page": {
+      "name": "Page content",
+      "settings": {
+        "show_title": { "label": "Show page title" }
+      },
+      "presets": {
+        "default": "Page content"
+      }
+    },
+    "cart_content": {
+      "name": "Cart",
+      "settings": {
+        "show_free_shipping_bar": { "label": "Show free shipping progress bar" }
+      },
+      "presets": {
+        "default": "Cart"
+      }
+    },
+    "search_results": {
+      "name": "Search results",
+      "settings": {
+        "results_per_page": { "label": "Results per page" }
+      },
+      "presets": {
+        "default": "Search results"
+      }
+    },
+    "not_found": {
+      "name": "404 page",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "subheading": { "label": "Subheading" }
+      },
+      "presets": {
+        "default": "404 page"
+      }
+    },
+    "customer_login": {
+      "name": "Customer login"
+    },
+    "customer_register": {
+      "name": "Customer register"
+    },
+    "customer_account": {
+      "name": "Customer account"
+    },
+    "customer_order": {
+      "name": "Customer order"
+    }
+  }
+}

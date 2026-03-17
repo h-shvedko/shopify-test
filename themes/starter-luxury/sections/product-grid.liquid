@@ -1,0 +1,194 @@
+{% paginate collection.products by section.settings.products_per_page %}
+<section class="product-grid section-padding">
+  <div class="container">
+    <h1 class="product-grid__title">{{ collection.title }}</h1>
+
+    <div class="product-grid__toolbar">
+      <p class="product-grid__count">{{ 'product_grid.showing_count' | t: count: collection.products_count }}</p>
+      <div class="product-grid__sort">
+        <label for="patina-sort-by" class="product-grid__sort-label">{{ 'product_grid.sort_by' | t }}</label>
+        <select id="patina-sort-by" class="product-grid__sort-select" data-sort-select>
+          <option value="manual" {% if collection.sort_by == 'manual' %}selected{% endif %}>{{ 'product_grid.sort_featured' | t }}</option>
+          <option value="best-selling" {% if collection.sort_by == 'best-selling' %}selected{% endif %}>{{ 'product_grid.sort_best_selling' | t }}</option>
+          <option value="price-ascending" {% if collection.sort_by == 'price-ascending' %}selected{% endif %}>{{ 'product_grid.sort_price_asc' | t }}</option>
+          <option value="price-descending" {% if collection.sort_by == 'price-descending' %}selected{% endif %}>{{ 'product_grid.sort_price_desc' | t }}</option>
+          <option value="created-descending" {% if collection.sort_by == 'created-descending' %}selected{% endif %}>{{ 'product_grid.sort_newest' | t }}</option>
+          <option value="title-ascending" {% if collection.sort_by == 'title-ascending' %}selected{% endif %}>{{ 'product_grid.sort_title_asc' | t }}</option>
+          <option value="title-descending" {% if collection.sort_by == 'title-descending' %}selected{% endif %}>{{ 'product_grid.sort_title_desc' | t }}</option>
+        </select>
+      </div>
+    </div>
+
+    {% if collection.products.size > 0 %}
+      <div
+        class="product-grid__grid"
+        style="--pg-columns: {{ section.settings.columns_desktop }}"
+      >
+        {% for product in collection.products %}
+          {% render 'product-card', product: product %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="product-grid__empty">
+        <p class="product-grid__empty-text">{{ 'product_grid.no_products' | t }}</p>
+        <a href="{{ routes.all_products_collection_url }}" class="product-grid__empty-link">{{ 'product_grid.view_all' | t }}</a>
+      </div>
+    {% endif %}
+
+    {% render 'pagination', paginate: paginate %}
+  </div>
+</section>
+{% endpaginate %}
+
+{% stylesheet %}
+  .product-grid__title {
+    font-family: var(--font-heading-family);
+    font-style: italic;
+    font-size: 2rem;
+    color: var(--color-text);
+    margin: 0 0 32px;
+    letter-spacing: 0.02em;
+  }
+
+  .product-grid__toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--color-border);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .product-grid__count {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .product-grid__sort {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .product-grid__sort-label {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .product-grid__sort-select {
+    padding: 8px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: 0;
+    background: var(--color-surface);
+    font-size: 0.875rem;
+    color: var(--color-text);
+    font-family: var(--font-body-family);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238B7355' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+  }
+
+  .product-grid__sort-select:focus-visible {
+    outline: 1px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  .product-grid__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .product-grid__empty {
+    text-align: center;
+    padding: 80px 20px;
+    border: 1px solid var(--color-border);
+  }
+
+  .product-grid__empty-text {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    margin: 0 0 20px;
+  }
+
+  .product-grid__empty-link {
+    color: var(--color-primary);
+    font-size: 0.875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+  }
+
+  .product-grid__empty-link:hover {
+    opacity: 0.75;
+  }
+
+  @media (min-width: 1024px) {
+    .product-grid__title {
+      font-size: 2.5rem;
+    }
+
+    .product-grid__grid {
+      grid-template-columns: repeat(var(--pg-columns, 3), 1fr);
+      gap: 32px;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    var select = document.querySelector('[data-sort-select]');
+    if (!select) return;
+
+    select.addEventListener('change', function () {
+      var url = new URL(window.location.href);
+      url.searchParams.set('sort_by', this.value);
+      window.location.href = url.toString();
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.product_grid.name",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "t:sections.product_grid.settings.products_per_page.label",
+      "min": 4,
+      "max": 24,
+      "step": 4,
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "t:sections.product_grid.settings.columns_desktop.label",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "3"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product grid"
+    }
+  ]
+}
+{% endschema %}

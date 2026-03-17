@@ -1,0 +1,38 @@
+{% doc %}
+  Outputs CSS custom properties derived from theme settings.
+  Renders a <style> block that maps Shopify theme color/typography/layout
+  settings to CSS variables consumed by all components.
+
+  Usage:
+    {% render 'css-variables' %}
+
+  No parameters — reads from global `settings` object.
+{% enddoc %}
+
+<style>
+  :root {
+    --color-primary: {{ settings.color_primary }};
+    --color-background: {{ settings.color_background }};
+    --color-text: {{ settings.color_text }};
+    --color-text-secondary: {{ settings.color_text_secondary }};
+    --color-surface: {{ settings.color_surface }};
+    --color-border: {{ settings.color_border }};
+    --color-footer-bg: {{ settings.color_footer_bg }};
+    --color-footer-text: {{ settings.color_footer_text }};
+
+    --font-heading: {{ settings.font_heading.family | json }}, Georgia, serif;
+    --font-body: {{ settings.font_body.family | json }}, Helvetica, Arial, sans-serif;
+    --font-scale: {{ settings.font_scale | divided_by: 100.0 }};
+
+    --page-width: {{ settings.page_width }}px;
+    --spacing-scale: {{ settings.spacing_scale | divided_by: 100.0 }};
+  }
+</style>
+
+{%- if settings.font_heading.system == false -%}
+  <style>{{ settings.font_heading | font_face }}</style>
+{%- endif -%}
+
+{%- if settings.font_body.system == false -%}
+  <style>{{ settings.font_body | font_face }}</style>
+{%- endif -%}

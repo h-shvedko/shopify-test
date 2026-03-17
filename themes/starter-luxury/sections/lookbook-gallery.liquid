@@ -1,0 +1,291 @@
+<section class="patina-lookbook section" data-section-id="{{ section.id }}">
+  <div class="container">
+
+    {%- if section.settings.heading != blank -%}
+      <div class="patina-lookbook__header">
+        <h2 class="patina-lookbook__heading">{{ section.settings.heading | escape }}</h2>
+        {%- if section.settings.subheading != blank -%}
+          <p class="patina-lookbook__subheading">{{ section.settings.subheading | escape }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="patina-lookbook__grid">
+        {%- for block in section.blocks -%}
+          {%- assign grid_class = '' -%}
+          {%- assign mod = forloop.index0 | modulo: 5 -%}
+          {%- if mod == 0 -%}
+            {%- assign grid_class = 'patina-lookbook__item--large' -%}
+          {%- elsif mod == 3 -%}
+            {%- assign grid_class = 'patina-lookbook__item--wide' -%}
+          {%- endif -%}
+
+          <div
+            class="patina-lookbook__item {{ grid_class }}"
+            {{ block.shopify_attributes }}
+          >
+            {%- if block.settings.link != blank -%}
+              <a href="{{ block.settings.link }}" class="patina-lookbook__link" aria-label="{{ block.settings.caption | default: shop.name | escape }}">
+            {%- else -%}
+              <div class="patina-lookbook__link">
+            {%- endif -%}
+
+              <div class="patina-lookbook__img-wrap">
+                {%- if block.settings.image != blank -%}
+                  {{
+                    block.settings.image
+                    | image_url: width: 900
+                    | image_tag:
+                      class: 'patina-lookbook__img',
+                      loading: 'lazy',
+                      alt: block.settings.image.alt | escape | default: block.settings.caption | escape
+                  }}
+                {%- else -%}
+                  <div class="patina-lookbook__img-placeholder" aria-hidden="true">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="opacity:0.25;">
+                      <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                  </div>
+                {%- endif -%}
+
+                {%- if block.settings.caption != blank -%}
+                  <div class="patina-lookbook__caption" aria-hidden="true">
+                    <span class="patina-lookbook__caption-text">{{ block.settings.caption | escape }}</span>
+                  </div>
+                {%- endif -%}
+              </div>
+
+            {%- if block.settings.link != blank -%}
+              </a>
+            {%- else -%}
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+{% stylesheet %}
+  /* ---- Lookbook gallery ---- */
+
+  .patina-lookbook__header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+
+  .patina-lookbook__heading {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+    color: var(--color-text);
+    margin: 0 0 12px;
+    letter-spacing: 0.01em;
+  }
+
+  .patina-lookbook__subheading {
+    font-size: 0.875rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  /* Grid — 2 equal columns on mobile */
+
+  .patina-lookbook__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  @media (min-width: 768px) {
+    .patina-lookbook__grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .patina-lookbook__grid {
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: 300px;
+      gap: 16px;
+    }
+  }
+
+  /* Asymmetric size variants — desktop only */
+
+  @media (min-width: 1024px) {
+    .patina-lookbook__item--large {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+
+    .patina-lookbook__item--wide {
+      grid-column: span 2;
+    }
+  }
+
+  /* Item */
+
+  .patina-lookbook__item {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .patina-lookbook__link {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    overflow: hidden;
+  }
+
+  .patina-lookbook__img-wrap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--color-border);
+  }
+
+  /* Force aspect ratio on mobile/tablet where grid rows are auto */
+  @media (max-width: 1023px) {
+    .patina-lookbook__img-wrap {
+      aspect-ratio: 3 / 4;
+    }
+  }
+
+  .patina-lookbook__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+
+  .patina-lookbook__link:hover .patina-lookbook__img {
+    transform: scale(1.04);
+  }
+
+  .patina-lookbook__img-placeholder {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    background-color: var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary);
+  }
+
+  /* Thin border overlay on hover */
+
+  .patina-lookbook__img-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1px solid transparent;
+    transition: border-color 0.3s ease;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .patina-lookbook__link:hover .patina-lookbook__img-wrap::after {
+    border-color: rgba(250, 247, 242, 0.6);
+  }
+
+  /* Caption */
+
+  .patina-lookbook__caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 24px 16px 16px;
+    background: linear-gradient(to top, rgba(44, 24, 16, 0.7) 0%, transparent 100%);
+    transform: translateY(4px);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 3;
+  }
+
+  .patina-lookbook__link:hover .patina-lookbook__caption,
+  .patina-lookbook__item:hover .patina-lookbook__caption {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .patina-lookbook__caption-text {
+    font-size: 0.75rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(250, 247, 242, 0.9);
+    display: block;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.lookbook_gallery.name",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.lookbook_gallery.settings.heading.label",
+      "default": "The lookbook"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "t:sections.lookbook_gallery.settings.subheading.label",
+      "default": "A season in fine gold and stone"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "t:sections.lookbook_gallery.blocks.image.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.lookbook_gallery.blocks.image.settings.image.label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.lookbook_gallery.blocks.image.settings.link.label"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "t:sections.lookbook_gallery.blocks.image.settings.caption.label"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "t:sections.lookbook_gallery.name",
+      "blocks": [
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" }
+      ]
+    }
+  ]
+}
+{% endschema %}

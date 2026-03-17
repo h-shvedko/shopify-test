@@ -1,0 +1,179 @@
+<section class="customer-auth section">
+  <div class="container">
+    <div class="customer-auth__inner">
+
+      <div class="customer-auth__header">
+        <h1 class="customer-auth__title">{{ 'customer.login' | t }}</h1>
+        <p class="customer-auth__subtitle">{{ 'customer.login_subheading' | t }}</p>
+      </div>
+
+      {%- form 'customer_login' -%}
+        {{ form.errors | default_errors }}
+
+        <div class="customer-auth__field">
+          <label class="customer-auth__label" for="login-email">
+            {{ 'customer.email' | t }}
+          </label>
+          <input
+            class="customer-auth__input"
+            type="email"
+            id="login-email"
+            name="customer[email]"
+            autocomplete="email"
+            required
+          >
+        </div>
+
+        <div class="customer-auth__field">
+          <div class="customer-auth__label-row">
+            <label class="customer-auth__label" for="login-password">
+              {{ 'customer.password' | t }}
+            </label>
+            <a href="{{ routes.account_recover_url }}" class="customer-auth__forgot">
+              {{ 'customer.forgot_password' | t }}
+            </a>
+          </div>
+          <input
+            class="customer-auth__input"
+            type="password"
+            id="login-password"
+            name="customer[password]"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full">
+          {{ 'customer.login' | t }}
+        </button>
+      {%- endform -%}
+
+      <p class="customer-auth__switch">
+        {{ 'customer.no_account' | t }}
+        <a href="{{ routes.account_register_url }}">{{ 'customer.register' | t }}</a>
+      </p>
+
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .customer-auth__inner {
+    max-width: 440px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: var(--space-12) 0;
+  }
+
+  .customer-auth__header {
+    text-align: center;
+    margin-bottom: var(--space-10);
+  }
+
+  .customer-auth__title {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    margin-bottom: var(--space-2);
+  }
+
+  .customer-auth__subtitle {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    font-weight: 300;
+    margin: 0;
+  }
+
+  .customer-auth__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-bottom: var(--space-5);
+  }
+
+  .customer-auth__label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .customer-auth__label {
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+  }
+
+  .customer-auth__forgot {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .customer-auth__forgot:hover {
+    color: var(--color-primary);
+    opacity: 1;
+  }
+
+  .customer-auth__input {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 0.9375rem;
+    font-weight: 300;
+    width: 100%;
+    transition: border-color var(--transition-base);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .customer-auth__input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+
+  .customer-auth__input:focus-visible {
+    outline: 1px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  .customer-auth__switch {
+    text-align: center;
+    margin-top: var(--space-6);
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+  }
+
+  .customer-auth__switch a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* Error styles */
+  .customer-auth .errors {
+    background-color: #fdf2f2;
+    border: 1px solid #e8b4b4;
+    padding: var(--space-4);
+    margin-bottom: var(--space-6);
+    font-size: 0.875rem;
+    color: #8b2020;
+  }
+
+  .customer-auth .errors ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.customer_login.name",
+  "settings": [],
+}
+{% endschema %}

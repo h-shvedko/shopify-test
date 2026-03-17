@@ -1,0 +1,253 @@
+{% doc %}
+  Renders a product card with hover-to-reveal interaction.
+
+  @param {product} product - A Shopify product object
+  @param {boolean} [show_vendor] - Show the vendor name above the title. Default: false
+  @param {boolean} [show_badge] - Show sale/new/sold-out badge overlay. Default: true
+  @param {string} [image_ratio] - Aspect ratio class suffix. Default: '3-4'
+
+  @example
+  {% render 'product-card', product: product, show_vendor: true, show_badge: true %}
+{% enddoc %}
+
+<style>
+  .product-card {
+    position: relative;
+    display: block;
+    text-decoration: none;
+    color: var(--color-text);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+  }
+
+  .product-card:hover {
+    border-color: var(--color-text-secondary);
+  }
+
+  .product-card__media {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .product-card__media--3-4 {
+    aspect-ratio: 3 / 4;
+  }
+
+  .product-card__media--1-1 {
+    aspect-ratio: 1 / 1;
+  }
+
+  .product-card__media--4-3 {
+    aspect-ratio: 4 / 3;
+  }
+
+  .product-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 600ms ease;
+  }
+
+  .product-card:hover .product-card__image {
+    transform: scale(1.04);
+  }
+
+  .product-card__placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .product-card__placeholder svg {
+    opacity: 0.3;
+    color: var(--color-text-secondary);
+  }
+
+  /* Badge overlay */
+  .product-card__badge {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 2;
+  }
+
+  /* Hover reveal overlay */
+  .product-card__overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.25rem;
+    background-color: rgba(250, 247, 242, 0.92);
+    border-top: 1px solid var(--color-border);
+    transform: translateY(100%);
+    transition: transform 350ms ease;
+  }
+
+  .product-card:hover .product-card__overlay {
+    transform: translateY(0);
+  }
+
+  .product-card:focus-within .product-card__overlay {
+    transform: translateY(0);
+  }
+
+  .product-card__vendor {
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.25rem;
+  }
+
+  .product-card__title {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 1.125rem;
+    line-height: 1.2;
+    color: var(--color-text);
+    margin-bottom: 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .product-card__price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .product-card__link-hint {
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    white-space: nowrap;
+  }
+
+  /* Static info below card (always visible, no hover required) */
+  .product-card__info {
+    padding: 0.875rem 0.875rem 1rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  @media (max-width: 767px) {
+    /* On mobile, skip hover — show info block below image instead */
+    .product-card__overlay {
+      position: static;
+      transform: none;
+      background: none;
+      border-top: none;
+      padding: 0;
+    }
+
+    .product-card__image {
+      transform: none !important;
+    }
+
+    .product-card__info {
+      display: block;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .product-card__info {
+      display: none;
+    }
+  }
+</style>
+
+{%- liquid
+  assign card_ratio = image_ratio | default: '3-4'
+  assign display_badge = show_badge | default: true
+
+  assign is_sold_out = false
+  unless product.available
+    assign is_sold_out = true
+  endunless
+
+  assign is_on_sale = false
+  if product.compare_at_price > product.price
+    assign is_on_sale = true
+  endif
+
+  assign is_new = false
+  assign seven_days_ago = 'now' | date: '%s' | minus: 604800
+  assign published_at = product.published_at | date: '%s' | plus: 0
+  if published_at > seven_days_ago
+    assign is_new = true
+  endif
+-%}
+
+<article class="product-card">
+  <a href="{{ product.url }}" aria-label="{{ product.title | escape }}" tabindex="0">
+
+    <div class="product-card__media product-card__media--{{ card_ratio }}">
+      {%- if product.featured_image != blank -%}
+        {{
+          product.featured_image
+          | image_url: width: 600
+          | image_tag:
+            class: 'product-card__image',
+            loading: 'lazy',
+            widths: '300, 400, 600',
+            sizes: '(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw',
+            alt: product.featured_image.alt | escape
+        }}
+      {%- else -%}
+        <div class="product-card__placeholder">
+          {% render 'icon', name: 'diamond', size: 48 %}
+        </div>
+      {%- endif -%}
+
+      {%- if display_badge -%}
+        <div class="product-card__badge">
+          {%- if is_sold_out -%}
+            {%- assign sold_out_text = 'products.sold_out' | t -%}
+            {% render 'badge', text: sold_out_text, type: 'sold_out' %}
+          {%- elsif is_on_sale -%}
+            {%- assign sale_text = 'products.sale' | t -%}
+            {% render 'badge', text: sale_text, type: 'sale' %}
+          {%- elsif is_new -%}
+            {%- assign new_text = 'products.new_arrival' | t -%}
+            {% render 'badge', text: new_text, type: 'new' %}
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <!-- Hover overlay (desktop) -->
+      <div class="product-card__overlay" aria-hidden="true">
+        {%- if show_vendor -%}
+          <p class="product-card__vendor">{{ product.vendor }}</p>
+        {%- endif -%}
+        <h3 class="product-card__title">{{ product.title }}</h3>
+        <div class="product-card__price-row">
+          {% render 'price', product: product %}
+          <span class="product-card__link-hint">{{ 'products.view_details' | t }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Static info (mobile) -->
+    <div class="product-card__info">
+      {%- if show_vendor -%}
+        <p class="product-card__vendor">{{ product.vendor }}</p>
+      {%- endif -%}
+      <h3 class="product-card__title">{{ product.title }}</h3>
+      {% render 'price', product: product %}
+    </div>
+
+  </a>
+</article>

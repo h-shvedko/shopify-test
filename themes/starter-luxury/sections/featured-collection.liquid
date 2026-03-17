@@ -1,0 +1,146 @@
+<section class="featured-collection section-padding">
+  <div class="container">
+    <div class="featured-collection__header">
+      {% if section.settings.heading != blank %}
+        <h2 class="featured-collection__heading">{{ section.settings.heading | escape }}</h2>
+      {% endif %}
+
+      {% if section.settings.subheading != blank %}
+        <p class="featured-collection__subheading">{{ section.settings.subheading | escape }}</p>
+      {% endif %}
+    </div>
+
+    {% if section.settings.collection != blank %}
+      <div class="featured-collection__grid">
+        {% for product in section.settings.collection.products limit: section.settings.products_to_show %}
+          {% render 'product-card', product: product %}
+        {% endfor %}
+      </div>
+
+      {% if section.settings.show_view_all %}
+        <div class="featured-collection__footer">
+          <a
+            href="{{ section.settings.collection.url }}"
+            class="featured-collection__view-all"
+            aria-label="{{ 'featured_collection.view_all_label' | t: title: section.settings.collection.title }}"
+          >
+            {{ 'featured_collection.view_all' | t }}
+          </a>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .featured-collection__header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .featured-collection__heading {
+    font-family: var(--font-heading-family);
+    font-style: italic;
+    font-size: 2rem;
+    color: var(--color-text);
+    margin: 0 0 12px;
+    letter-spacing: 0.02em;
+  }
+
+  .featured-collection__subheading {
+    font-size: 0.9375rem;
+    color: var(--color-text-secondary);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .featured-collection__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .featured-collection__footer {
+    text-align: center;
+    margin-top: 48px;
+  }
+
+  .featured-collection__view-all {
+    display: inline-block;
+    color: var(--color-text);
+    font-size: 0.8125rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-primary);
+    padding-bottom: 2px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .featured-collection__view-all:hover {
+    color: var(--color-primary);
+  }
+
+  .featured-collection__view-all:focus-visible {
+    outline: 1px solid var(--color-primary);
+    outline-offset: 4px;
+  }
+
+  @media (min-width: 1024px) {
+    .featured-collection__heading {
+      font-size: 2.75rem;
+    }
+
+    .featured-collection__grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.featured_collection.name",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.featured_collection.settings.heading.label",
+      "default": "New arrivals"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "t:sections.featured_collection.settings.subheading.label",
+      "default": "Handcrafted pieces for the discerning collector"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:sections.featured_collection.settings.collection.label"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "t:sections.featured_collection.settings.products_to_show.label",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "t:sections.featured_collection.settings.show_view_all.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured collection"
+    }
+  ]
+}
+{% endschema %}

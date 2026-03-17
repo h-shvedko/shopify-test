@@ -1,0 +1,167 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Patina",
+    "theme_version": "1.0.0",
+    "theme_author": "Starter Luxury",
+    "theme_documentation_url": "https://github.com/h-shvedko/shopify-test",
+    "theme_support_url": "https://github.com/h-shvedko/shopify-test/issues"
+  },
+  {
+    "name": "t:settings.colors.name",
+    "settings": [
+      {
+        "id": "color_primary",
+        "type": "color",
+        "label": "t:settings.colors.color_primary.label",
+        "default": "#C2734C"
+      },
+      {
+        "id": "color_background",
+        "type": "color",
+        "label": "t:settings.colors.color_background.label",
+        "default": "#FAF7F2"
+      },
+      {
+        "id": "color_text",
+        "type": "color",
+        "label": "t:settings.colors.color_text.label",
+        "default": "#2C1810"
+      },
+      {
+        "id": "color_text_secondary",
+        "type": "color",
+        "label": "t:settings.colors.color_text_secondary.label",
+        "default": "#8B7355"
+      },
+      {
+        "id": "color_surface",
+        "type": "color",
+        "label": "t:settings.colors.color_surface.label",
+        "default": "#FFFFFF"
+      },
+      {
+        "id": "color_border",
+        "type": "color",
+        "label": "t:settings.colors.color_border.label",
+        "default": "#E8E0D4"
+      },
+      {
+        "id": "color_footer_bg",
+        "type": "color",
+        "label": "t:settings.colors.color_footer_bg.label",
+        "default": "#2C1810"
+      },
+      {
+        "id": "color_footer_text",
+        "type": "color",
+        "label": "t:settings.colors.color_footer_text.label",
+        "default": "#FAF7F2"
+      }
+    ]
+  },
+  {
+    "name": "t:settings.typography.name",
+    "settings": [
+      {
+        "id": "font_heading",
+        "type": "font_picker",
+        "label": "t:settings.typography.font_heading.label",
+        "default": "cormorant_garamond_n4"
+      },
+      {
+        "id": "font_body",
+        "type": "font_picker",
+        "label": "t:settings.typography.font_body.label",
+        "default": "lato_n4"
+      },
+      {
+        "id": "font_scale",
+        "type": "range",
+        "label": "t:settings.typography.font_scale.label",
+        "min": 80,
+        "max": 130,
+        "step": 5,
+        "unit": "%",
+        "default": 100
+      }
+    ]
+  },
+  {
+    "name": "t:settings.layout.name",
+    "settings": [
+      {
+        "id": "page_width",
+        "type": "range",
+        "label": "t:settings.layout.page_width.label",
+        "min": 1000,
+        "max": 1600,
+        "step": 40,
+        "unit": "px",
+        "default": 1200
+      },
+      {
+        "id": "spacing_scale",
+        "type": "range",
+        "label": "t:settings.layout.spacing_scale.label",
+        "min": 80,
+        "max": 130,
+        "step": 10,
+        "unit": "%",
+        "default": 100
+      }
+    ]
+  },
+  {
+    "name": "t:settings.cart.name",
+    "settings": [
+      {
+        "id": "free_shipping_threshold",
+        "type": "number",
+        "label": "t:settings.cart.free_shipping_threshold.label",
+        "default": 150
+      },
+      {
+        "id": "show_free_shipping_bar",
+        "type": "checkbox",
+        "label": "t:settings.cart.show_free_shipping_bar.label",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "t:settings.social.name",
+    "settings": [
+      {
+        "id": "social_instagram_url",
+        "type": "url",
+        "label": "t:settings.social.social_instagram_url.label"
+      },
+      {
+        "id": "social_facebook_url",
+        "type": "url",
+        "label": "t:settings.social.social_facebook_url.label"
+      },
+      {
+        "id": "social_pinterest_url",
+        "type": "url",
+        "label": "t:settings.social.social_pinterest_url.label"
+      },
+      {
+        "id": "social_twitter_url",
+        "type": "url",
+        "label": "t:settings.social.social_twitter_url.label"
+      }
+    ]
+  },
+  {
+    "name": "t:settings.favicon.name",
+    "settings": [
+      {
+        "id": "favicon",
+        "type": "image_picker",
+        "label": "t:settings.favicon.favicon.label"
+      }
+    ]
+  }
+]

@@ -1,0 +1,20 @@
+{% doc %}
+  Renders a small label badge for products (sale, new, sold out, or custom).
+
+  @param {string} text - Badge display text
+  @param {string} [type] - Visual type: 'sale', 'new', 'sold_out', or 'custom'. Default: 'custom'
+  @param {boolean} [small] - If true, adds .badge--small for a reduced-size variant
+
+  @example
+  {% render 'badge', text: sale_label, type: 'sale' %}
+{% enddoc %}
+
+{%- liquid
+  assign badge_type = type | default: 'custom'
+  assign badge_classes = 'badge badge--' | append: badge_type
+  if small
+    assign badge_classes = badge_classes | append: ' badge--small'
+  endif
+-%}
+
+<span class="{{ badge_classes }}">{{ text | escape }}</span>

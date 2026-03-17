@@ -1,0 +1,210 @@
+{%- liquid
+  assign has_image = false
+  if section.settings.image != blank
+    assign has_image = true
+  endif
+
+  assign use_overlay = section.settings.enable_overlay
+-%}
+
+<section
+  class="cta-banner{% if has_image %} cta-banner--has-image{% endif %}"
+  style="
+    --cta-overlay-opacity: {{ section.settings.overlay_opacity }};
+    --cta-bg: {{ section.settings.background_color }};
+  "
+>
+  {% if has_image %}
+    {%- assign cta_img_alt = section.settings.image.alt | escape -%}
+    {{
+      section.settings.image
+      | image_url: width: 1920
+      | image_tag:
+        class: 'cta-banner__bg-image',
+        loading: 'lazy',
+        alt: cta_img_alt,
+        width: 1920,
+        height: 800
+    }}
+  {% endif %}
+
+  {% if use_overlay %}
+    <div class="cta-banner__overlay" aria-hidden="true"></div>
+  {% endif %}
+
+  <div class="container cta-banner__content">
+    {% if section.settings.heading != blank %}
+      <h2 class="cta-banner__heading">{{ section.settings.heading | escape }}</h2>
+    {% endif %}
+
+    {% if section.settings.subheading != blank %}
+      <p class="cta-banner__subheading">{{ section.settings.subheading | escape }}</p>
+    {% endif %}
+
+    {% if section.settings.button_label != blank %}
+      <a
+        href="{{ section.settings.button_url | default: '#' }}"
+        class="cta-banner__btn{% if has_image %} cta-banner__btn--on-image{% endif %}"
+      >
+        {{ section.settings.button_label | escape }}
+      </a>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .cta-banner {
+    position: relative;
+    background: var(--cta-bg, var(--color-primary));
+    padding: 80px 20px;
+    overflow: hidden;
+  }
+
+  .cta-banner__bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .cta-banner__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(44, 24, 16, calc(var(--cta-overlay-opacity, 40) / 100));
+  }
+
+  .cta-banner__content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .cta-banner__heading {
+    font-family: var(--font-heading-family);
+    font-style: italic;
+    font-size: 2.25rem;
+    color: #FAF7F2;
+    margin: 0 0 16px;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+  }
+
+  .cta-banner--has-image .cta-banner__heading {
+    color: #FAF7F2;
+  }
+
+  .cta-banner__subheading {
+    font-size: 1rem;
+    color: rgba(250, 247, 242, 0.85);
+    margin: 0 0 36px;
+    line-height: 1.65;
+  }
+
+  .cta-banner__btn {
+    display: inline-block;
+    padding: 14px 40px;
+    border: 1px solid #FAF7F2;
+    color: #FAF7F2;
+    font-family: var(--font-body-family);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .cta-banner__btn:hover {
+    background: #FAF7F2;
+    color: var(--color-primary);
+  }
+
+  .cta-banner__btn:focus-visible {
+    outline: 1px solid #FAF7F2;
+    outline-offset: 3px;
+  }
+
+  @media (min-width: 768px) {
+    .cta-banner {
+      padding: 120px 20px;
+    }
+
+    .cta-banner__heading {
+      font-size: 3rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .cta-banner__heading {
+      font-size: 3.5rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.cta_banner.name",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.cta_banner.settings.image.label"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:sections.cta_banner.settings.background_color.label",
+      "default": "#C2734C"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_overlay",
+      "label": "t:sections.cta_banner.settings.enable_overlay.label",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "t:sections.cta_banner.settings.overlay_opacity.label",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "default": 40,
+      "unit": "%"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.cta_banner.settings.heading.label",
+      "default": "Discover the collection"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "t:sections.cta_banner.settings.subheading.label",
+      "default": "Each piece tells a story. Find yours."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.cta_banner.settings.button_label.label",
+      "default": "Shop now"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "t:sections.cta_banner.settings.button_url.label",
+      "default": "/collections/all"
+    }
+  ],
+  "presets": [
+    {
+      "name": "CTA banner"
+    }
+  ]
+}
+{% endschema %}
