@@ -17,12 +17,15 @@ E-commerce project with 3 completed Shopify OS 2.0 themes under `themes/`, each 
 | BrewMaster | `themes/starter-minimal` | Small boutiques | #161419264240 | Published (live) |
 | ArtVault | `themes/starter-bold` | Art/creative studios | #161425916144 | Unpublished |
 | CodeCraft Academy | `themes/starter-developer` | Agencies, SaaS, courses | #161428340976 | Unpublished |
+| Patina | `themes/starter-luxury` | Fine jewelry, luxury | #161439547632 | Unpublished |
 
 **starter-minimal (BrewMaster)** — 76 files. Amber (#d97706) primary, white background, Helvetica fonts. Clean typography, whitespace-focused, fast loading. Plan: `PLANS/themes/1/PLAN-0001-brewmaster-shopify-theme.md`. Figma source: file IrYnqvFhgUXJAmw10tmxoe.
 
 **starter-bold (ArtVault)** — 69 files. Forest green (#2D5A3D) + warm wood (#C8956C), Playfair Display serif + Inter, dense editorial layouts. Features: glassmorphism header, marquee strip, editorial split, social feed, testimonials, video background hero. Plan: `PLANS/themes/2/PLAN-0002-artvault-shopify-theme.md`. Figma: https://www.figma.com/design/g2fn6NTKAz2GtmEyNYxMUE
 
 **starter-developer (CodeCraft Academy)** — 57 files. Dark terminal (#0B1120) + cyan (#06B6D4), JetBrains Mono/Space Grotesk, retro hacker aesthetic. Features: command bar header, terminal window component, dark mode toggle, comparison pricing table, animated counters, gradient text, tech stack badges. Design HTML: `PLANS/themes/3/design-developer-theme.html`. Figma: https://www.figma.com/design/0SaGse6Scy9l1hehrxojCK
+
+**starter-luxury (Patina)** — 52 files. Warm terracotta (#C2734C) + cream (#FAF7F2), Cormorant Garamond italic + Lato, retro/vintage aesthetic. Features: transparent header overlay, hover-to-reveal product cards, asymmetric lookbook gallery, editorial brand story, testimonials, newsletter CTA. Sharp edges (0px radius), no shadows, thin borders.
 
 ## Development Commands
 
