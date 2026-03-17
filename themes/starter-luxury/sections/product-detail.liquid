@@ -57,7 +57,8 @@
         {% render 'price', product: product %}
       </div>
 
-      {%- form 'product', product, data-product-form: '', data-added-message: 'product_detail.added_to_cart' | t -%}
+      {%- assign added_msg = 'product_detail.added_to_cart' | t -%}
+      {%- form 'product', product, data-product-form: '', data-added-message: added_msg -%}
         {%- comment -%} Variant selector {%- endcomment -%}
         {% unless product.has_only_default_variant %}
           {% for option in product.options_with_values %}

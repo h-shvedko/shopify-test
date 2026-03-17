@@ -18,7 +18,25 @@
     },
     "testimonials": {
       "type": "testimonials",
-      "settings": {}
+      "blocks": {
+        "testimonial_1": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "An heirloom in the making. The craftsmanship is extraordinary — every detail speaks of care and intention.",
+            "author": "Isabelle M.",
+            "rating": 5
+          }
+        },
+        "testimonial_2": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "The ring arrived beautifully packaged. The vintage style is exactly what I was looking for — timeless.",
+            "author": "Clara R.",
+            "rating": 5
+          }
+        }
+      },
+      "block_order": ["testimonial_1", "testimonial_2"]
     },
     "newsletter": {
       "type": "newsletter-cta",
