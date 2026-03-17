@@ -79,7 +79,7 @@
         "id": "font_serif",
         "type": "font_picker",
         "label": "t:settings.typography.font_serif.label",
-        "default": "source_serif_pro_n4"
+        "default": "source_serif_4_n4"
       },
       {
         "id": "font_scale",
