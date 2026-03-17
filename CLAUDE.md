@@ -19,6 +19,7 @@ E-commerce project with 3 completed Shopify OS 2.0 themes under `themes/`, each 
 | CodeCraft Academy | `themes/starter-developer` | Agencies, SaaS, courses | #161428340976 | Unpublished |
 | Patina | `themes/starter-luxury` | Fine jewelry, luxury | #161439547632 | Unpublished |
 | PawHaven | `themes/starter-pets` | Pet supplies | #161442234608 | Unpublished |
+| Zenith | `themes/starter-fitness` | Fitness & wellness | #161442988272 | Unpublished |
 
 **starter-minimal (BrewMaster)** — 76 files. Amber (#d97706) primary, white background, Helvetica fonts. Clean typography, whitespace-focused, fast loading. Plan: `PLANS/themes/1/PLAN-0001-brewmaster-shopify-theme.md`. Figma source: file IrYnqvFhgUXJAmw10tmxoe.
 
@@ -29,6 +30,8 @@ E-commerce project with 3 completed Shopify OS 2.0 themes under `themes/`, each 
 **starter-luxury (Patina)** — 52 files. Warm terracotta (#C2734C) + cream (#FAF7F2), Cormorant Garamond italic + Lato, retro/vintage aesthetic. Features: transparent header overlay, hover-to-reveal product cards, asymmetric lookbook gallery, editorial brand story, testimonials, newsletter CTA. Sharp edges (0px radius), no shadows, thin borders.
 
 **starter-pets (PawHaven)** — 52 files. Forest emerald (#059669) + warm sand (#F5F0E8), Nunito + Quicksand, earthy/natural aesthetic. Features: emerald announcement topbar, category carousel with circular cards, mosaic product grid, rounded cards with soft shadows (12px radius), scroll-reveal animations, mini cart dropdown, testimonial carousel, newsletter CTA.
+
+**starter-fitness (Zenith)** — 64 files. Soft black (#0A0A0A) + electric teal (#00D4AA) + coral (#FF6B6B), Syne/Inter/Source Serif 4 3-font system, ultra-premium cinematic editorial. Features: quick-view modal, product comparison, countdown timer, recently viewed (localStorage), swipeable product cards, tabbed gallery, multi-step cart, mega menu with product previews, bottom tab bar (mobile), dark/light mode toggle, FAQ with search, program showcase with pricing, animated stat counters, scroll-snap cinematic layout, parallax effects, glow animations.
 
 ## Development Commands
 
