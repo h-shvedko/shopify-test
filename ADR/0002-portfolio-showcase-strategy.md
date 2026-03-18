@@ -451,3 +451,138 @@ Incorporating the new job-driven projects into the existing build order, re-prio
 **Estimated total effort for top 8 (job-critical) projects:** 19-27 days
 
 **Recommendation:** For this specific job application, prioritize Projects 1, 10, 9, and 8 (approximately 12-16 days of work). These four projects would move portfolio coverage from 29% to approximately 63% of the job requirements, addressing the most visible gaps: custom app, SEO, B2B pricing, and polished UX.
+
+---
+
+## Additional Showcase Projects (Remaining Gaps)
+
+These projects address the last uncovered requirements from the gap analysis.
+
+### Project 15: Dropshipping Fulfillment Integration (Addresses Gap #12)
+
+**What:** A dropshipping-ready product setup with supplier integration via webhook/API, automated fulfillment routing, and inventory sync demonstration.
+
+**Why impressive:** Dropshipping is explicitly listed in the scope of work. It's a high-volume business model on Shopify, and demonstrating the technical setup (not just installing an app) shows operational depth.
+
+**Implementation approach:**
+- **Product architecture:** Products with `custom.supplier` metafield and `custom.supplier_sku` for mapping to supplier catalogs
+- **Fulfillment workflow:** Shopify Flow workflow that routes orders to different fulfillment services based on product vendor/tag
+- **Inventory sync concept:** Webhook listener (`inventory_levels/update`) that demonstrates how supplier stock feeds into Shopify inventory
+- **Supplier management page:** Admin metaobject `supplier` with fields: name, API endpoint, lead time, shipping origin country
+- **Automated order forwarding:** Documented webhook flow — `orders/create` → parse line items → forward supplier-specific items to supplier API endpoint
+- **Shipping estimate snippet:** `snippets/shipping-estimate.liquid` that calculates and displays estimated delivery based on supplier lead time metafield
+- **Documentation:** Supplier onboarding guide, fulfillment SLA expectations, inventory sync frequency recommendations
+
+**Complexity:** Medium (2-3 days)
+**Where:** Add to PawHaven theme (pet supplies dropshipping is a common use case)
+
+---
+
+### Project 16: CRO Audit and Growth Recommendations (Addresses Deliverable #4)
+
+**What:** A complete Conversion Rate Optimization audit of one theme with documented findings, A/B test hypotheses, and actionable growth recommendations delivered as a professional report.
+
+**Why impressive:** "Recommendations for growth, CRO, and performance improvements" is an explicit deliverable. This proves consulting-level thinking beyond code execution — the ability to advise merchants on revenue growth.
+
+**Implementation approach:**
+- **Funnel analysis document:** Map the customer journey (homepage → collection → product → cart → checkout) with conversion drop-off points and optimization recommendations at each stage
+- **Heatmap-informed UX audit:** Document above-the-fold content hierarchy, CTA placement, visual hierarchy issues, and scroll depth assumptions for each key page
+- **A/B test hypotheses:** 10 documented test ideas with hypothesis format ("If we [change], then [metric] will [improve] because [reason]"):
+  1. Hero CTA copy and color contrast
+  2. Product page image gallery layout (carousel vs. grid)
+  3. Add-to-cart button placement (sticky vs. static)
+  4. Social proof positioning (reviews above vs. below fold)
+  5. Free shipping threshold bar in header
+  6. Collection page grid density (3-col vs. 4-col)
+  7. Cart upsell recommendation algorithm (related vs. complementary)
+  8. Mobile navigation pattern (hamburger vs. bottom tabs)
+  9. Product description format (tabs vs. accordion vs. long-form)
+  10. Urgency elements (stock countdown, limited-time badge)
+- **Quick wins implementation:** Implement 3-5 quick CRO improvements directly in theme code:
+  - Trust badges below add-to-cart button (`snippets/trust-badges.liquid`)
+  - Sticky add-to-cart bar on mobile for product pages
+  - "Customers also bought" section on cart page using Product Recommendations API
+  - Exit-intent newsletter popup (vanilla JS, `mouseleave` event on desktop)
+- **Growth strategy document:** Recommendations for email capture, retention marketing, AOV improvement, and repeat purchase strategies
+- **Deliverable format:** Professional PDF-ready Markdown report in `CRO/` directory with screenshots, annotated mockups, and prioritized action items
+
+**Complexity:** Medium (2-3 days)
+**Where:** Audit Zenith theme, implement quick wins, document in `CRO/`
+
+---
+
+### Project 17: Merchant Training Video Scripts and Knowledge Base (Extends Project 14)
+
+**What:** Video walkthrough scripts and a Shopify-native knowledge base page template that merchants can use for self-service store management.
+
+**Why impressive:** Goes beyond static documentation to demonstrate client enablement skills. Agencies charge $2,000-5,000 for training packages. Having scripts ready shows productized service capability.
+
+**Implementation approach:**
+- **Video script series** (5 scripts, each 3-5 minutes):
+  1. "Customizing your homepage" — theme editor walkthrough for sections and blocks
+  2. "Managing products and collections" — bulk editing, variants, images, SEO fields
+  3. "Processing orders" — fulfillment, refunds, draft orders, notes
+  4. "Updating your navigation and pages" — menus, link lists, page templates
+  5. "Checking store health" — Shopify analytics overview, speed report, common issues
+- **Knowledge base page template:** `templates/page.help-center.json` with an FAQ section, search functionality (reuse FAQ search from Zenith), and categorized help articles using metaobjects
+- **Help center metaobject:** `help_article` with fields: title, category, body (rich text), related_articles, difficulty_level
+- **Quick-start checklist snippet:** `snippets/merchant-checklist.liquid` for embedding an interactive launch checklist on a staff-only page
+
+**Complexity:** Low-medium (1-2 days)
+**Where:** Scripts in `DOCS/training-scripts/`, knowledge base template in Zenith theme
+
+---
+
+## Final Updated Build Order (Complete Job Coverage)
+
+Full prioritized list including all 17 projects, optimized for maximum job requirement coverage:
+
+| Priority | Project | Type | Effort | Job Requirement | Coverage Impact |
+|---|---|---|---|---|---|
+| 1 | P1: Cart Drawer with Upsells | Liquid + JS | 2-3d | High-converting UX | Fills most-requested feature gap |
+| 2 | P10: SEO Optimization | Liquid + Audit | 2-3d | SEO (required skill) | Fills explicit skill requirement |
+| 3 | P9: Custom Shopify App | App + Admin API | 5-7d | Custom apps (scope) | Fills biggest portfolio gap |
+| 4 | P8: B2B Wholesale Pricing | Liquid + Metafields | 2-3d | B2B pricing (scope) | Fills Shopify Plus signal |
+| 5 | P12: Subscriptions + Bundles | Liquid + Selling Plans | 3-4d | Subscriptions, bundles (scope) | Fills 2 scope items at once |
+| 6 | P11: Analytics + Tracking | Pixels + GA4 | 2-3d | Analytics (scope) | Fills explicit scope item |
+| 7 | P16: CRO Audit + Recommendations | Audit + Quick Wins | 2-3d | Growth/CRO (deliverable) | Fills explicit deliverable |
+| 8 | P14: Merchant Documentation | Markdown/PDF | 1-2d | Training (deliverable) | Fills explicit deliverable |
+| 9 | P13: Shopify Flow Automation | Flow + Docs | 1-2d | Automation (optional) | Fills optional extra |
+| 10 | P15: Dropshipping Integration | Metafields + Flow | 2-3d | Dropshipping (scope) | Fills explicit scope item |
+| 11 | P2: Predictive Search + Filtering | Liquid + JS | 3-4d | High-converting UX | Enhances theme sophistication |
+| 12 | P4: Checkout Extension | App + Extension | 3-5d | Checkout (optional) | Fills Plus-specific gap |
+| 13 | P7: Multi-Language / Markets | Locales | 2-3d | Multi-lang (optional) | Fills optional extra |
+| 14 | P17: Training Videos + KB | Scripts + Template | 1-2d | Training (deliverable) | Enhances deliverable #3 |
+| 15 | P3: Metaobject Content System | Liquid + Admin | 2-3d | Content modeling | Enhances data architecture |
+| 16 | P5: Performance Optimization | Analysis | 2-3d | Page speed (scope) | Fills performance gap |
+| 17 | P6: Theme App Extension | App + Extension | 4-5d | App integrations | Advanced app development |
+
+### Coverage Projection
+
+| Milestone | Projects Completed | Estimated Coverage | Effort |
+|---|---|---|---|
+| Current state | None (6 themes only) | 29% covered, 21% partial | — |
+| After top 4 | P1, P10, P9, P8 | ~58% covered | 12-16 days |
+| After top 8 | + P12, P11, P16, P14 | ~79% covered | 22-31 days |
+| After top 12 | + P13, P15, P2, P4 | ~92% covered | 32-44 days |
+| All 17 | Complete | ~96% covered (PHP remains N/A) | 42-58 days |
+
+### Job Application Strategy
+
+**Immediate actions (before applying):**
+1. Complete Project 1 (Cart Drawer) — fastest way to show polished UX skill
+2. Complete Project 10 (SEO) — directly addresses a listed required skill
+3. Prepare a 1-page portfolio summary highlighting the 6 themes with live preview links
+
+**In the proposal, emphasize:**
+- 6 production-ready themes covering diverse verticals (boutique → fitness → luxury → pets)
+- OS 2.0 architecture mastery with 300+ Liquid files
+- Accessibility compliance (WCAG 2.1) across all themes
+- Zero framework dependency — vanilla JS, no jQuery
+- Advanced features already built: quick-view, product comparison, multi-step cart, mega menu, dark mode toggle
+
+**Address gaps honestly:**
+- "Custom app development is my next focus area — I have the architecture planned and am building a dashboard app with Admin API integration"
+- "I've implemented mobile-first responsive design across 6 themes and am adding structured data/SEO optimization to demonstrate the full stack"
+
+**Differentiator:** Most applicants will have 1-2 themes. Having 6 distinct themes with varied design systems (minimal, editorial, terminal, luxury, natural, cinematic) demonstrates range and speed that is hard to match.
