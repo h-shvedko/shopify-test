@@ -586,3 +586,230 @@ Full prioritized list including all 17 projects, optimized for maximum job requi
 - "I've implemented mobile-first responsive design across 6 themes and am adding structured data/SEO optimization to demonstrate the full stack"
 
 **Differentiator:** Most applicants will have 1-2 themes. Having 6 distinct themes with varied design systems (minimal, editorial, terminal, luxury, natural, cinematic) demonstrates range and speed that is hard to match.
+
+---
+
+## Job Description Gap Analysis #2: Senior Shopify App Developer — Compliance SaaS Integration
+
+**Source:** "Senior Shopify App Developer — Compliance SaaS Integration (GraphQL, React, Node.js)" (analyzed 2026-03-19)
+
+**Role summary:** Build a public Shopify app for a B2B compliance SaaS company (sanctions screening, PEP data, adverse media monitoring). The app screens merchants' orders and customers against global sanctions lists (OFAC, EU, UN, HM Treasury) directly from Shopify admin. Long-term engagement with 10-20 hours/month maintenance after launch.
+
+### Requirements Coverage
+
+| # | Requirement | Coverage Status | Notes |
+|---|---|---|---|
+| 1 | Public Shopify App (App Store distribution) | **Not Covered** | No published app. Project 9 is a private/custom app concept. |
+| 2 | Embedded app (Shopify App Bridge + Polaris) | **Not Covered** | No Polaris usage anywhere. App Bridge mentioned in P6 but not built. |
+| 3 | GraphQL Admin API (exclusively) | **Not Covered** | Mentioned in P9 but not implemented. Job explicitly rejects REST-based proposals. |
+| 4 | OAuth install flow + session token auth | **Not Covered** | P9 mentions session tokens but no OAuth handshake, consent screen, or token storage. |
+| 5 | Shopify Billing API (subscription + free trial) | **Not Covered** | Not mentioned in any project. |
+| 6 | GDPR webhooks (mandatory for App Store) | **Not Covered** | `customers/data_request`, `customers/redact`, `shop/redact` — not mentioned. |
+| 7 | Automated account provisioning on install | **Not Covered** | No external SaaS account creation flow. |
+| 8 | Order screening via webhooks | **Partially Covered** | P9 mentions `orders/create` webhook but no screening/processing logic. |
+| 9 | Customer screening (on-demand + automatic) | **Not Covered** | No screening concept in any project. |
+| 10 | Manual screening UI panel in admin | **Not Covered** | No interactive data table or search UI in embedded app context. |
+| 11 | Match review UI (risk levels, false positive marking) | **Not Covered** | No review workflow or risk assessment UI. |
+| 12 | Settings panel (sensitivity, thresholds, list selection) | **Not Covered** | No configurable app settings UI. |
+| 13 | Webhook reliability (idempotency, retries, queues) | **Not Covered** | Listed as nice-to-have but strongly preferred. No reliability patterns anywhere. |
+| 14 | External SaaS API integration | **Not Covered** | No API integration with third-party services. |
+| 15 | App Store submission + review process | **Not Covered** | No App Store experience. |
+| 16 | Built for Shopify certification | **Not Covered** | No awareness of BFS requirements documented. |
+| 17 | React + TypeScript frontend | **Not Covered** | ADR states "vanilla JS only, no frameworks." |
+| 18 | Node.js backend/middleware | **Not Covered** | No backend project exists. |
+| 19 | Shopify Flow integration (Phase 2+) | **Partially Covered** | P13 proposes Flow workflows but not custom triggers/actions from an app. |
+| 20 | Ongoing maintenance + API version upgrades | **Covered** | Demonstrated via iterative commits across themes. |
+
+### Summary
+
+- **Covered:** 1 of 20 requirements (5%)
+- **Partially Covered:** 2 of 20 requirements (10%)
+- **Not Covered:** 17 of 20 requirements (85%)
+
+**Core mismatch:** ADR-0002 has 15 of 17 projects focused on theme development. This job is 100% app development. The tech stack gap is fundamental — the job requires React, TypeScript, Node.js, Polaris, GraphQL, and OAuth, none of which are demonstrated in the current portfolio.
+
+---
+
+## Additional Showcase Projects (App Developer Track)
+
+These projects specifically target the Shopify App Developer gap. They are numbered starting at 18 to continue from the existing project list.
+
+### Project 18: Public Shopify App — Compliance Screening Tool (HIGHEST PRIORITY)
+
+**What:** A full public Shopify app that screens orders and customers against an external sanctions/compliance API, with an embedded Polaris admin panel, OAuth install flow, Shopify Billing API integration, GDPR webhook compliance, and webhook reliability patterns. Target: App Store submission.
+
+**Why impressive:** This single project addresses 17 of the 20 identified gaps simultaneously. It is the job description implemented as a portfolio piece. Building this before applying transforms a theme-only portfolio into a credible full-stack Shopify developer portfolio.
+
+**Implementation approach:**
+
+- **App scaffold:** `shopify app init` with the Remix template (Node.js + React + TypeScript)
+- **OAuth install flow:** Full merchant authorization with required scopes (`read_orders`, `read_customers`), offline access tokens stored encrypted at rest in database
+- **Shopify Billing API:** `appSubscriptionCreate` GraphQL mutation, monthly recurring charge with 14-day free trial, usage-based billing tier for screening volume, grace period handling for failed charges
+- **Embedded admin UI (Polaris + App Bridge):**
+  - **Dashboard page:** screening stats, recent matches, risk level breakdown (high/medium/low/clear), activity feed
+  - **Order screening page:** data table of screened orders with risk badges, detail view with match reasons, false positive marking, bulk actions
+  - **Customer screening page:** on-demand screening trigger, screening history per customer, risk score timeline
+  - **Manual screening page:** ad-hoc name/entity search form, results with match confidence scores
+  - **Match review page:** detailed match display with entity comparison (name similarity, country, date of birth), approve/reject workflow, audit log with timestamps
+  - **Settings page:** screening sensitivity slider, notification email configuration, auto-hold threshold, API key display, list selection (OFAC, EU, UN, HM Treasury checkboxes)
+- **Webhook handling:**
+  - `orders/create` and `orders/updated` → trigger automatic screening
+  - `customers/create` → trigger customer screening
+  - `app/uninstalled` → cleanup routine (suspend backend account, revoke API key)
+  - GDPR mandatory: `customers/data_request`, `customers/redact`, `shop/redact`
+  - **Idempotency:** deduplicate by `X-Shopify-Webhook-Id` header + event timestamp
+  - **HMAC verification:** validate `X-Shopify-Hmac-Sha256` for all incoming webhooks
+  - **Queue-based processing:** webhook receipt returns 200 immediately; processing via BullMQ job queue with Redis
+  - **Retry handling:** exponential backoff with configurable max retries
+  - **Dead letter queue:** capture permanently failed webhook processing for manual review
+- **External SaaS integration:** Mock compliance API (or OpenSanctions open data) demonstrating: API key management, request/response mapping, rate limiting, error handling with circuit breaker pattern
+- **Automated account provisioning:** On app install → create backend account for merchant → generate API credentials → store securely → provision default screening config → surface API key in settings UI
+- **Session token auth:** App Bridge session token validation middleware, no cookie-based sessions
+- **Database:** Prisma ORM with SQLite (dev) / PostgreSQL (production) — tables: merchants, api_keys, screening_results, audit_log, webhook_events
+- **App Store preparation:** listing description, feature screenshots, privacy policy, data handling disclosure
+
+**Tech stack:** Node.js, React (TypeScript), Remix, Prisma, BullMQ + Redis, Polaris, App Bridge, GraphQL Admin API
+
+**Complexity:** High (10-14 days)
+**Where:** Standalone app repository, installed on dev store
+
+---
+
+### Project 19: Webhook Reliability Patterns Library (PRIORITY 2)
+
+**What:** A documented, reusable Node.js module demonstrating production-grade webhook handling patterns, packaged as a reference implementation within the app project.
+
+**Why impressive:** Webhook reliability (idempotency, retries, queue-based processing) is what separates a junior app developer from a senior one. The job lists it as nice-to-have but in practice it's a strong signal of production experience.
+
+**Implementation approach:**
+- **Idempotency middleware:** Deduplicate webhooks by `X-Shopify-Webhook-Id` header, backed by a `webhook_events` table with unique constraint
+- **HMAC verification middleware:** Validate `X-Shopify-Hmac-Sha256` using app secret, reject invalid signatures
+- **Queue-based processing:** BullMQ job queue separating webhook receipt (fast 200 response) from processing (async worker). Configurable concurrency and rate limiting.
+- **Retry with exponential backoff:** Configurable strategy (initial delay, max retries, backoff multiplier) for failed processing
+- **Dead letter queue:** Capture permanently failed jobs for manual review with full payload and error context
+- **Circuit breaker:** For outbound API calls to external SaaS — prevent cascade failures when the compliance API is down
+- **Structured logging:** JSON logs with correlation IDs, processing duration, webhook type, and outcome
+- **Test suite:** Unit tests for each pattern with mock Shopify webhook payloads
+
+**Complexity:** Medium (3-4 days, can be built as part of Project 18)
+**Where:** Module within Project 18's app codebase
+
+---
+
+### Project 20: Shopify Flow Custom Trigger and Action (PRIORITY 3)
+
+**What:** Custom Flow trigger ("Screening match found") and custom Flow action ("Screen customer on demand") exposed by the compliance app.
+
+**Why impressive:** The job lists Shopify Flow as a Phase 2+ integration. Custom triggers/actions (not just using built-in Flow) show deep platform integration capability beyond theme-level Flow workflows in P13.
+
+**Implementation approach:**
+- **Custom Flow trigger — "Screening match found":** Fires when a customer or order matches a sanctions list entry. Passes: risk level, match confidence score, matched list name, entity details. Merchants can build flows like: "When high-risk match found → tag order as held → send Slack notification."
+- **Custom Flow action — "Screen customer on demand":** Merchants can build flows that trigger screening. Example: "When customer tag added 'needs-review' → screen customer against all lists."
+- Extension configuration in `shopify.app.toml` with `flow` extension targets
+- Documentation of 3-5 example workflows merchants can compose
+
+**Complexity:** Medium (2-3 days, requires Project 18 as foundation)
+**Where:** Extension within Project 18's app
+
+---
+
+### Project 21: Built for Shopify Certification Checklist
+
+**What:** A documented checklist covering all Built for Shopify (BFS) certification requirements, applied to Project 18 as a compliance target.
+
+**Why impressive:** The job explicitly requires Built for Shopify certification. Having a documented checklist shows awareness of the program even before completing certification.
+
+**Checklist content:**
+- App performance: API rate limit compliance, webhook response time under 5 seconds
+- Required GDPR webhooks implemented and tested
+- App listing quality: description, screenshots, support URL, privacy policy, data handling disclosure
+- Session token auth (no cookie-based auth, no redirect flows)
+- Billing API usage (no external payment collection for app charges)
+- Embedded app requirement (no redirect-based admin flows)
+- Polaris usage for all admin UI components
+- Accessibility compliance in admin UI (Polaris handles most, but custom components need audit)
+- App health metrics: install rate, crash rate, uninstall rate targets
+- Shopify API version currency (not more than 2 versions behind)
+
+**Complexity:** Low (0.5-1 day to document, ongoing to maintain)
+**Where:** Document in `APP/built-for-shopify-checklist.md`
+
+---
+
+## Revised Build Order (App Developer Track)
+
+For the Compliance SaaS App Developer role, the build order must pivot from theme-centric to app-centric projects:
+
+| Priority | Project | Type | Effort | Coverage Impact |
+|---|---|---|---|---|
+| **1** | **P18: Compliance Screening App** | App (React/Node/GraphQL) | 10-14d | Closes 80% of gaps alone |
+| **2** | **P19: Webhook Reliability Patterns** | Node.js module | 3-4d | Demonstrates production maturity |
+| **3** | **P20: Shopify Flow Custom Trigger/Action** | App extension | 2-3d | Demonstrates platform depth |
+| **4** | **P21: Built for Shopify Checklist** | Documentation | 0.5-1d | Shows certification awareness |
+| 5 | P4: Checkout Extension + Function | App + Extension | 3-5d | Shows extension ecosystem breadth |
+| 6 | P6: Theme App Extension | App + Extension | 4-5d | Shows app-to-theme integration |
+| 7 | P13: Shopify Flow Automation | Flow + Docs | 1-2d | Supports P20 with merchant workflows |
+
+### Coverage Projection (Compliance SaaS Job)
+
+| Milestone | Projects Completed | Coverage | Effort |
+|---|---|---|---|
+| Current state | None (6 themes only) | ~5% covered | — |
+| After P18 | Compliance Screening App | ~80% covered | 10-14 days |
+| After P18 + P19 | + Webhook Reliability | ~88% covered | 13-18 days |
+| After P18-P20 | + Flow Integration | ~93% covered | 15-21 days |
+| After P18-P21 | + BFS Checklist | ~95% covered | 16-22 days |
+| All app-track projects | + P4, P6, P13 | ~97% covered | 24-34 days |
+
+### What to Deprioritize for This Role
+
+These existing projects have **low relevance** for an app developer role and should be deferred:
+
+| Project | Reason |
+|---|---|
+| P1: Cart Drawer | Theme-only; this job has no theme development |
+| P2: Predictive Search | Theme-only |
+| P3: Metaobjects | Theme-only |
+| P5: Performance Optimization | Theme-only (app performance is different) |
+| P7: Multi-Language / Markets | Theme-only |
+| P8: B2B Wholesale Pricing | Theme-only |
+| P10: SEO Optimization | Theme-only |
+| P14: Merchant Documentation | Theme-only |
+| P15: Dropshipping Integration | Theme-only |
+| P16: CRO Audit | Theme-only |
+| P17: Training Videos | Theme-only |
+
+These existing projects **remain relevant:**
+
+| Project | Relevance |
+|---|---|
+| P4: Checkout Extension | Demonstrates React in Shopify extension context |
+| P6: Theme App Extension | Demonstrates app blocks, app embeds, App Bridge |
+| P9: Custom Shopify App | Should be merged into P18 (P18 is a superset) |
+| P13: Shopify Flow | Foundation for P20's custom triggers/actions |
+
+---
+
+## Job Application Strategy (Compliance SaaS Role)
+
+### Before Applying
+
+1. **Build Project 18** to at minimum a working demo: OAuth install, Polaris admin UI with screening dashboard, webhook processing, Billing API subscription creation. Even without App Store publication, a working demo with a screen recording is compelling.
+2. **Extract webhook patterns** (Project 19) as a documented module — shows engineering rigor.
+3. **Prepare a technical architecture diagram:** Shopify webhook → BullMQ queue → compliance API → risk assessment → Polaris UI → merchant action.
+
+### In the Proposal
+
+**Automated account provisioning approach** (the job asks for a paragraph on this):
+> "On app install, the OAuth callback handler triggers an async provisioning job: (1) create a sanctions.io account via the REST API using the merchant's shop domain and email, (2) receive and encrypt the API key, storing it in the app database scoped to the merchant's `shop_id`, (3) set default screening configuration (all lists enabled, medium sensitivity), (4) surface the API key and account status in the Polaris settings page. Edge cases: if the merchant's email already has an account, link to existing; if provisioning fails, show a retry button with error context; on re-install, check for existing suspended account and reactivate."
+
+**Recommended hosting approach:**
+> "Fly.io for the Node.js middleware (auto-scaling, global edge deployment, built-in Redis for BullMQ), with PostgreSQL on Fly Postgres or Neon for the lightweight database. Alternative: Railway for simpler deployment with similar capabilities. The app is stateless except for the job queue, so horizontal scaling is straightforward."
+
+### Frame the Theme Portfolio as an Advantage
+
+> "My 6 Shopify themes demonstrate deep platform knowledge — I understand the merchant experience, the theme editor, the Liquid rendering pipeline, and Shopify's data model at a level most app developers do not. This translates directly to building better embedded app experiences because I know what merchants expect from their admin, how orders flow, and what the checkout looks like. Most app developers learn Shopify from the API docs. I learned it from building the storefront up."
+
+### Key Differentiator
+
+Most Shopify app developers come from a React/Node.js background and learn Shopify's API layer. A developer coming from deep Shopify platform knowledge (6 themes, OS 2.0 mastery, AJAX Cart API, section rendering) who adds app development skills has a fundamentally better understanding of the merchant context. Frame this as: "I build apps for merchants I already understand."
