@@ -273,7 +273,7 @@
           <span class="zn-filters__group-title-inner">
             {{ filter.label }}
             {%- if filter.active_values.size > 0 -%}
-              <span class="zn-filters__group-count" aria-label="{{ filter.active_values.size }} active">{{ filter.active_values.size }}</span>
+              <span class="zn-filters__group-count" aria-label="{{ 'collection.filter_active_count' | t: count: filter.active_values.size }}">{{ filter.active_values.size }}</span>
             {%- endif -%}
           </span>
           <svg class="zn-filters__group-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">

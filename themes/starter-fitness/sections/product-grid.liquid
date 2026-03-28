@@ -647,7 +647,7 @@
             </svg>
             {{ filter_label }}
             {%- if active_filter_count > 0 -%}
-              <span class="zn-filters__count-badge" aria-label="{{ active_filter_count }} active filters">{{ active_filter_count }}</span>
+              <span class="zn-filters__count-badge" aria-label="{{ 'collection.active_filters_count' | t: count: active_filter_count }}">{{ active_filter_count }}</span>
             {%- endif -%}
           </button>
         </div>
@@ -848,9 +848,11 @@
     var drawerOpenBtns = sectionEl.querySelectorAll('[data-filter-drawer-open]');
     var drawerCloseBtn = drawer ? drawer.querySelector('[data-filter-drawer-close]') : null;
     var applyBtn     = drawer ? drawer.querySelector('[data-filter-apply]') : null;
+    var drawerTriggerEl = null;
 
     function openDrawer() {
       if (!drawer) return;
+      drawerTriggerEl = document.activeElement;
       drawer.showModal();
       document.body.style.overflow = 'hidden';
     }
@@ -859,6 +861,10 @@
       if (!drawer) return;
       drawer.close();
       document.body.style.overflow = '';
+      if (drawerTriggerEl && typeof drawerTriggerEl.focus === 'function') {
+        drawerTriggerEl.focus();
+        drawerTriggerEl = null;
+      }
     }
 
     drawerOpenBtns.forEach(function (btn) {

@@ -160,7 +160,10 @@
     "no_results": "No results for \"{{ query }}\"",
     "results_count": "{{ count }} results found",
     "view_all": "View all results for \"{{ query }}\"",
-    "loading": "Searching..."
+    "loading": "Searching...",
+    "hint_close": "to close",
+    "hint_navigate": "to navigate",
+    "hint_open": "to open"
   },
   "collection": {
     "filter": "Filter",
@@ -177,7 +180,9 @@
     "show_results": "Show {{ count }} results",
     "active_filters": "Active filters",
     "filter_by": "Filter by {{ label }}",
-    "loading_results": "Loading results..."
+    "loading_results": "Loading results...",
+    "filter_active_count": "{{ count }} active",
+    "active_filters_count": "{{ count }} active filters"
   },
   "collections": {
     "heading": "Shop by category",

@@ -816,8 +816,16 @@
   }
 
   function formatMoney(cents) {
-    var amount = (cents / 100).toFixed(2);
-    return '$' + amount;
+    if (window.Shopify && window.Shopify.formatMoney) {
+      return window.Shopify.formatMoney(cents);
+    }
+    var currency = (window.Shopify && window.Shopify.currency && window.Shopify.currency.active) || 'USD';
+    var amount = cents / 100;
+    try {
+      return new Intl.NumberFormat(undefined, { style: 'currency', currency: currency }).format(amount);
+    } catch (e) {
+      return (amount).toFixed(2);
+    }
   }
 
   function updateBadges(count) {
