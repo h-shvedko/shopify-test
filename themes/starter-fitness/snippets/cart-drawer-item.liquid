@@ -215,11 +215,12 @@
 >
   <a href="{{ item.url }}" class="cdi__image" tabindex="-1" aria-hidden="true">
     {%- if item.image -%}
+      {%- assign cdi_img_alt = item.image.alt | escape -%}
       {{
         item.image
         | image_url: width: 128
         | image_tag:
-          alt: item.image.alt | escape,
+          alt: cdi_img_alt,
           width: 64,
           height: 64,
           loading: 'lazy'
