@@ -1,0 +1,151 @@
+{% doc %}
+  Renders the wholesale price display for a product, showing the tier price,
+  retail comparison, and savings percentage.
+
+  The customer object is NOT available inside snippets rendered with {% render %}.
+  All callers must pass customer tags as a comma-separated string.
+
+  @param {product} product       - Shopify product object. Required.
+  @param {string}  customer_tags - Comma-separated customer tags string. Required.
+
+  @example
+  {% assign tags_string = customer.tags | join: ',' %}
+  {% render 'wholesale-price', product: product, customer_tags: tags_string %}
+{% enddoc %}
+
+{% comment %}
+  IMPORTANT NOTICE: This snippet controls display only.
+  Actual wholesale discount enforcement at checkout requires Shopify automatic discounts,
+  Shopify Scripts (Plus plan), or discount codes configured by the merchant.
+{% endcomment %}
+
+{% assign ws_tier = '' %}
+{% assign ws_discount = 0 %}
+{% assign ws_min_qty = 1 %}
+{% assign ws_tier_name = '' %}
+
+{% if settings.wholesale_enabled %}
+  {% assign tags_array = customer_tags | split: ',' %}
+
+  {% comment %} Priority: distributor > vip > wholesale {% endcomment %}
+  {% for tag in tags_array %}
+    {% assign tag_stripped = tag | strip %}
+    {% if tag_stripped == settings.wholesale_tier_3_tag %}
+      {% assign ws_tier = settings.wholesale_tier_3_tag %}
+      {% assign ws_discount = settings.wholesale_tier_3_discount %}
+      {% assign ws_min_qty = settings.wholesale_tier_3_min_qty %}
+      {% assign ws_tier_name = settings.wholesale_tier_3_name %}
+    {% endif %}
+  {% endfor %}
+
+  {% if ws_tier == '' %}
+    {% for tag in tags_array %}
+      {% assign tag_stripped = tag | strip %}
+      {% if tag_stripped == settings.wholesale_tier_2_tag %}
+        {% assign ws_tier = settings.wholesale_tier_2_tag %}
+        {% assign ws_discount = settings.wholesale_tier_2_discount %}
+        {% assign ws_min_qty = settings.wholesale_tier_2_min_qty %}
+        {% assign ws_tier_name = settings.wholesale_tier_2_name %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  {% if ws_tier == '' %}
+    {% for tag in tags_array %}
+      {% assign tag_stripped = tag | strip %}
+      {% if tag_stripped == settings.wholesale_tier_1_tag %}
+        {% assign ws_tier = settings.wholesale_tier_1_tag %}
+        {% assign ws_discount = settings.wholesale_tier_1_discount %}
+        {% assign ws_min_qty = settings.wholesale_tier_1_min_qty %}
+        {% assign ws_tier_name = settings.wholesale_tier_1_name %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endif %}
+
+{% if ws_tier != '' %}
+  {% comment %} Check for product metafield override first {% endcomment %}
+  {% assign ws_price_cents = 0 %}
+
+  {% if ws_tier == settings.wholesale_tier_1_tag %}
+    {% if product.metafields.custom.wholesale_price != blank %}
+      {% assign ws_price_cents = product.metafields.custom.wholesale_price | times: 100 | round %}
+    {% endif %}
+  {% elsif ws_tier == settings.wholesale_tier_2_tag %}
+    {% if product.metafields.custom.tier_2_price != blank %}
+      {% assign ws_price_cents = product.metafields.custom.tier_2_price | times: 100 | round %}
+    {% endif %}
+  {% elsif ws_tier == settings.wholesale_tier_3_tag %}
+    {% if product.metafields.custom.tier_3_price != blank %}
+      {% assign ws_price_cents = product.metafields.custom.tier_3_price | times: 100 | round %}
+    {% endif %}
+  {% endif %}
+
+  {% comment %} Fall back to calculated discount if no metafield {% endcomment %}
+  {% if ws_price_cents == 0 %}
+    {% assign discount_multiplier = 100 | minus: ws_discount %}
+    {% assign ws_price_cents = product.price | times: discount_multiplier | divided_by: 100 %}
+  {% endif %}
+
+  {% assign savings_cents = product.price | minus: ws_price_cents %}
+  {% assign savings_percent = savings_cents | times: 100 | divided_by: product.price %}
+
+  <div class="wholesale-price" role="region" aria-label="{{ 'wholesale.your_price' | t }}">
+    <div class="wholesale-price__header">
+      {% render 'wholesale-badge', tier: ws_tier, label: ws_tier_name %}
+    </div>
+    <div class="wholesale-price__main">
+      <span class="wholesale-price__amount">{{ ws_price_cents | money }}</span>
+      <span class="wholesale-price__retail">{{ product.price | money }}</span>
+    </div>
+    <p class="wholesale-price__savings">{{ 'wholesale.you_save' | t: percent: savings_percent }}</p>
+    <p class="wholesale-price__disclaimer">{{ 'wholesale.savings_disclaimer' | t }}</p>
+  </div>
+{% endif %}
+
+<style>
+  .wholesale-price {
+    background: var(--color-background-alt);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: 16px;
+    margin: 16px 0;
+  }
+
+  .wholesale-price__header {
+    margin-bottom: 8px;
+  }
+
+  .wholesale-price__main {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .wholesale-price__amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-success);
+  }
+
+  .wholesale-price__retail {
+    font-size: 0.9375rem;
+    color: var(--color-text-secondary);
+    text-decoration: line-through;
+  }
+
+  .wholesale-price__savings {
+    margin: 6px 0 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-success);
+  }
+
+  .wholesale-price__disclaimer {
+    margin: 6px 0 0;
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    font-style: italic;
+  }
+</style>

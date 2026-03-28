@@ -1,0 +1,551 @@
+{% comment %}
+  quick-order-form.liquid
+  Bulk order form for wholesale customers to add multiple products/variants at once.
+  Gated behind wholesale customer check — non-wholesale customers see a login/apply prompt.
+{% endcomment %}
+
+{% assign is_wholesale = false %}
+{% if customer %}
+  {% if customer.tags contains settings.wholesale_tier_1_tag %}
+    {% assign is_wholesale = true %}
+  {% endif %}
+  {% if customer.tags contains settings.wholesale_tier_2_tag %}
+    {% assign is_wholesale = true %}
+  {% endif %}
+  {% if customer.tags contains settings.wholesale_tier_3_tag %}
+    {% assign is_wholesale = true %}
+  {% endif %}
+{% endif %}
+
+{% assign ws_tags_str = '' %}
+{% if customer %}
+  {% assign ws_tags_str = customer.tags | join: ',' %}
+{% endif %}
+
+<section class="quick-order section-padding">
+  <div class="container">
+    {% if section.settings.heading != blank %}
+      <h1 class="quick-order__heading">{{ section.settings.heading | escape }}</h1>
+    {% endif %}
+
+    {% if is_wholesale %}
+      {% assign qs_collection = section.settings.collection %}
+
+      <div class="quick-order__toolbar">
+        <div class="quick-order__search-wrapper">
+          <input
+            type="search"
+            class="quick-order__search"
+            placeholder="{{ 'wholesale.search_products' | t }}"
+            data-quick-order-search
+            aria-label="{{ 'wholesale.search_products' | t }}"
+          >
+        </div>
+
+        <button
+          class="btn btn--primary quick-order__submit"
+          data-quick-order-submit
+          disabled
+          type="button"
+        >
+          {{ 'wholesale.add_all_to_cart' | t }}
+          (<span data-quick-order-count>0</span>)
+        </button>
+      </div>
+
+      <div class="quick-order__table-wrapper">
+        <table class="quick-order__table" aria-label="{{ section.settings.heading | escape }}">
+          <thead>
+            <tr>
+              <th scope="col">{{ 'wholesale.table_product' | t }}</th>
+              <th scope="col">{{ 'wholesale.table_sku' | t }}</th>
+              <th scope="col">{{ 'wholesale.table_price' | t }}</th>
+              <th scope="col">{{ 'wholesale.table_stock' | t }}</th>
+              <th scope="col">{{ 'wholesale.table_quantity' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if qs_collection %}
+              {% for product in qs_collection.products limit: section.settings.products_per_page %}
+                {% for variant in product.variants %}
+                  {% assign ws_variant_price = 0 %}
+                  {% if ws_tags_str != blank %}
+                    {% assign variant_tags_arr = ws_tags_str | split: ',' %}
+                    {% assign ws_v_tier = '' %}
+                    {% assign ws_v_discount = 0 %}
+
+                    {% for v_tag in variant_tags_arr %}
+                      {% assign v_tag_s = v_tag | strip %}
+                      {% if v_tag_s == settings.wholesale_tier_3_tag %}
+                        {% assign ws_v_tier = settings.wholesale_tier_3_tag %}
+                        {% assign ws_v_discount = settings.wholesale_tier_3_discount %}
+                      {% endif %}
+                    {% endfor %}
+                    {% if ws_v_tier == '' %}
+                      {% for v_tag in variant_tags_arr %}
+                        {% assign v_tag_s = v_tag | strip %}
+                        {% if v_tag_s == settings.wholesale_tier_2_tag %}
+                          {% assign ws_v_tier = settings.wholesale_tier_2_tag %}
+                          {% assign ws_v_discount = settings.wholesale_tier_2_discount %}
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                    {% if ws_v_tier == '' %}
+                      {% for v_tag in variant_tags_arr %}
+                        {% assign v_tag_s = v_tag | strip %}
+                        {% if v_tag_s == settings.wholesale_tier_1_tag %}
+                          {% assign ws_v_tier = settings.wholesale_tier_1_tag %}
+                          {% assign ws_v_discount = settings.wholesale_tier_1_discount %}
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
+
+                    {% if ws_v_tier != '' %}
+                      {% assign v_mult = 100 | minus: ws_v_discount %}
+                      {% assign ws_variant_price = variant.price | times: v_mult | divided_by: 100 %}
+                    {% endif %}
+                  {% endif %}
+
+                  <tr
+                    class="quick-order__row"
+                    data-quick-order-row
+                    data-variant-id="{{ variant.id }}"
+                    data-product-title="{{ product.title | escape }}"
+                    data-variant-title="{{ variant.title | escape }}"
+                  >
+                    <td class="quick-order__product">
+                      <a href="{{ product.url }}" class="quick-order__product-link">
+                        {{ product.title }}
+                      </a>
+                      {% if variant.title != 'Default Title' %}
+                        <span class="quick-order__variant-label">{{ variant.title }}</span>
+                      {% endif %}
+                    </td>
+
+                    <td class="quick-order__sku">
+                      <span class="quick-order__sku-value">{{ variant.sku | default: '—' }}</span>
+                    </td>
+
+                    <td class="quick-order__price">
+                      {% if ws_variant_price > 0 %}
+                        <span class="quick-order__price-ws">{{ ws_variant_price | money }}</span>
+                        <span class="quick-order__price-retail">{{ variant.price | money }}</span>
+                      {% else %}
+                        <span>{{ variant.price | money }}</span>
+                      {% endif %}
+                    </td>
+
+                    <td class="quick-order__stock">
+                      {% if variant.available %}
+                        {% if variant.inventory_management == 'shopify' %}
+                          {% if variant.inventory_quantity > 10 %}
+                            <span class="quick-order__stock-in">{{ 'products.in_stock' | t }}</span>
+                          {% elsif variant.inventory_quantity > 0 %}
+                            <span class="quick-order__stock-low">{{ 'products.low_stock' | t: count: variant.inventory_quantity }}</span>
+                          {% else %}
+                            <span class="quick-order__stock-in">{{ 'products.in_stock' | t }}</span>
+                          {% endif %}
+                        {% else %}
+                          <span class="quick-order__stock-in">{{ 'products.in_stock' | t }}</span>
+                        {% endif %}
+                      {% else %}
+                        <span class="quick-order__stock-out">{{ 'products.out_of_stock' | t }}</span>
+                      {% endif %}
+                    </td>
+
+                    <td class="quick-order__qty">
+                      {% if variant.available %}
+                        <input
+                          type="number"
+                          class="quick-order__qty-input"
+                          min="0"
+                          max="999"
+                          value="0"
+                          step="1"
+                          data-variant-id="{{ variant.id }}"
+                          aria-label="{{ 'wholesale.quantity_for' | t: title: product.title }}"
+                        >
+                      {% else %}
+                        <span class="quick-order__qty-na">—</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="5" class="quick-order__no-collection">
+                  {{ 'products.no_products' | t }}
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="quick-order__footer">
+        <button
+          class="btn btn--primary quick-order__submit-footer"
+          data-quick-order-submit-footer
+          disabled
+          type="button"
+        >
+          {{ 'wholesale.add_all_to_cart' | t }}
+          (<span data-quick-order-count-footer>0</span>)
+        </button>
+      </div>
+
+    {% else %}
+      <div class="quick-order__gated">
+        {% if customer %}
+          <p>{{ 'wholesale.quick_order_gated' | t }}</p>
+          {%- assign apply_label = 'wholesale.cta_button' | t -%}
+          {% render 'button', label: apply_label, url: '/pages/wholesale-application', variant: 'primary' %}
+        {% else %}
+          <p>{{ 'wholesale.quick_order_gated' | t }}</p>
+          {%- assign login_label = 'customer.submit_login' | t -%}
+          {% render 'button', label: login_label, url: routes.account_login_url, variant: 'primary' %}
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .quick-order__heading {
+    margin-bottom: 24px;
+  }
+
+  .quick-order__toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  @media (min-width: 600px) {
+    .quick-order__toolbar {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  .quick-order__search-wrapper {
+    flex: 1;
+    max-width: 360px;
+  }
+
+  .quick-order__search {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    font-size: 0.9375rem;
+    color: var(--color-text);
+    background: var(--color-background);
+    font-family: var(--font-body);
+  }
+
+  .quick-order__search:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+
+  .quick-order__table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+  }
+
+  .quick-order__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+    min-width: 560px;
+  }
+
+  .quick-order__table thead th {
+    text-align: left;
+    padding: 12px 16px;
+    background: var(--color-background-alt);
+    border-bottom: 2px solid var(--color-border);
+    font-weight: 700;
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+  }
+
+  .quick-order__row td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+  }
+
+  .quick-order__row:last-child td {
+    border-bottom: none;
+  }
+
+  .quick-order__row--hidden {
+    display: none;
+  }
+
+  .quick-order__product-link {
+    color: var(--color-text);
+    font-weight: 600;
+    text-decoration: none;
+    display: block;
+  }
+
+  .quick-order__product-link:hover {
+    color: var(--color-primary);
+  }
+
+  .quick-order__variant-label {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+  }
+
+  .quick-order__sku-value {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    font-family: monospace;
+  }
+
+  .quick-order__price-ws {
+    display: block;
+    font-weight: 700;
+    color: var(--color-success);
+  }
+
+  .quick-order__price-retail {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    text-decoration: line-through;
+  }
+
+  .quick-order__stock-in {
+    color: var(--color-success);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .quick-order__stock-low {
+    color: var(--color-primary);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .quick-order__stock-out {
+    color: var(--color-error);
+    font-size: 0.875rem;
+  }
+
+  .quick-order__qty-input {
+    width: 72px;
+    padding: 6px 8px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: 1rem;
+    text-align: center;
+    color: var(--color-text);
+    background: var(--color-background);
+    -moz-appearance: textfield;
+  }
+
+  .quick-order__qty-input::-webkit-outer-spin-button,
+  .quick-order__qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .quick-order__qty-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+
+  .quick-order__qty-input--active {
+    border-color: var(--color-primary);
+    background: #fffbeb;
+  }
+
+  .quick-order__qty-na {
+    color: var(--color-text-secondary);
+  }
+
+  .quick-order__no-collection {
+    padding: 24px;
+    text-align: center;
+    color: var(--color-text-secondary);
+  }
+
+  .quick-order__footer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .quick-order__gated {
+    text-align: center;
+    padding: 60px 0;
+  }
+
+  .quick-order__gated p {
+    margin-bottom: 24px;
+    color: var(--color-text-secondary);
+    font-size: 1.0625rem;
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    var section = document.querySelector('.quick-order');
+    if (!section) return;
+
+    var searchInput = section.querySelector('[data-quick-order-search]');
+    var submitBtns = section.querySelectorAll('[data-quick-order-submit], [data-quick-order-submit-footer]');
+    var countEls = section.querySelectorAll('[data-quick-order-count], [data-quick-order-count-footer]');
+    var rows = section.querySelectorAll('[data-quick-order-row]');
+    var qtyInputs = section.querySelectorAll('.quick-order__qty-input');
+
+    // Search / filter
+    if (searchInput) {
+      searchInput.addEventListener('input', function () {
+        var query = this.value.trim().toLowerCase();
+        rows.forEach(function (row) {
+          var title = (row.dataset.productTitle || '').toLowerCase();
+          var variantTitle = (row.dataset.variantTitle || '').toLowerCase();
+          var skuEl = row.querySelector('.quick-order__sku-value');
+          var sku = skuEl ? skuEl.textContent.trim().toLowerCase() : '';
+
+          if (!query || title.includes(query) || variantTitle.includes(query) || sku.includes(query)) {
+            row.classList.remove('quick-order__row--hidden');
+          } else {
+            row.classList.add('quick-order__row--hidden');
+          }
+        });
+      });
+    }
+
+    // Quantity tracking
+    function updateCount() {
+      var count = 0;
+      qtyInputs.forEach(function (input) {
+        var val = parseInt(input.value, 10) || 0;
+        if (val > 0) count++;
+        input.classList.toggle('quick-order__qty-input--active', val > 0);
+      });
+
+      countEls.forEach(function (el) { el.textContent = count; });
+      submitBtns.forEach(function (btn) { btn.disabled = count === 0; });
+    }
+
+    qtyInputs.forEach(function (input) {
+      input.addEventListener('input', updateCount);
+      input.addEventListener('change', function () {
+        var val = parseInt(this.value, 10) || 0;
+        if (val < 0) { this.value = 0; }
+        if (val > 999) { this.value = 999; }
+        updateCount();
+      });
+    });
+
+    // Add all to cart
+    function collectItems() {
+      var items = [];
+      qtyInputs.forEach(function (input) {
+        var qty = parseInt(input.value, 10) || 0;
+        if (qty > 0) {
+          items.push({
+            id: parseInt(input.dataset.variantId, 10),
+            quantity: qty
+          });
+        }
+      });
+      return items;
+    }
+
+    function setLoading(loading) {
+      submitBtns.forEach(function (btn) {
+        btn.disabled = loading;
+        if (loading) {
+          btn.dataset.originalText = btn.innerHTML;
+          btn.textContent = {{ 'wholesale.adding_to_cart' | t | json }};
+        } else {
+          if (btn.dataset.originalText) {
+            btn.innerHTML = btn.dataset.originalText;
+          }
+        }
+      });
+    }
+
+    function handleAddAll() {
+      var items = collectItems();
+      if (items.length === 0) return;
+
+      setLoading(true);
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        body: JSON.stringify({ items: items })
+      })
+        .then(function (res) {
+          if (!res.ok) {
+            return res.json().then(function (data) {
+              throw new Error(data.description || 'Could not add items to cart');
+            });
+          }
+          return res.json();
+        })
+        .then(function () {
+          window.location.href = '/cart';
+        })
+        .catch(function (err) {
+          setLoading(false);
+          alert(err.message);
+        });
+    }
+
+    submitBtns.forEach(function (btn) {
+      btn.addEventListener('click', handleAddAll);
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.quick_order.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.quick_order.settings.heading.label",
+      "default": "Quick order"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:sections.quick_order.settings.collection.label"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "t:sections.quick_order.settings.products_per_page.label",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "Quick order form"
+    }
+  ]
+}
+{% endschema %}

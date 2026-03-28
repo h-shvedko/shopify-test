@@ -33,6 +33,29 @@
 
     {%- comment -%} Action icons {%- endcomment -%}
     <div class="header__actions">
+      {% if settings.wholesale_enabled %}
+        {% if customer %}
+          {% assign header_ws_tier = '' %}
+          {% assign header_ws_name = '' %}
+          {% if customer.tags contains settings.wholesale_tier_3_tag %}
+            {% assign header_ws_tier = settings.wholesale_tier_3_tag %}
+            {% assign header_ws_name = settings.wholesale_tier_3_name %}
+          {% elsif customer.tags contains settings.wholesale_tier_2_tag %}
+            {% assign header_ws_tier = settings.wholesale_tier_2_tag %}
+            {% assign header_ws_name = settings.wholesale_tier_2_name %}
+          {% elsif customer.tags contains settings.wholesale_tier_1_tag %}
+            {% assign header_ws_tier = settings.wholesale_tier_1_tag %}
+            {% assign header_ws_name = settings.wholesale_tier_1_name %}
+          {% endif %}
+
+          {% if header_ws_tier != '' %}
+            <a href="/pages/quick-order" class="header__wholesale-badge-link" aria-label="{{ 'wholesale.tier_label' | t: name: header_ws_name }}">
+              {% render 'wholesale-badge', tier: header_ws_tier, label: header_ws_name %}
+            </a>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+
       <a
         href="{{ routes.search_url }}"
         class="header__icon"
@@ -191,6 +214,19 @@
     align-items: center;
     gap: 16px;
     flex-shrink: 0;
+  }
+
+  /* Wholesale badge in header */
+
+  .header__wholesale-badge-link {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+  }
+
+  .header__wholesale-badge-link:hover {
+    opacity: 0.85;
+    text-decoration: none;
   }
 
   .header__icon {

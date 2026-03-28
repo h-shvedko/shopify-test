@@ -1,0 +1,236 @@
+{% comment %}
+  wholesale-pricing-table.liquid
+  Displays a volume discount / quantity break table on the product page.
+  Shows discounted unit prices calculated from the current product price.
+
+  IMPORTANT NOTICE: This section controls display only.
+  Actual discount enforcement at checkout requires Shopify automatic discounts,
+  Shopify Scripts (Plus plan), or discount codes configured by the merchant.
+{% endcomment %}
+
+{% assign is_wholesale_customer = false %}
+{% if customer %}
+  {% if customer.tags contains settings.wholesale_tier_1_tag %}
+    {% assign is_wholesale_customer = true %}
+    {% assign current_ws_tag = settings.wholesale_tier_1_tag %}
+  {% endif %}
+  {% if customer.tags contains settings.wholesale_tier_2_tag %}
+    {% assign is_wholesale_customer = true %}
+    {% assign current_ws_tag = settings.wholesale_tier_2_tag %}
+  {% endif %}
+  {% if customer.tags contains settings.wholesale_tier_3_tag %}
+    {% assign is_wholesale_customer = true %}
+    {% assign current_ws_tag = settings.wholesale_tier_3_tag %}
+  {% endif %}
+{% endif %}
+
+{% if section.settings.show_for_all or is_wholesale_customer %}
+  {% if section.blocks.size > 0 %}
+    <section class="wholesale-pricing-table section-padding">
+      <div class="container">
+        {% if section.settings.heading != blank %}
+          <h2 class="wholesale-pricing-table__heading">{{ section.settings.heading | escape }}</h2>
+        {% endif %}
+
+        <div class="wholesale-pricing-table__notice">
+          <p>{{ 'wholesale.savings_disclaimer' | t }}</p>
+        </div>
+
+        <div class="wholesale-pricing-table__wrapper">
+          <table class="wholesale-pricing-table__table">
+            <thead>
+              <tr>
+                <th scope="col">{{ 'wholesale.table_quantity' | t }}</th>
+                <th scope="col">{{ 'wholesale.table_discount' | t }}</th>
+                <th scope="col">{{ 'wholesale.table_unit_price' | t }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for block in section.blocks %}
+                {% assign discount_mult = 100 | minus: block.settings.discount_percent %}
+                {% assign discounted_price = product.price | times: discount_mult | divided_by: 100 %}
+
+                {% assign is_current_tier = false %}
+                {% if is_wholesale_customer %}
+                  {% if block.settings.label == settings.wholesale_tier_1_name %}
+                    {% if current_ws_tag == settings.wholesale_tier_1_tag %}
+                      {% assign is_current_tier = true %}
+                    {% endif %}
+                  {% endif %}
+                  {% if block.settings.label == settings.wholesale_tier_2_name %}
+                    {% if current_ws_tag == settings.wholesale_tier_2_tag %}
+                      {% assign is_current_tier = true %}
+                    {% endif %}
+                  {% endif %}
+                  {% if block.settings.label == settings.wholesale_tier_3_name %}
+                    {% if current_ws_tag == settings.wholesale_tier_3_tag %}
+                      {% assign is_current_tier = true %}
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+
+                <tr
+                  class="wholesale-pricing-table__row{% if is_current_tier %} wholesale-pricing-table__row--active{% endif %}"
+                  {{ block.shopify_attributes }}
+                >
+                  <td class="wholesale-pricing-table__qty">
+                    {{ block.settings.min_quantity }}+
+                    {% if block.settings.label != blank %}
+                      <span class="wholesale-pricing-table__tier-label">{{ block.settings.label }}</span>
+                    {% endif %}
+                  </td>
+                  <td class="wholesale-pricing-table__discount">
+                    {{ block.settings.discount_percent }}%
+                  </td>
+                  <td class="wholesale-pricing-table__price">{{ discounted_price | money }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+{% endif %}
+
+{% stylesheet %}
+  .wholesale-pricing-table__heading {
+    margin-bottom: 12px;
+  }
+
+  .wholesale-pricing-table__notice {
+    margin-bottom: 16px;
+  }
+
+  .wholesale-pricing-table__notice p {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    font-style: italic;
+    margin: 0;
+  }
+
+  .wholesale-pricing-table__wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .wholesale-pricing-table__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+  }
+
+  .wholesale-pricing-table__table thead th {
+    text-align: left;
+    padding: 10px 16px;
+    background: var(--color-background-alt);
+    border-bottom: 2px solid var(--color-border);
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+  }
+
+  .wholesale-pricing-table__row td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+  }
+
+  .wholesale-pricing-table__row--active {
+    background: #fffbeb;
+  }
+
+  .wholesale-pricing-table__row--active td {
+    border-bottom-color: var(--color-primary);
+  }
+
+  .wholesale-pricing-table__row--active .wholesale-pricing-table__price {
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+
+  .wholesale-pricing-table__qty {
+    font-weight: 600;
+  }
+
+  .wholesale-pricing-table__tier-label {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    font-weight: 400;
+  }
+
+  .wholesale-pricing-table__discount {
+    color: var(--color-success);
+    font-weight: 600;
+  }
+
+  .wholesale-pricing-table__price {
+    font-weight: 600;
+  }
+
+  @media (min-width: 768px) {
+    .wholesale-pricing-table__table {
+      font-size: 1rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.wholesale_pricing_table.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.wholesale_pricing_table.settings.heading.label",
+      "default": "Volume pricing"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_for_all",
+      "label": "t:sections.wholesale_pricing_table.settings.show_for_all.label",
+      "info": "t:sections.wholesale_pricing_table.settings.show_for_all.info",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "quantity_break",
+      "name": "t:blocks.quantity_break.name",
+      "settings": [
+        {
+          "type": "number",
+          "id": "min_quantity",
+          "label": "t:blocks.quantity_break.settings.min_quantity.label",
+          "default": 10
+        },
+        {
+          "type": "number",
+          "id": "discount_percent",
+          "label": "t:blocks.quantity_break.settings.discount_percent.label",
+          "default": 15
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:blocks.quantity_break.settings.label.label",
+          "default": "Wholesale"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Wholesale pricing table",
+      "blocks": [
+        { "type": "quantity_break", "settings": { "min_quantity": 10, "discount_percent": 15, "label": "Wholesale" } },
+        { "type": "quantity_break", "settings": { "min_quantity": 25, "discount_percent": 20, "label": "Bulk" } },
+        { "type": "quantity_break", "settings": { "min_quantity": 50, "discount_percent": 25, "label": "Distributor" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

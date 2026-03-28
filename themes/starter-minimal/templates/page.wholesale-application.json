@@ -1,0 +1,12 @@
+{
+  "sections": {
+    "main": {
+      "type": "wholesale-application-form",
+      "settings": {
+        "heading": "Apply for wholesale pricing",
+        "submit_label": "Submit application"
+      }
+    }
+  },
+  "order": ["main"]
+}

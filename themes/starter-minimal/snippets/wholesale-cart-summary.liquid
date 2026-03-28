@@ -1,0 +1,235 @@
+{% doc %}
+  Renders a wholesale savings summary in the cart, showing per-item and total
+  savings compared to retail pricing.
+
+  The customer object is NOT available inside snippets rendered with {% render %}.
+  All callers must pass customer tags as a comma-separated string.
+
+  @param {cart}   cart          - Shopify cart object. Required.
+  @param {string} customer_tags - Comma-separated customer tags string. Required.
+
+  @example
+  {% assign tags_string = customer.tags | join: ',' %}
+  {% render 'wholesale-cart-summary', cart: cart, customer_tags: tags_string %}
+{% enddoc %}
+
+{% comment %}
+  IMPORTANT NOTICE: This snippet shows estimated savings for display purposes only.
+  Actual wholesale discount enforcement at checkout requires Shopify automatic discounts,
+  Shopify Scripts (Plus plan), or discount codes configured by the merchant.
+{% endcomment %}
+
+{% assign ws_tier = '' %}
+{% assign ws_discount = 0 %}
+{% assign ws_tier_name = '' %}
+
+{% if settings.wholesale_enabled %}
+  {% assign tags_array = customer_tags | split: ',' %}
+
+  {% comment %} Priority: distributor > vip > wholesale {% endcomment %}
+  {% for tag in tags_array %}
+    {% assign tag_stripped = tag | strip %}
+    {% if tag_stripped == settings.wholesale_tier_3_tag %}
+      {% assign ws_tier = settings.wholesale_tier_3_tag %}
+      {% assign ws_discount = settings.wholesale_tier_3_discount %}
+      {% assign ws_tier_name = settings.wholesale_tier_3_name %}
+    {% endif %}
+  {% endfor %}
+
+  {% if ws_tier == '' %}
+    {% for tag in tags_array %}
+      {% assign tag_stripped = tag | strip %}
+      {% if tag_stripped == settings.wholesale_tier_2_tag %}
+        {% assign ws_tier = settings.wholesale_tier_2_tag %}
+        {% assign ws_discount = settings.wholesale_tier_2_discount %}
+        {% assign ws_tier_name = settings.wholesale_tier_2_name %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  {% if ws_tier == '' %}
+    {% for tag in tags_array %}
+      {% assign tag_stripped = tag | strip %}
+      {% if tag_stripped == settings.wholesale_tier_1_tag %}
+        {% assign ws_tier = settings.wholesale_tier_1_tag %}
+        {% assign ws_discount = settings.wholesale_tier_1_discount %}
+        {% assign ws_tier_name = settings.wholesale_tier_1_name %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endif %}
+
+{% if ws_tier != '' %}
+  {% assign total_savings_cents = 0 %}
+
+  {% for item in cart.items %}
+    {% assign item_ws_price = 0 %}
+
+    {% comment %} Check metafield override per tier {% endcomment %}
+    {% if ws_tier == settings.wholesale_tier_1_tag %}
+      {% if item.product.metafields.custom.wholesale_price != blank %}
+        {% assign item_ws_price = item.product.metafields.custom.wholesale_price | times: 100 | round %}
+      {% endif %}
+    {% elsif ws_tier == settings.wholesale_tier_2_tag %}
+      {% if item.product.metafields.custom.tier_2_price != blank %}
+        {% assign item_ws_price = item.product.metafields.custom.tier_2_price | times: 100 | round %}
+      {% endif %}
+    {% elsif ws_tier == settings.wholesale_tier_3_tag %}
+      {% if item.product.metafields.custom.tier_3_price != blank %}
+        {% assign item_ws_price = item.product.metafields.custom.tier_3_price | times: 100 | round %}
+      {% endif %}
+    {% endif %}
+
+    {% if item_ws_price == 0 %}
+      {% assign discount_multiplier = 100 | minus: ws_discount %}
+      {% assign item_ws_price = item.variant.price | times: discount_multiplier | divided_by: 100 %}
+    {% endif %}
+
+    {% assign item_saving = item.variant.price | minus: item_ws_price %}
+    {% assign item_line_saving = item_saving | times: item.quantity %}
+    {% assign total_savings_cents = total_savings_cents | plus: item_line_saving %}
+  {% endfor %}
+
+  {% if total_savings_cents > 0 %}
+    <div class="wholesale-cart-summary">
+      <div class="wholesale-cart-summary__header">
+        <span class="wholesale-cart-summary__label">{{ 'wholesale.pricing_applied' | t }}</span>
+        {% render 'wholesale-badge', tier: ws_tier, label: ws_tier_name %}
+      </div>
+
+      {% assign savings_amount_formatted = total_savings_cents | money %}
+      <p class="wholesale-cart-summary__total">
+        {{ 'wholesale.savings_summary' | t: amount: savings_amount_formatted }}
+      </p>
+
+      <details class="wholesale-cart-summary__details">
+        <summary class="wholesale-cart-summary__summary-toggle">
+          {{ 'wholesale.per_item_savings' | t }}
+        </summary>
+        <ul class="wholesale-cart-summary__items">
+          {% for item in cart.items %}
+            {% assign item_ws_price2 = 0 %}
+
+            {% if ws_tier == settings.wholesale_tier_1_tag %}
+              {% if item.product.metafields.custom.wholesale_price != blank %}
+                {% assign item_ws_price2 = item.product.metafields.custom.wholesale_price | times: 100 | round %}
+              {% endif %}
+            {% elsif ws_tier == settings.wholesale_tier_2_tag %}
+              {% if item.product.metafields.custom.tier_2_price != blank %}
+                {% assign item_ws_price2 = item.product.metafields.custom.tier_2_price | times: 100 | round %}
+              {% endif %}
+            {% elsif ws_tier == settings.wholesale_tier_3_tag %}
+              {% if item.product.metafields.custom.tier_3_price != blank %}
+                {% assign item_ws_price2 = item.product.metafields.custom.tier_3_price | times: 100 | round %}
+              {% endif %}
+            {% endif %}
+
+            {% if item_ws_price2 == 0 %}
+              {% assign discount_multiplier2 = 100 | minus: ws_discount %}
+              {% assign item_ws_price2 = item.variant.price | times: discount_multiplier2 | divided_by: 100 %}
+            {% endif %}
+
+            {% assign item_saving2 = item.variant.price | minus: item_ws_price2 %}
+            {% if item_saving2 > 0 %}
+              <li class="wholesale-cart-summary__item">
+                <span class="wholesale-cart-summary__item-title">{{ item.product.title }}</span>
+                <span class="wholesale-cart-summary__item-saving">-{{ item_saving2 | times: item.quantity | money }}</span>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </details>
+
+      <p class="wholesale-cart-summary__disclaimer">{{ 'wholesale.savings_disclaimer' | t }}</p>
+    </div>
+  {% endif %}
+{% endif %}
+
+<style>
+  .wholesale-cart-summary {
+    background: #f0fdf4;
+    border: 1px solid var(--color-success);
+    border-radius: var(--border-radius);
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .wholesale-cart-summary__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  .wholesale-cart-summary__label {
+    font-weight: 700;
+    font-size: 0.9375rem;
+    color: var(--color-success);
+  }
+
+  .wholesale-cart-summary__total {
+    margin: 0 0 8px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .wholesale-cart-summary__details {
+    margin-bottom: 8px;
+  }
+
+  .wholesale-cart-summary__summary-toggle {
+    font-size: 0.875rem;
+    color: var(--color-primary);
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+  }
+
+  .wholesale-cart-summary__summary-toggle::-webkit-details-marker {
+    display: none;
+  }
+
+  .wholesale-cart-summary__summary-toggle::before {
+    content: '+ ';
+  }
+
+  .wholesale-cart-summary__details[open] .wholesale-cart-summary__summary-toggle::before {
+    content: '- ';
+  }
+
+  .wholesale-cart-summary__items {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+  }
+
+  .wholesale-cart-summary__item {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 0.875rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .wholesale-cart-summary__item:last-child {
+    border-bottom: none;
+  }
+
+  .wholesale-cart-summary__item-title {
+    color: var(--color-text-secondary);
+  }
+
+  .wholesale-cart-summary__item-saving {
+    color: var(--color-success);
+    font-weight: 600;
+  }
+
+  .wholesale-cart-summary__disclaimer {
+    margin: 8px 0 0;
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    font-style: italic;
+  }
+</style>

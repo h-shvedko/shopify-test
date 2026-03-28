@@ -156,5 +156,111 @@
         "default": true
       }
     ]
+  },
+  {
+    "name": "t:settings.wholesale.name",
+    "settings": [
+      {
+        "id": "wholesale_enabled",
+        "type": "checkbox",
+        "label": "t:settings.wholesale.enabled.label",
+        "info": "t:settings.wholesale.enabled.info",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "t:settings.wholesale.tier_1_header"
+      },
+      {
+        "id": "wholesale_tier_1_tag",
+        "type": "text",
+        "label": "t:settings.wholesale.tier_1_tag.label",
+        "default": "wholesale"
+      },
+      {
+        "id": "wholesale_tier_1_name",
+        "type": "text",
+        "label": "t:settings.wholesale.tier_1_name.label",
+        "default": "Wholesale"
+      },
+      {
+        "id": "wholesale_tier_1_discount",
+        "type": "number",
+        "label": "t:settings.wholesale.tier_1_discount.label",
+        "default": 15
+      },
+      {
+        "id": "wholesale_tier_1_min_qty",
+        "type": "number",
+        "label": "t:settings.wholesale.tier_1_min_qty.label",
+        "default": 10
+      },
+      {
+        "type": "header",
+        "content": "t:settings.wholesale.tier_2_header"
+      },
+      {
+        "id": "wholesale_tier_2_tag",
+        "type": "text",
+        "label": "t:settings.wholesale.tier_2_tag.label",
+        "default": "vip"
+      },
+      {
+        "id": "wholesale_tier_2_name",
+        "type": "text",
+        "label": "t:settings.wholesale.tier_2_name.label",
+        "default": "VIP"
+      },
+      {
+        "id": "wholesale_tier_2_discount",
+        "type": "number",
+        "label": "t:settings.wholesale.tier_2_discount.label",
+        "default": 20
+      },
+      {
+        "id": "wholesale_tier_2_min_qty",
+        "type": "number",
+        "label": "t:settings.wholesale.tier_2_min_qty.label",
+        "default": 5
+      },
+      {
+        "type": "header",
+        "content": "t:settings.wholesale.tier_3_header"
+      },
+      {
+        "id": "wholesale_tier_3_tag",
+        "type": "text",
+        "label": "t:settings.wholesale.tier_3_tag.label",
+        "default": "distributor"
+      },
+      {
+        "id": "wholesale_tier_3_name",
+        "type": "text",
+        "label": "t:settings.wholesale.tier_3_name.label",
+        "default": "Distributor"
+      },
+      {
+        "id": "wholesale_tier_3_discount",
+        "type": "number",
+        "label": "t:settings.wholesale.tier_3_discount.label",
+        "default": 25
+      },
+      {
+        "id": "wholesale_tier_3_min_qty",
+        "type": "number",
+        "label": "t:settings.wholesale.tier_3_min_qty.label",
+        "default": 25
+      },
+      {
+        "type": "header",
+        "content": "t:settings.wholesale.shipping_header"
+      },
+      {
+        "id": "wholesale_free_shipping_threshold",
+        "type": "number",
+        "label": "t:settings.wholesale.free_shipping_threshold.label",
+        "default": 500
+      }
+    ]
   }
 ]

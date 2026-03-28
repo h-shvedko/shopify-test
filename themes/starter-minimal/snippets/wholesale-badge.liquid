@@ -1,0 +1,12 @@
+{% doc %}
+  Renders a wholesale tier badge showing the customer's pricing tier.
+
+  @param {string} tier  - Tier identifier: "wholesale", "vip", or "distributor". Required.
+  @param {string} label - Badge text to display. Required.
+
+  @example
+  {% assign ws_label = 'wholesale.badge_wholesale' | t %}
+  {% render 'wholesale-badge', tier: 'wholesale', label: ws_label %}
+{% enddoc %}
+
+<span class="wholesale-badge wholesale-badge--{{ tier }}">{{ label }}</span>

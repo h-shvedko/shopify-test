@@ -3,6 +3,8 @@
 
   @param {number} value          - Current quantity value. Optional, default: 1.
   @param {string} name           - The name attribute for the hidden/number input. Required.
+  @param {number} min            - Minimum allowed quantity. Optional, default: 1. Used to enforce
+                                   wholesale minimum order quantities.
   @param {string} line_item_key  - Cart line item key for AJAX quantity updates. Optional.
                                    When provided, a 'quantity:change' CustomEvent is dispatched
                                    on change with detail { key, quantity }.
@@ -10,9 +12,11 @@
   @example
   {% render 'quantity-selector', name: 'quantity', value: 1 %}
   {% render 'quantity-selector', name: 'quantity', value: item.quantity, line_item_key: item.key %}
+  {% render 'quantity-selector', name: 'quantity', value: 10, min: 10 %}
 {% enddoc %}
 
-{% assign qty_value = value | default: 1 %}
+{% assign min_value = min | default: 1 %}
+{% assign qty_value = value | default: min_value %}
 
 <style>
   .quantity-selector {
@@ -90,7 +94,7 @@
     class="quantity-selector__input"
     name="{{ name }}"
     value="{{ qty_value }}"
-    min="1"
+    min="{{ min_value }}"
     max="99"
     step="1"
     aria-label="{{ 'cart.quantity' | t }}"

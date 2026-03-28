@@ -1,11 +1,15 @@
 {% doc %}
   Renders the price display for a product, handling sale prices, price ranges,
-  and sold-out states.
+  and sold-out states. Optionally shows wholesale pricing for tagged customers.
 
-  @param {product} product - Shopify product object. Required.
+  @param {product} product         - Shopify product object. Required.
+  @param {boolean} show_wholesale  - Show wholesale pricing when customer has a tier tag. Optional, default: false.
+  @param {string}  customer_tags   - Comma-separated customer tags string. Required when show_wholesale is true.
 
   @example
   {% render 'price', product: product %}
+  {% assign tags_string = customer.tags | join: ',' %}
+  {% render 'price', product: product, show_wholesale: true, customer_tags: tags_string %}
 {% enddoc %}
 
 <style>
@@ -27,7 +31,72 @@
   }
 </style>
 
-{% if product.available %}
+{% comment %} Resolve wholesale price when show_wholesale is enabled {% endcomment %}
+{% assign ws_price_cents = 0 %}
+{% assign ws_tier = '' %}
+
+{% if show_wholesale %}
+  {% if settings.wholesale_enabled %}
+    {% if customer_tags != blank %}
+      {% assign tags_arr = customer_tags | split: ',' %}
+
+      {% comment %} Priority: distributor > vip > wholesale {% endcomment %}
+      {% for tag in tags_arr %}
+        {% assign tag_s = tag | strip %}
+        {% if tag_s == settings.wholesale_tier_3_tag %}
+          {% assign ws_tier = settings.wholesale_tier_3_tag %}
+          {% assign ws_discount_pct = settings.wholesale_tier_3_discount %}
+        {% endif %}
+      {% endfor %}
+
+      {% if ws_tier == '' %}
+        {% for tag in tags_arr %}
+          {% assign tag_s = tag | strip %}
+          {% if tag_s == settings.wholesale_tier_2_tag %}
+            {% assign ws_tier = settings.wholesale_tier_2_tag %}
+            {% assign ws_discount_pct = settings.wholesale_tier_2_discount %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+
+      {% if ws_tier == '' %}
+        {% for tag in tags_arr %}
+          {% assign tag_s = tag | strip %}
+          {% if tag_s == settings.wholesale_tier_1_tag %}
+            {% assign ws_tier = settings.wholesale_tier_1_tag %}
+            {% assign ws_discount_pct = settings.wholesale_tier_1_discount %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+
+      {% if ws_tier != '' %}
+        {% if ws_tier == settings.wholesale_tier_1_tag %}
+          {% if product.metafields.custom.wholesale_price != blank %}
+            {% assign ws_price_cents = product.metafields.custom.wholesale_price | times: 100 | round %}
+          {% endif %}
+        {% elsif ws_tier == settings.wholesale_tier_2_tag %}
+          {% if product.metafields.custom.tier_2_price != blank %}
+            {% assign ws_price_cents = product.metafields.custom.tier_2_price | times: 100 | round %}
+          {% endif %}
+        {% elsif ws_tier == settings.wholesale_tier_3_tag %}
+          {% if product.metafields.custom.tier_3_price != blank %}
+            {% assign ws_price_cents = product.metafields.custom.tier_3_price | times: 100 | round %}
+          {% endif %}
+        {% endif %}
+
+        {% if ws_price_cents == 0 %}
+          {% assign ws_mult = 100 | minus: ws_discount_pct %}
+          {% assign ws_price_cents = product.price | times: ws_mult | divided_by: 100 %}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+{% endif %}
+
+{% if ws_tier != '' %}
+  <span class="price price--sale">{{ ws_price_cents | money }}</span>
+  <span class="price price--compare">{{ product.price | money }}</span>
+{% elsif product.available %}
   {% if product.price_varies %}
     <span class="price">
       {{- 'products.from_price' | t: price: product.price_min | money -}}

@@ -30,6 +30,30 @@
       "name": "Cart",
       "free_shipping_threshold": { "label": "Free shipping threshold" },
       "show_free_shipping_bar": { "label": "Show free shipping progress bar" }
+    },
+    "wholesale": {
+      "name": "B2B / Wholesale",
+      "enabled": {
+        "label": "Enable wholesale pricing",
+        "info": "Shows wholesale pricing to customers with wholesale tier tags. Actual price enforcement requires Shopify automatic discounts or Scripts."
+      },
+      "tier_1_header": "Tier 1 — Wholesale",
+      "tier_1_tag": { "label": "Customer tag" },
+      "tier_1_name": { "label": "Tier name" },
+      "tier_1_discount": { "label": "Discount percentage" },
+      "tier_1_min_qty": { "label": "Minimum order quantity" },
+      "tier_2_header": "Tier 2 — VIP",
+      "tier_2_tag": { "label": "Customer tag" },
+      "tier_2_name": { "label": "Tier name" },
+      "tier_2_discount": { "label": "Discount percentage" },
+      "tier_2_min_qty": { "label": "Minimum order quantity" },
+      "tier_3_header": "Tier 3 — Distributor",
+      "tier_3_tag": { "label": "Customer tag" },
+      "tier_3_name": { "label": "Tier name" },
+      "tier_3_discount": { "label": "Discount percentage" },
+      "tier_3_min_qty": { "label": "Minimum order quantity" },
+      "shipping_header": "Wholesale free shipping",
+      "free_shipping_threshold": { "label": "Free shipping threshold (wholesale orders)" }
     }
   },
   "sections": {
@@ -112,7 +136,8 @@
       "settings": {
         "show_rating": { "label": "Show rating" },
         "show_stock": { "label": "Show stock indicator" },
-        "show_description": { "label": "Show description" }
+        "show_description": { "label": "Show description" },
+        "show_wholesale_pricing": { "label": "Show wholesale pricing" }
       }
     },
     "product_tabs": {
@@ -135,7 +160,8 @@
       "name": "Cart content",
       "settings": {
         "show_free_shipping_bar": { "label": "Show free shipping progress bar" },
-        "show_payment_icons": { "label": "Show payment icons" }
+        "show_payment_icons": { "label": "Show payment icons" },
+        "show_wholesale_savings": { "label": "Show wholesale savings summary" }
       }
     },
     "main_page": {
@@ -168,7 +194,47 @@
     "customer_login": { "name": "Customer login" },
     "customer_register": { "name": "Customer register" },
     "customer_account": { "name": "Customer account" },
-    "customer_order": { "name": "Customer order" }
+    "customer_order": { "name": "Customer order" },
+    "wholesale_pricing_table": {
+      "name": "Wholesale pricing table",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "show_for_all": {
+          "label": "Show for all visitors",
+          "info": "When disabled, only shows to customers with a wholesale tier tag."
+        }
+      }
+    },
+    "wholesale_application": {
+      "name": "Wholesale application form",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "description": { "label": "Description" },
+        "success_message": { "label": "Success message" },
+        "submit_label": { "label": "Submit button label" },
+        "notification_email": {
+          "label": "Notification email",
+          "info": "Leave blank to use the store default contact email."
+        }
+      }
+    },
+    "quick_order": {
+      "name": "Quick order form",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "collection": { "label": "Collection" },
+        "products_per_page": { "label": "Products per page" }
+      }
+    },
+    "wholesale_cta": {
+      "name": "Wholesale CTA banner",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "subtitle": { "label": "Subtitle" },
+        "button_label": { "label": "Button label" },
+        "button_url": { "label": "Button URL" }
+      }
+    }
   },
   "blocks": {
     "feature_item": {
@@ -205,6 +271,14 @@
         "image": { "label": "Image" },
         "url": { "label": "Link URL" },
         "alt": { "label": "Alt text" }
+      }
+    },
+    "quantity_break": {
+      "name": "Quantity break",
+      "settings": {
+        "min_quantity": { "label": "Minimum quantity" },
+        "discount_percent": { "label": "Discount percentage" },
+        "label": { "label": "Label" }
       }
     }
   }

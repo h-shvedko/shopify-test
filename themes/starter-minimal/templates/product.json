@@ -1,8 +1,18 @@
 {
   "sections": {
     "main": { "type": "product-detail", "settings": {} },
+    "wholesale_pricing": {
+      "type": "wholesale-pricing-table",
+      "settings": { "heading": "Volume pricing" },
+      "blocks": {
+        "break_1": { "type": "quantity_break", "settings": { "min_quantity": 10, "discount_percent": 15, "label": "Wholesale" } },
+        "break_2": { "type": "quantity_break", "settings": { "min_quantity": 25, "discount_percent": 20, "label": "Bulk" } },
+        "break_3": { "type": "quantity_break", "settings": { "min_quantity": 50, "discount_percent": 25, "label": "Distributor" } }
+      },
+      "block_order": ["break_1", "break_2", "break_3"]
+    },
     "tabs": { "type": "product-tabs", "settings": {} },
     "related": { "type": "related-products", "settings": {} }
   },
-  "order": ["main", "tabs", "related"]
+  "order": ["main", "wholesale_pricing", "tabs", "related"]
 }

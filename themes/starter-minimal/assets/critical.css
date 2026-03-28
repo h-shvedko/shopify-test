@@ -269,3 +269,33 @@ button:focus-visible {
 @media (min-width: 768px) {
   .grid { gap: var(--grid-gap-desktop); }
 }
+
+/* 11. Wholesale badge */
+
+.wholesale-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.wholesale-badge--wholesale {
+  background-color: var(--color-primary, #d97706);
+  color: var(--color-primary-contrast, #ffffff);
+}
+
+.wholesale-badge--vip {
+  background-color: var(--color-success, #16a34a);
+  color: #ffffff;
+}
+
+.wholesale-badge--distributor {
+  background-color: var(--color-text, #111827);
+  color: var(--color-background, #ffffff);
+}

@@ -14,10 +14,15 @@
       {% endif %}
     </div>
 
+    {% assign ws_tags = '' %}
+    {% if customer %}
+      {% assign ws_tags = customer.tags | join: ',' %}
+    {% endif %}
+
     <div class="featured-products__grid">
       {% if section.settings.collection %}
         {% for product in section.settings.collection.products limit: section.settings.products_count %}
-          {% render 'product-card', product: product %}
+          {% render 'product-card', product: product, customer_tags: ws_tags %}
         {% endfor %}
       {% endif %}
     </div>

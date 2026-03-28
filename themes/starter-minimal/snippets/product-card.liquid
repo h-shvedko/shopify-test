@@ -2,14 +2,19 @@
   Renders a product card with image, badge, category, title, star rating, description,
   price with tax note, and an optional add-to-cart icon button.
 
+  The customer object is NOT available inside snippets rendered with {% render %}.
+  The calling section must pass customer tag data when wholesale display is needed.
+
   @param {product} product          - Shopify product object. Required.
   @param {boolean} show_description - Show a truncated product description. Optional, default: true.
   @param {boolean} show_add_to_cart - Show an add-to-cart button when the product is available.
                                       Optional, default: true.
+  @param {string}  customer_tags    - Comma-separated customer tags string for wholesale pricing. Optional.
 
   @example
   {% render 'product-card', product: product %}
-  {% render 'product-card', product: product, show_description: false, show_add_to_cart: false %}
+  {% assign ws_tags = customer.tags | join: ',' %}
+  {% render 'product-card', product: product, customer_tags: ws_tags %}
 {% enddoc %}
 
 {% assign show_atc = true %}
@@ -173,7 +178,42 @@
       {% endif %}
 
       <div class="product-card__badge">
-        {% if product.tags contains 'bestseller' %}
+        {% comment %} Wholesale tier badge takes priority over bestseller {% endcomment %}
+        {% assign card_ws_tier = '' %}
+        {% if settings.wholesale_enabled %}
+          {% if customer_tags != blank %}
+            {% assign card_tags_arr = customer_tags | split: ',' %}
+            {% for card_tag in card_tags_arr %}
+              {% assign card_tag_s = card_tag | strip %}
+              {% if card_tag_s == settings.wholesale_tier_3_tag %}
+                {% assign card_ws_tier = settings.wholesale_tier_3_tag %}
+                {% assign card_ws_name = settings.wholesale_tier_3_name %}
+              {% endif %}
+            {% endfor %}
+            {% if card_ws_tier == '' %}
+              {% for card_tag in card_tags_arr %}
+                {% assign card_tag_s = card_tag | strip %}
+                {% if card_tag_s == settings.wholesale_tier_2_tag %}
+                  {% assign card_ws_tier = settings.wholesale_tier_2_tag %}
+                  {% assign card_ws_name = settings.wholesale_tier_2_name %}
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+            {% if card_ws_tier == '' %}
+              {% for card_tag in card_tags_arr %}
+                {% assign card_tag_s = card_tag | strip %}
+                {% if card_tag_s == settings.wholesale_tier_1_tag %}
+                  {% assign card_ws_tier = settings.wholesale_tier_1_tag %}
+                  {% assign card_ws_name = settings.wholesale_tier_1_name %}
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          {% endif %}
+        {% endif %}
+
+        {% if card_ws_tier != '' %}
+          {% render 'wholesale-badge', tier: card_ws_tier, label: card_ws_name %}
+        {% elsif product.tags contains 'bestseller' %}
           {% assign badge_label = 'badges.bestseller' | t %}
           {% render 'badge', type: 'bestseller', label: badge_label %}
         {% elsif product.available == false %}
@@ -215,7 +255,7 @@
     {% if product.available %}
       <div class="product-card__footer">
         <div class="product-card__price-area">
-          {% render 'price', product: product %}
+          {% render 'price', product: product, show_wholesale: true, customer_tags: customer_tags %}
           <p class="product-card__tax-note">{{ 'products.tax_included' | t }}</p>
         </div>
         <form action="{{ routes.cart_add_url }}" method="post" class="product-card__atc-form">
@@ -228,7 +268,7 @@
     {% else %}
       <div class="product-card__footer">
         <div class="product-card__price-area">
-          {% render 'price', product: product %}
+          {% render 'price', product: product, show_wholesale: true, customer_tags: customer_tags %}
           <p class="product-card__tax-note">{{ 'products.tax_included' | t }}</p>
         </div>
       </div>
@@ -236,7 +276,7 @@
   {% else %}
     <div class="product-card__footer">
       <div class="product-card__price-area">
-        {% render 'price', product: product %}
+        {% render 'price', product: product, show_wholesale: true, customer_tags: customer_tags %}
         <p class="product-card__tax-note">{{ 'products.tax_included' | t }}</p>
       </div>
     </div>

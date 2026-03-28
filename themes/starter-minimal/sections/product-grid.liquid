@@ -21,12 +21,17 @@
       </div>
     {% endif %}
 
+    {% assign ws_tags = '' %}
+    {% if customer %}
+      {% assign ws_tags = customer.tags | join: ',' %}
+    {% endif %}
+
     <div
       class="product-grid__grid"
       style="--columns: {{ section.settings.columns_desktop }}"
     >
       {% for product in collection.products %}
-        {% render 'product-card', product: product %}
+        {% render 'product-card', product: product, customer_tags: ws_tags %}
       {% else %}
         <p class="product-grid__empty">{{ 'products.no_products' | t }}</p>
       {% endfor %}

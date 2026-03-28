@@ -31,6 +31,15 @@
         {% render 'price', product: product %}
       </div>
 
+      {% if settings.wholesale_enabled %}
+        {% if section.settings.show_wholesale_pricing %}
+          {% if customer %}
+            {% assign ws_tags = customer.tags | join: ',' %}
+            {% render 'wholesale-price', product: product, customer_tags: ws_tags %}
+          {% endif %}
+        {% endif %}
+      {% endif %}
+
       {% if section.settings.show_stock %}
         {% assign variant = product.selected_or_first_available_variant %}
         {% if variant.inventory_management == 'shopify' %}
@@ -50,12 +59,34 @@
         {% endif %}
       {% endif %}
 
+      {% assign ws_min = 1 %}
+      {% assign ws_min_tier_name = '' %}
+      {% if settings.wholesale_enabled %}
+        {% if customer %}
+          {% if customer.tags contains settings.wholesale_tier_3_tag %}
+            {% assign ws_min = settings.wholesale_tier_3_min_qty %}
+            {% assign ws_min_tier_name = settings.wholesale_tier_3_name %}
+          {% elsif customer.tags contains settings.wholesale_tier_2_tag %}
+            {% assign ws_min = settings.wholesale_tier_2_min_qty %}
+            {% assign ws_min_tier_name = settings.wholesale_tier_2_name %}
+          {% elsif customer.tags contains settings.wholesale_tier_1_tag %}
+            {% assign ws_min = settings.wholesale_tier_1_min_qty %}
+            {% assign ws_min_tier_name = settings.wholesale_tier_1_name %}
+          {% endif %}
+        {% endif %}
+      {% endif %}
+
       {%- assign added_msg = 'products.added_to_cart' | t -%}
       {% form 'product', product, data-product-form: '', data-added-message: added_msg %}
         <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
         <div class="product-detail__quantity">
-          {% render 'quantity-selector', value: 1, name: 'quantity' %}
+          {% render 'quantity-selector', value: ws_min, name: 'quantity', min: ws_min %}
         </div>
+        {% if ws_min > 1 %}
+          <p class="product-detail__min-notice">
+            {{ 'wholesale.min_order_notice' | t: qty: ws_min, tier: ws_min_tier_name }}
+          </p>
+        {% endif %}
         <button
           type="submit"
           class="btn btn--primary btn--full-width product-detail__add-btn"
@@ -134,7 +165,14 @@
   }
 
   .product-detail__quantity {
-    margin-bottom: 12px;
+    margin-bottom: 8px;
+  }
+
+  .product-detail__min-notice {
+    font-size: 0.8125rem;
+    color: var(--color-primary);
+    font-weight: 600;
+    margin: 0 0 12px;
   }
 
   .product-detail__add-btn {
@@ -269,6 +307,12 @@
       "type": "checkbox",
       "id": "show_description",
       "label": "t:sections.product_detail.settings.show_description.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wholesale_pricing",
+      "label": "t:sections.product_detail.settings.show_wholesale_pricing.label",
       "default": true
     }
   ],

@@ -21,10 +21,15 @@
         <p class="search-results__count">
           {{ 'search.results_count' | t: count: search.results_count, query: search.terms }}
         </p>
+        {% assign ws_tags = '' %}
+        {% if customer %}
+          {% assign ws_tags = customer.tags | join: ',' %}
+        {% endif %}
+
         <div class="search-results__grid">
           {% for item in search.results %}
             {% if item.object_type == 'product' %}
-              {% render 'product-card', product: item %}
+              {% render 'product-card', product: item, customer_tags: ws_tags %}
             {% else %}
               <div class="search-results__article">
                 <h3 class="search-results__article-title">
