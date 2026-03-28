@@ -1075,7 +1075,10 @@
           .then(function (cart) {
             updateCartBadge(cart.item_count);
             showToast(atcBtn.dataset.addedMsg);
-            document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart: cart } }));
+            document.dispatchEvent(new CustomEvent('cart:updated', { detail: { item_count: cart.item_count } }));
+            document.dispatchEvent(new CustomEvent('cart:open', {
+              detail: { cart: cart, productId: variantId }
+            }));
           })
           .catch(function (err) { console.error('ATC error:', err); })
           .finally(function () {
@@ -1130,7 +1133,10 @@
           .then(function (cart) {
             updateCartBadge(cart.item_count);
             showToast(addedMsg);
-            document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart: cart } }));
+            document.dispatchEvent(new CustomEvent('cart:updated', { detail: { item_count: cart.item_count } }));
+            document.dispatchEvent(new CustomEvent('cart:open', {
+              detail: { cart: cart, productId: variantId }
+            }));
           })
           .catch(function (err) { console.error('Sticky ATC error:', err); })
           .finally(function () { stickyBtn.disabled = false; });

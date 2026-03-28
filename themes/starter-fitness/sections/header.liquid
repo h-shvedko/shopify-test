@@ -164,10 +164,11 @@
       </a>
 
       {%- comment -%} Cart {%- endcomment -%}
-      <a
-        href="{{ routes.cart_url }}"
+      <button
+        type="button"
         class="zn-header__icon-btn zn-header__cart"
         aria-label="{{ cart_label }}"
+        data-cart-drawer-toggle
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -178,7 +179,7 @@
           class="zn-header__cart-badge{% if cart.item_count == 0 %} zn-header__cart-badge--hidden{% endif %}"
           data-cart-count
         >{{ cart.item_count }}</span>
-      </a>
+      </button>
 
     </div>
   </div>
@@ -219,12 +220,16 @@
       {% endfor %}
     </nav>
     <div class="zn-mobile-menu__footer">
-      <a href="{{ routes.cart_url }}" class="zn-mobile-menu__cart-link">
+      <button
+        type="button"
+        class="zn-mobile-menu__cart-link"
+        data-cart-drawer-toggle
+      >
         {{ cart_label }}
         {% if cart.item_count > 0 %}
           <span class="zn-mobile-menu__cart-count">({{ cart.item_count }})</span>
         {% endif %}
-      </a>
+      </button>
     </div>
   </div>
 </dialog>
@@ -651,6 +656,11 @@
     font-weight: 600;
     font-size: 0.9375rem;
     letter-spacing: 0.04em;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 100%;
   }
 
   .zn-mobile-menu__cart-link:hover {
@@ -773,6 +783,14 @@
         localStorage.setItem('zn-theme', next);
       });
     }
+
+    // Cart drawer toggle — header cart button and mobile menu cart button
+    var cartToggles = document.querySelectorAll('[data-cart-drawer-toggle]');
+    cartToggles.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.dispatchEvent(new CustomEvent('cart:open', { detail: {} }));
+      });
+    });
 
     // Cart badge update
     document.addEventListener('cart:updated', function (e) {

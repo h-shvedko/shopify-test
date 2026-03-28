@@ -488,12 +488,18 @@
         document.querySelectorAll('[data-cart-count]').forEach(function (b) {
           b.textContent = cartData.item_count;
         });
+        document.dispatchEvent(new CustomEvent('cart:updated', {
+          detail: { item_count: cartData.item_count }
+        }));
         atcBtn.textContent = '{{ 'products.added_to_cart' | t | escape }}';
+        document.dispatchEvent(new CustomEvent('cart:open', {
+          detail: { cart: cartData, productId: parseInt(variantId, 10) }
+        }));
         setTimeout(function () {
           atcBtn.textContent = originalText;
           atcBtn.disabled    = false;
           closeModal();
-        }, 1500);
+        }, 800);
       })
       .catch(function () {
         atcBtn.disabled = false;

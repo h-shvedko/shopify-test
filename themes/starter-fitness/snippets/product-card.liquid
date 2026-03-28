@@ -415,6 +415,12 @@
         .then(function (cartData) {
           var badges = document.querySelectorAll('[data-cart-count]');
           badges.forEach(function (b) { b.textContent = cartData.item_count; });
+          document.dispatchEvent(new CustomEvent('cart:updated', {
+            detail: { item_count: cartData.item_count }
+          }));
+          document.dispatchEvent(new CustomEvent('cart:open', {
+            detail: { cart: cartData, productId: parseInt(variantId, 10) }
+          }));
           quickAddBtn.textContent = document.documentElement.lang === 'en'
             ? 'Added!'
             : quickAddBtn.dataset.addedLabel || 'Added!';

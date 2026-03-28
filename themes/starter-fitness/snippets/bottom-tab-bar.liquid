@@ -125,6 +125,19 @@
   }
 </style>
 
+<script>
+(function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    var cartBtns = document.querySelectorAll('.bottom-tab-bar [data-cart-drawer-toggle]');
+    cartBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.dispatchEvent(new CustomEvent('cart:open', { detail: {} }));
+      });
+    });
+  });
+}());
+</script>
+
 <nav class="bottom-tab-bar" aria-label="{{ 'bottom_nav.label' | t }}">
   <a
     href="{{ routes.root_url }}"
@@ -150,11 +163,11 @@
     <span>{{ search_label }}</span>
   </a>
 
-  <a
-    href="{{ routes.cart_url }}"
+  <button
+    type="button"
     class="bottom-tab-bar__tab{% if is_cart %} bottom-tab-bar__tab--active{% endif %}"
     aria-label="{{ cart_label }}"
-    {% if is_cart %}aria-current="page"{% endif %}
+    data-cart-drawer-toggle
   >
     <span class="bottom-tab-bar__icon-wrap">
       {% render 'icon', name: 'cart', size: 22 %}
@@ -165,7 +178,7 @@
       >{{ cart.item_count }}</span>
     </span>
     <span>{{ cart_label }}</span>
-  </a>
+  </button>
 
   <a
     href="{{ routes.account_url }}"

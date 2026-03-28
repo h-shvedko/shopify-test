@@ -1,0 +1,886 @@
+{%- liquid
+  assign threshold        = settings.free_shipping_threshold | times: 100
+  assign cart_total       = cart.total_price
+  assign shipping_pct     = 0
+  assign shipping_remaining = 0
+  if threshold > 0
+    if cart_total >= threshold
+      assign shipping_pct = 100
+    else
+      assign shipping_remaining = threshold | minus: cart_total
+      assign shipping_pct = cart_total | times: 100 | divided_by: threshold
+    endif
+  endif
+
+  assign title_label             = 'cart_drawer.title' | t
+  assign title_with_count_label  = 'cart_drawer.title_with_count' | t: count: cart.item_count
+  assign empty_label             = 'cart_drawer.empty' | t
+  assign empty_cta_label         = 'cart_drawer.empty_cta' | t
+  assign subtotal_label          = 'cart_drawer.subtotal' | t
+  assign shipping_note_label     = 'cart_drawer.shipping_note' | t
+  assign checkout_label          = 'cart_drawer.checkout' | t
+  assign continue_label          = 'cart_drawer.continue_shopping' | t
+  assign view_cart_label         = 'cart_drawer.view_cart' | t
+  assign free_shipping_done      = 'cart_drawer.free_shipping_achieved' | t
+  assign upsells_heading_fallback = 'cart_drawer.upsells_heading' | t
+  if section.settings.upsells_heading != blank
+    assign upsells_heading_label = section.settings.upsells_heading
+  else
+    assign upsells_heading_label = upsells_heading_fallback
+  endif
+  assign close_label             = 'accessibility.close' | t
+-%}
+
+{%- if section.settings.enable -%}
+<dialog
+  class="cart-drawer"
+  id="CartDrawer"
+  aria-label="{{ title_label | escape }}"
+  data-cart-drawer
+  data-section-id="{{ section.id }}"
+>
+  <div class="cart-drawer__panel" data-cart-drawer-panel>
+
+    {%- comment -%} Header {%- endcomment -%}
+    <header class="cart-drawer__header">
+      <h2 class="cart-drawer__title" data-cart-drawer-title aria-live="polite">
+        {%- if cart.item_count > 0 -%}
+          {{ title_with_count_label }}
+        {%- else -%}
+          {{ title_label }}
+        {%- endif -%}
+      </h2>
+      <button
+        class="cart-drawer__close"
+        type="button"
+        aria-label="{{ close_label }}"
+        data-cart-drawer-close
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </header>
+
+    {%- comment -%} Body — wrapped for Section Rendering API partial replacement {%- endcomment -%}
+    <div class="cart-drawer__body" data-cart-drawer-body>
+
+      {%- comment -%} Free shipping bar {%- endcomment -%}
+      {%- if section.settings.show_free_shipping_bar -%}
+        {%- if threshold > 0 -%}
+          <div class="cart-drawer__shipping-bar">
+            {%- if shipping_pct >= 100 -%}
+              <p class="cart-drawer__shipping-msg cart-drawer__shipping-msg--done">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                {{ free_shipping_done }}
+              </p>
+            {%- else -%}
+              <p class="cart-drawer__shipping-msg">
+                {{ 'cart_drawer.free_shipping_remaining' | t: amount: shipping_remaining | money }}
+              </p>
+            {%- endif -%}
+            <div
+              class="cart-drawer__progress-track"
+              role="progressbar"
+              aria-valuenow="{{ shipping_pct }}"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
+              <div
+                class="cart-drawer__progress-fill"
+                style="width: {{ shipping_pct }}%"
+              ></div>
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- comment -%} Line items {%- endcomment -%}
+      {%- if cart.item_count > 0 -%}
+        <ul class="cart-drawer__items" role="list">
+          {%- for item in cart.items -%}
+            <li>
+              {%- render 'cart-drawer-item', item: item -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        {%- comment -%} Upsells — static fallback from collection {%- endcomment -%}
+        {%- if section.settings.show_upsells -%}
+          {%- assign upsell_collection = section.settings.upsell_collection -%}
+          {%- if upsell_collection != blank -%}
+            {%- liquid
+              assign cart_product_ids = cart.items | map: 'product_id'
+              assign upsell_products = upsell_collection.products
+              assign shown = 0
+              assign upsell_limit = section.settings.upsell_count | default: 4
+            -%}
+            {%- assign has_upsells = false -%}
+            {%- for up in upsell_products -%}
+              {%- unless cart_product_ids contains up.id -%}
+                {%- if shown < upsell_limit -%}
+                  {%- assign has_upsells = true -%}
+                {%- endif -%}
+              {%- endunless -%}
+            {%- endfor -%}
+
+            {%- if has_upsells -%}
+              <div class="cart-drawer__upsells" data-cart-drawer-upsells>
+                <h3 class="cart-drawer__upsells-heading">{{ upsells_heading_label }}</h3>
+                <div class="cart-drawer__upsells-list" data-upsells-list>
+                  {%- for up in upsell_products -%}
+                    {%- unless cart_product_ids contains up.id -%}
+                      {%- if shown < upsell_limit -%}
+                        {%- render 'cart-drawer-upsell', product: up -%}
+                        {%- assign shown = shown | plus: 1 -%}
+                      {%- endif -%}
+                    {%- endunless -%}
+                  {%- endfor -%}
+                </div>
+              </div>
+            {%- endif -%}
+          {%- else -%}
+            {%- comment -%} Dynamic upsells injected by JS (Product Recommendations API) {%- endcomment -%}
+            <div class="cart-drawer__upsells cart-drawer__upsells--dynamic" data-cart-drawer-upsells data-dynamic-upsells style="display:none">
+              <h3 class="cart-drawer__upsells-heading">{{ upsells_heading_label }}</h3>
+              <div class="cart-drawer__upsells-list" data-upsells-list></div>
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+
+      {%- else -%}
+        {%- comment -%} Empty state {%- endcomment -%}
+        <div class="cart-drawer__empty">
+          <div class="cart-drawer__empty-icon" aria-hidden="true">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M16 10a4 4 0 0 1-8 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <p class="cart-drawer__empty-msg">{{ empty_label }}</p>
+          <a href="{{ routes.all_products_collection_url }}" class="cart-drawer__empty-cta btn btn--primary">
+            {{ empty_cta_label }}
+          </a>
+        </div>
+      {%- endif -%}
+
+    </div>
+
+    {%- comment -%} Footer {%- endcomment -%}
+    {%- if cart.item_count > 0 -%}
+      <footer class="cart-drawer__footer">
+        <div class="cart-drawer__subtotal">
+          <span class="cart-drawer__subtotal-label">{{ subtotal_label }}</span>
+          <span
+            class="cart-drawer__subtotal-value"
+            data-cart-subtotal
+            aria-live="polite"
+          >{{ cart.total_price | money }}</span>
+        </div>
+        <p class="cart-drawer__shipping-note">{{ shipping_note_label }}</p>
+        <a href="{{ routes.checkout }}" class="cart-drawer__checkout btn btn--primary btn--full">
+          {{ checkout_label }}
+        </a>
+        <div class="cart-drawer__links">
+          <a href="{{ routes.cart_url }}" class="cart-drawer__view-cart">{{ view_cart_label }}</a>
+          <button type="button" class="cart-drawer__continue" data-cart-drawer-close>
+            {{ continue_label }}
+          </button>
+        </div>
+      </footer>
+    {%- endif -%}
+
+  </div>
+</dialog>
+{%- endif -%}
+
+{% stylesheet %}
+  /* ============================================================
+     Cart Drawer — Zenith Fitness Theme
+     Slide-in drawer from right. Supports dark/light mode via CSS vars.
+  ============================================================ */
+
+  .cart-drawer {
+    border: none;
+    padding: 0;
+    margin: 0;
+    position: fixed;
+    inset: 0 0 0 auto;
+    width: 100%;
+    max-width: 420px;
+    height: 100%;
+    max-height: 100%;
+    background: var(--color-surface);
+    border-left: 1px solid var(--color-border);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                display 0s allow-discrete;
+    z-index: var(--z-modal);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cart-drawer[open] {
+    transform: translateX(0);
+  }
+
+  @starting-style {
+    .cart-drawer[open] {
+      transform: translateX(100%);
+    }
+  }
+
+  .cart-drawer::backdrop {
+    background: var(--color-overlay);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .cart-drawer[open]::backdrop {
+    opacity: 1;
+  }
+
+  /* Panel layout */
+  .cart-drawer__panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* Header */
+  .cart-drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+  }
+
+  .cart-drawer__title {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  .cart-drawer__close {
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .cart-drawer__close:hover {
+    color: var(--color-text);
+    border-color: var(--color-text-secondary);
+    background-color: var(--color-surface-elevated);
+  }
+
+  .cart-drawer__close:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* Body — scrollable middle area */
+  .cart-drawer__body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    padding: 0 20px;
+  }
+
+  /* Free shipping bar */
+  .cart-drawer__shipping-bar {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .cart-drawer__shipping-msg {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    margin: 0 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.4;
+  }
+
+  .cart-drawer__shipping-msg--done {
+    color: var(--color-success);
+    font-weight: 600;
+  }
+
+  .cart-drawer__progress-track {
+    height: 4px;
+    background-color: var(--color-border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .cart-drawer__progress-fill {
+    height: 100%;
+    background: var(--gradient-accent);
+    border-radius: 2px;
+    transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    min-width: 4px;
+  }
+
+  /* Line items list */
+  .cart-drawer__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .cart-drawer__items li {
+    list-style: none;
+  }
+
+  /* Upsells */
+  .cart-drawer__upsells {
+    padding: 16px 0 8px;
+    border-top: 1px solid var(--color-border);
+    margin-top: 8px;
+  }
+
+  .cart-drawer__upsells-heading {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    margin: 0 0 12px;
+  }
+
+  .cart-drawer__upsells-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Empty state */
+  .cart-drawer__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 48px 24px;
+    gap: 16px;
+  }
+
+  .cart-drawer__empty-icon {
+    color: var(--color-border);
+    opacity: 0.6;
+  }
+
+  .cart-drawer__empty-msg {
+    font-size: 0.9375rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .cart-drawer__empty-cta {
+    margin-top: 4px;
+  }
+
+  /* Footer */
+  .cart-drawer__footer {
+    padding: 16px 20px 20px;
+    border-top: 1px solid var(--color-border);
+    flex-shrink: 0;
+    background: var(--color-surface);
+  }
+
+  .cart-drawer__subtotal {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .cart-drawer__subtotal-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .cart-drawer__subtotal-value {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .cart-drawer__shipping-note {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    margin: 0 0 16px;
+  }
+
+  .cart-drawer__checkout {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 12px;
+    text-decoration: none;
+  }
+
+  .cart-drawer__links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .cart-drawer__view-cart,
+  .cart-drawer__continue {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color 0.15s ease;
+    font-family: var(--font-body);
+  }
+
+  .cart-drawer__view-cart:hover,
+  .cart-drawer__continue:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  /* Spinner on loading state */
+  .cart-drawer__body--loading {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  /* Mobile: full width */
+  @media (max-width: 767px) {
+    .cart-drawer {
+      max-width: 100%;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+(function () {
+  'use strict';
+
+  var drawer       = document.getElementById('CartDrawer');
+  if (!drawer) return;
+
+  var panel        = drawer.querySelector('[data-cart-drawer-panel]');
+  var body         = drawer.querySelector('[data-cart-drawer-body]');
+  var titleEl      = drawer.querySelector('[data-cart-drawer-title]');
+  var closeBtns    = drawer.querySelectorAll('[data-cart-drawer-close]');
+  var triggerEl    = null;
+
+  var sectionId    = drawer.dataset.sectionId;
+  var upsellCount  = {{ section.settings.upsell_count | default: 4 }};
+  var showUpsells  = {{ section.settings.show_upsells }};
+  var lastProductId = null;
+
+  // ── Open / Close ────────────────────────────────────────────
+
+  function openDrawer() {
+    triggerEl = document.activeElement;
+    drawer.showModal();
+    document.body.style.overflow = 'hidden';
+    var closeBtn = drawer.querySelector('[data-cart-drawer-close]');
+    if (closeBtn) closeBtn.focus();
+  }
+
+  function closeDrawer() {
+    drawer.close();
+    document.body.style.overflow = '';
+    if (triggerEl && typeof triggerEl.focus === 'function') {
+      triggerEl.focus();
+    }
+    triggerEl = null;
+  }
+
+  closeBtns.forEach(function (btn) {
+    btn.addEventListener('click', closeDrawer);
+  });
+
+  drawer.addEventListener('click', function (e) {
+    if (e.target === drawer) closeDrawer();
+  });
+
+  drawer.addEventListener('close', function () {
+    document.body.style.overflow = '';
+    if (triggerEl && typeof triggerEl.focus === 'function') {
+      triggerEl.focus();
+    }
+    triggerEl = null;
+  });
+
+  // ── Listen for cart:open ─────────────────────────────────────
+
+  document.addEventListener('cart:open', function (e) {
+    var detail = (e && e.detail) || {};
+    if (detail.productId) lastProductId = detail.productId;
+    openDrawer();
+    refreshDrawer(function () {
+      if (showUpsells && lastProductId) {
+        fetchDynamicUpsells(lastProductId);
+      }
+    });
+  });
+
+  // ── Listen for cart:updated ──────────────────────────────────
+
+  document.addEventListener('cart:updated', function (e) {
+    var detail = (e && e.detail) || {};
+    if (detail.item_count !== undefined) {
+      updateBadges(detail.item_count);
+    }
+    // Only re-render body if drawer is open
+    if (drawer.open) {
+      refreshDrawer(null);
+    }
+  });
+
+  // ── Section Rendering API re-render ─────────────────────────
+
+  function refreshDrawer(callback) {
+    if (body) body.classList.add('cart-drawer__body--loading');
+
+    fetch('/?sections=cart-drawer', { headers: { 'Cache-Control': 'no-store' } })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        var html = data['cart-drawer'];
+        if (!html) return;
+        var temp = document.createElement('div');
+        temp.innerHTML = html;
+        var newBody = temp.querySelector('[data-cart-drawer-body]');
+        var newTitle = temp.querySelector('[data-cart-drawer-title]');
+        var currentBody = drawer.querySelector('[data-cart-drawer-body]');
+        var currentTitle = drawer.querySelector('[data-cart-drawer-title]');
+        var currentFooter = drawer.querySelector('.cart-drawer__footer');
+        var newFooter = temp.querySelector('.cart-drawer__footer');
+
+        if (newBody && currentBody) {
+          currentBody.innerHTML = newBody.innerHTML;
+          // Re-bind quantity/remove events on freshly rendered items
+          bindItemEvents();
+        }
+        if (newTitle && currentTitle) {
+          currentTitle.textContent = newTitle.textContent;
+        }
+        // Swap footer (subtotal/checkout) or add/remove it
+        if (newFooter) {
+          if (currentFooter) {
+            currentFooter.outerHTML = newFooter.outerHTML;
+          } else {
+            panel.appendChild(newFooter);
+          }
+        } else if (currentFooter) {
+          currentFooter.remove();
+        }
+        // Re-bind new footer close btn
+        drawer.querySelectorAll('[data-cart-drawer-close]').forEach(function (btn) {
+          btn.removeEventListener('click', closeDrawer);
+          btn.addEventListener('click', closeDrawer);
+        });
+      })
+      .catch(function (err) { console.error('Cart drawer refresh error:', err); })
+      .finally(function () {
+        if (body) body.classList.remove('cart-drawer__body--loading');
+        if (typeof callback === 'function') callback();
+      });
+  }
+
+  // ── Quantity & Remove handlers ───────────────────────────────
+
+  var debounceTimer = null;
+
+  function bindItemEvents() {
+    var items = drawer.querySelectorAll('[data-qty-control]');
+    items.forEach(function (control) {
+      var lineKey    = control.dataset.lineKey;
+      var decreaseBtn = control.querySelector('[data-qty-decrease]');
+      var increaseBtn = control.querySelector('[data-qty-increase]');
+      var input       = control.querySelector('[data-qty-input]');
+
+      function changeQty(newQty) {
+        if (newQty < 0) newQty = 0;
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function () {
+          setLineQuantity(lineKey, newQty);
+        }, 300);
+      }
+
+      if (decreaseBtn) {
+        decreaseBtn.addEventListener('click', function () {
+          var current = parseInt(input ? input.value : 1, 10);
+          changeQty(current - 1);
+        });
+      }
+
+      if (increaseBtn) {
+        increaseBtn.addEventListener('click', function () {
+          var current = parseInt(input ? input.value : 1, 10);
+          changeQty(current + 1);
+        });
+      }
+
+      if (input) {
+        input.addEventListener('change', function () {
+          var val = parseInt(input.value, 10);
+          if (isNaN(val) || val < 0) val = 0;
+          changeQty(val);
+        });
+      }
+    });
+
+    var removeBtns = drawer.querySelectorAll('[data-remove-item]');
+    removeBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        setLineQuantity(btn.dataset.lineKey, 0);
+      });
+    });
+
+    var upsellBtns = drawer.querySelectorAll('[data-upsell-add]');
+    upsellBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        addUpsellToCart(btn);
+      });
+    });
+  }
+
+  function setLineQuantity(lineKey, qty) {
+    if (body) body.classList.add('cart-drawer__body--loading');
+
+    fetch('/cart/change.js', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ id: lineKey, quantity: qty })
+    })
+      .then(function (res) { return res.json(); })
+      .then(function (cart) {
+        document.dispatchEvent(new CustomEvent('cart:updated', {
+          detail: { item_count: cart.item_count }
+        }));
+        refreshDrawer(function () {
+          if (showUpsells && lastProductId) {
+            fetchDynamicUpsells(lastProductId);
+          }
+        });
+      })
+      .catch(function (err) { console.error('Cart change error:', err); })
+      .finally(function () {
+        if (body) body.classList.remove('cart-drawer__body--loading');
+      });
+  }
+
+  function addUpsellToCart(btn) {
+    var variantId = btn.dataset.variantId;
+    if (!variantId) return;
+
+    btn.disabled = true;
+    var originalText = btn.textContent;
+    btn.textContent = btn.dataset.addingLabel || '...';
+
+    fetch('/cart/add.js', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ id: variantId, quantity: 1 })
+    })
+      .then(function (res) { return res.json(); })
+      .then(function () { return fetch('/cart.js'); })
+      .then(function (res) { return res.json(); })
+      .then(function (cart) {
+        document.dispatchEvent(new CustomEvent('cart:updated', {
+          detail: { item_count: cart.item_count }
+        }));
+        lastProductId = parseInt(variantId, 10);
+        refreshDrawer(function () {
+          if (showUpsells && lastProductId) {
+            fetchDynamicUpsells(lastProductId);
+          }
+        });
+      })
+      .catch(function (err) {
+        console.error('Upsell add error:', err);
+        btn.textContent = originalText;
+        btn.disabled = false;
+      });
+  }
+
+  // ── Product Recommendations API (dynamic upsells) ─────────────
+
+  function fetchDynamicUpsells(productId) {
+    if (!productId) return;
+    if (!showUpsells) return;
+
+    var upsellsContainer = drawer.querySelector('[data-dynamic-upsells]');
+    if (!upsellsContainer) return;
+
+    var url = '/recommendations/products.json?product_id=' + productId
+            + '&limit=' + (upsellCount * 2)
+            + '&intent=complementary';
+
+    fetch(url)
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (!data.products || data.products.length === 0) return;
+
+        // Filter out products already in cart
+        var cartItems = drawer.querySelectorAll('[data-line-key]');
+        var cartProductTitles = [];
+        cartItems.forEach(function (el) {
+          var titleEl = el.querySelector('.cdi__title');
+          if (titleEl) cartProductTitles.push(titleEl.textContent.trim());
+        });
+
+        var filtered = data.products.filter(function (p) {
+          return !cartProductTitles.includes(p.title.trim());
+        }).slice(0, upsellCount);
+
+        if (filtered.length === 0) return;
+
+        var addLabel    = '{{ "cart_drawer.add" | t | escape }}';
+        var addingLabel = '{{ "cart_drawer.adding" | t | escape }}';
+        var html = filtered.map(function (p) {
+          var variant   = p.variants[0];
+          var imgTag    = '';
+          if (p.featured_image) {
+            var imgSrc = p.featured_image.replace(/\.jpg$/, '_112x112.jpg')
+                                         .replace(/\.png$/, '_112x112.png')
+                                         .replace(/\.webp$/, '_112x112.webp');
+            imgTag = '<img src="' + imgSrc + '" alt="' + escapeHtml(p.title) + '" width="56" height="56" loading="lazy">';
+          } else {
+            imgTag = '<div class="cdu__image-placeholder" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/></svg></div>';
+          }
+          var priceHtml = '';
+          if (variant.compare_at_price && variant.compare_at_price > variant.price) {
+            priceHtml = '<span class="cdu__price-compare">' + formatMoney(variant.compare_at_price) + '</span>'
+                      + '<span class="cdu__price cdu__price--sale">' + formatMoney(variant.price) + '</span>';
+          } else {
+            priceHtml = '<span class="cdu__price">' + formatMoney(variant.price) + '</span>';
+          }
+          var addBtn = variant.available
+            ? '<button class="cdu__add" type="button" aria-label="' + addLabel + ' ' + escapeHtml(p.title) + '" data-upsell-add data-variant-id="' + variant.id + '" data-adding-label="' + addingLabel + '" data-add-label="' + addLabel + '">' + addLabel + '</button>'
+            : '';
+          return '<div class="cdu" data-upsell-product="' + p.id + '">'
+            + '<a href="/products/' + p.handle + '" class="cdu__image" tabindex="-1" aria-hidden="true">' + imgTag + '</a>'
+            + '<div class="cdu__info"><a href="/products/' + p.handle + '" class="cdu__title">' + escapeHtml(p.title) + '</a><div>' + priceHtml + '</div></div>'
+            + addBtn
+            + '</div>';
+        }).join('');
+
+        var list = upsellsContainer.querySelector('[data-upsells-list]');
+        if (list) {
+          list.innerHTML = html;
+          upsellsContainer.style.display = '';
+          bindItemEvents();
+        }
+      })
+      .catch(function (err) { console.warn('Recommendations fetch failed:', err); });
+  }
+
+  // ── Helpers ─────────────────────────────────────────────────
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function formatMoney(cents) {
+    var amount = (cents / 100).toFixed(2);
+    return '$' + amount;
+  }
+
+  function updateBadges(count) {
+    document.querySelectorAll('[data-cart-count]').forEach(function (el) {
+      el.textContent = count;
+      if (el.dataset) el.dataset.cartCount = count;
+      if (count > 0) {
+        el.classList.remove('zn-header__cart-badge--hidden');
+      } else {
+        el.classList.add('zn-header__cart-badge--hidden');
+      }
+    });
+  }
+
+  // ── Initial bind ────────────────────────────────────────────
+
+  bindItemEvents();
+
+}());
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.cart_drawer.name",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable",
+      "label": "t:sections.cart_drawer.settings.enable.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_free_shipping_bar",
+      "label": "t:sections.cart_drawer.settings.show_free_shipping_bar.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_upsells",
+      "label": "t:sections.cart_drawer.settings.show_upsells.label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "upsells_heading",
+      "label": "t:sections.cart_drawer.settings.upsells_heading.label",
+      "default": "Complete your routine"
+    },
+    {
+      "type": "collection",
+      "id": "upsell_collection",
+      "label": "t:sections.cart_drawer.settings.upsell_collection.label"
+    },
+    {
+      "type": "range",
+      "id": "upsell_count",
+      "label": "t:sections.cart_drawer.settings.upsell_count.label",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    }
+  ]
+}
+{% endschema %}

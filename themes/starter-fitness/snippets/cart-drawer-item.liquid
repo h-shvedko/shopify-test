@@ -1,0 +1,312 @@
+{% doc %}
+  Renders a single line item row inside the cart drawer. Shows product image
+  thumbnail, title, variant, unit price, quantity +/- controls, line total,
+  and a remove button.
+
+  @param {line_item} item - A Shopify cart line_item object. Required.
+
+  Usage:
+    {% render 'cart-drawer-item', item: item %}
+{% enddoc %}
+
+{%- liquid
+  assign increase_label = 'accessibility.increase_quantity' | t
+  assign decrease_label = 'accessibility.decrease_quantity' | t
+  assign remove_label   = 'accessibility.remove_item' | t: title: item.product.title
+  assign quantity_label = 'products.quantity' | t
+-%}
+
+<style>
+  .cdi {
+    display: flex;
+    gap: 12px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--color-border, #2A2A2A);
+    position: relative;
+  }
+
+  .cdi:last-child {
+    border-bottom: none;
+  }
+
+  .cdi__image {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    border-radius: var(--border-radius, 8px);
+    overflow: hidden;
+    background-color: var(--color-surface-elevated, #1E1E1E);
+    border: 1px solid var(--color-border, #2A2A2A);
+  }
+
+  .cdi__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .cdi__image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary, #8A8A8A);
+  }
+
+  .cdi__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .cdi__title {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text, #F0F0F0);
+    text-decoration: none;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+
+  .cdi__title:hover {
+    color: var(--color-accent, #00D4AA);
+  }
+
+  .cdi__variant {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary, #8A8A8A);
+    line-height: 1.3;
+  }
+
+  .cdi__props {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary, #8A8A8A);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .cdi__props li::before {
+    content: attr(data-name) ': ';
+    font-weight: 600;
+  }
+
+  .cdi__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .cdi__qty {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 1px solid var(--color-border, #2A2A2A);
+    border-radius: 6px;
+    overflow: hidden;
+    height: 28px;
+  }
+
+  .cdi__qty-btn {
+    width: 28px;
+    height: 28px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text, #F0F0F0);
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .cdi__qty-btn:hover {
+    background-color: rgba(0, 212, 170, 0.1);
+    color: var(--color-accent, #00D4AA);
+  }
+
+  .cdi__qty-btn:focus-visible {
+    outline: 2px solid var(--color-accent, #00D4AA);
+    outline-offset: -2px;
+  }
+
+  .cdi__qty-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .cdi__qty-input {
+    width: 32px;
+    height: 28px;
+    background: none;
+    border: none;
+    border-left: 1px solid var(--color-border, #2A2A2A);
+    border-right: 1px solid var(--color-border, #2A2A2A);
+    color: var(--color-text, #F0F0F0);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 0;
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
+  .cdi__qty-input::-webkit-inner-spin-button,
+  .cdi__qty-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .cdi__price {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--color-text, #F0F0F0);
+  }
+
+  .cdi__price--sale {
+    color: var(--color-accent-secondary, #FF6B6B);
+  }
+
+  .cdi__remove {
+    position: absolute;
+    top: 16px;
+    right: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-secondary, #8A8A8A);
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s ease, background-color 0.15s ease;
+    line-height: 0;
+  }
+
+  .cdi__remove:hover {
+    color: var(--color-accent-secondary, #FF6B6B);
+    background-color: rgba(255, 107, 107, 0.08);
+  }
+
+  .cdi__remove:focus-visible {
+    outline: 2px solid var(--color-accent-secondary, #FF6B6B);
+    outline-offset: 2px;
+  }
+</style>
+
+<div
+  class="cdi"
+  data-line-key="{{ item.key }}"
+  data-line-index="{{ item.line_level_discount_allocations.size | plus: 1 }}"
+>
+  <a href="{{ item.url }}" class="cdi__image" tabindex="-1" aria-hidden="true">
+    {%- if item.image -%}
+      {{
+        item.image
+        | image_url: width: 128
+        | image_tag:
+          alt: item.image.alt | escape,
+          width: 64,
+          height: 64,
+          loading: 'lazy'
+      }}
+    {%- else -%}
+      <div class="cdi__image-placeholder" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="m21 15-5-5L5 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    {%- endif -%}
+  </a>
+
+  <div class="cdi__body">
+    <a href="{{ item.url }}" class="cdi__title">{{ item.product.title }}</a>
+
+    {%- unless item.variant.title == 'Default Title' -%}
+      <span class="cdi__variant">{{ item.variant.title }}</span>
+    {%- endunless -%}
+
+    {%- if item.properties.size > 0 -%}
+      <ul class="cdi__props">
+        {%- for prop in item.properties -%}
+          {%- unless prop.last == blank -%}
+            {%- unless prop.first contains '_' -%}
+              <li data-name="{{ prop.first | escape }}">{{ prop.last }}</li>
+            {%- endunless -%}
+          {%- endunless -%}
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    <div class="cdi__footer">
+      <div
+        class="cdi__qty"
+        data-qty-control
+        data-line-key="{{ item.key }}"
+      >
+        <button
+          class="cdi__qty-btn"
+          type="button"
+          aria-label="{{ decrease_label }}"
+          data-qty-decrease
+          {%- if item.quantity <= 1 %} disabled{%- endif -%}
+        >
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M2 6h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <input
+          class="cdi__qty-input"
+          type="number"
+          min="1"
+          max="99"
+          value="{{ item.quantity }}"
+          aria-label="{{ quantity_label }}"
+          data-qty-input
+        >
+        <button
+          class="cdi__qty-btn"
+          type="button"
+          aria-label="{{ increase_label }}"
+          data-qty-increase
+        >
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <span class="cdi__price{% if item.original_line_price != item.final_line_price %} cdi__price--sale{% endif %}">
+        {{ item.final_line_price | money }}
+      </span>
+    </div>
+  </div>
+
+  <button
+    class="cdi__remove"
+    type="button"
+    aria-label="{{ remove_label }}"
+    data-remove-item
+    data-line-key="{{ item.key }}"
+  >
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </button>
+</div>
