@@ -1,0 +1,73 @@
+{% doc %}
+  Renders a single active filter pill with a label and a remove (X) link.
+
+  @param {object} value - A Shopify filter value object with .label and .url_to_remove properties. Required.
+
+  Usage:
+    {% render 'filter-pill', value: value %}
+{% enddoc %}
+
+<style>
+  .zn-filter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px 5px 12px;
+    background: rgba(0, 212, 170, 0.1);
+    border: 1px solid rgba(0, 212, 170, 0.35);
+    border-radius: 9999px;
+    color: var(--color-accent, #00D4AA);
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition:
+      background var(--transition-fast, 150ms ease),
+      border-color var(--transition-fast, 150ms ease);
+    white-space: nowrap;
+    line-height: 1.3;
+  }
+
+  .zn-filter-pill:hover {
+    background: rgba(0, 212, 170, 0.18);
+    border-color: var(--color-accent, #00D4AA);
+    text-decoration: none;
+    color: var(--color-accent, #00D4AA);
+  }
+
+  .zn-filter-pill:focus-visible {
+    outline: 2px solid var(--color-accent, #00D4AA);
+    outline-offset: 2px;
+  }
+
+  .zn-filter-pill__remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(0, 212, 170, 0.2);
+    flex-shrink: 0;
+    transition: background var(--transition-fast, 150ms ease);
+  }
+
+  .zn-filter-pill:hover .zn-filter-pill__remove {
+    background: rgba(0, 212, 170, 0.4);
+  }
+</style>
+
+{%- assign remove_label = 'collection.clear_filter' | t: label: value.label -%}
+
+<a
+  href="{{ value.url_to_remove }}"
+  class="zn-filter-pill"
+  aria-label="{{ remove_label }}"
+  data-filter-remove
+>
+  <span class="zn-filter-pill__label">{{ value.label }}</span>
+  <span class="zn-filter-pill__remove" aria-hidden="true">
+    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+      <path d="M18 6 6 18M6 6l12 12"/>
+    </svg>
+  </span>
+</a>

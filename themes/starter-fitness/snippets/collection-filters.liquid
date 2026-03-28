@@ -1,0 +1,355 @@
+{% doc %}
+  Renders collection filter controls using Shopify's Storefront Filtering API.
+  Uses details/summary for collapsible filter groups. Supports list (checkbox)
+  and price_range filter types. Active filter count shown per group. Active
+  filter pills rendered at the top. All colors use CSS custom properties for
+  automatic dark/light mode support.
+
+  @param {collection} collection - The current collection object. Required.
+  @param {string} section_id - Parent section ID for AJAX targeting. Required.
+
+  Usage:
+    {%- assign coll = collection -%}
+    {% render 'collection-filters', collection: coll, section_id: section_id %}
+{% enddoc %}
+
+{%- liquid
+  assign has_active_filters = false
+  for filter in collection.filters
+    if filter.active_values.size > 0
+      assign has_active_filters = true
+    endif
+    if filter.type == 'price_range'
+      if filter.min_value.value != blank
+        assign has_active_filters = true
+      endif
+      if filter.max_value.value != blank
+        assign has_active_filters = true
+      endif
+    endif
+  endfor
+
+  assign clear_all_label = 'collection.clear_filters' | t
+  assign filter_label    = 'collection.filter' | t
+  assign price_from      = 'collection.filter_price_from' | t
+  assign price_to        = 'collection.filter_price_to' | t
+  assign active_label    = 'collection.active_filters' | t
+-%}
+
+<style>
+  .zn-filters {
+    font-family: var(--font-body, 'Inter', sans-serif);
+  }
+
+  /* Active pills row */
+  .zn-filters__active {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+    min-height: 0;
+  }
+
+  .zn-filters__active:empty {
+    display: none;
+  }
+
+  .zn-filters__clear-all {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    background: transparent;
+    border: 1px solid var(--color-border, #2A2A2A);
+    border-radius: 9999px;
+    color: var(--color-accent-secondary, #FF6B6B);
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition:
+      border-color var(--transition-fast, 150ms ease),
+      background var(--transition-fast, 150ms ease);
+    white-space: nowrap;
+  }
+
+  .zn-filters__clear-all:hover {
+    border-color: var(--color-accent-secondary, #FF6B6B);
+    background: rgba(255, 107, 107, 0.08);
+    text-decoration: none;
+    color: var(--color-accent-secondary, #FF6B6B);
+  }
+
+  /* Filter group (details/summary) */
+  .zn-filters__group {
+    border-bottom: 1px solid var(--color-border, #2A2A2A);
+    padding: 0;
+  }
+
+  .zn-filters__group:first-of-type {
+    border-top: 1px solid var(--color-border, #2A2A2A);
+  }
+
+  .zn-filters__group-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text, #F0F0F0);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    gap: 8px;
+  }
+
+  .zn-filters__group-title::-webkit-details-marker {
+    display: none;
+  }
+
+  .zn-filters__group-title-inner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .zn-filters__group-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    background: var(--color-accent, #00D4AA);
+    color: var(--color-text-inverse, #0A0A0A);
+    font-size: 0.65rem;
+    font-weight: 700;
+    border-radius: 9999px;
+    line-height: 1;
+  }
+
+  .zn-filters__group-chevron {
+    flex-shrink: 0;
+    transition: transform var(--transition-fast, 150ms ease);
+    color: var(--color-text-secondary, #8A8A8A);
+  }
+
+  .zn-filters__group[open] .zn-filters__group-chevron {
+    transform: rotate(180deg);
+  }
+
+  .zn-filters__group-body {
+    padding-bottom: 16px;
+  }
+
+  /* Checkbox list option */
+  .zn-filters__option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    cursor: pointer;
+    line-height: 1.4;
+  }
+
+  .zn-filters__option:hover .zn-filters__option-label {
+    color: var(--color-accent, #00D4AA);
+  }
+
+  .zn-filters__option--disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .zn-filters__option--disabled:hover .zn-filters__option-label {
+    color: inherit;
+  }
+
+  .zn-filters__option-label {
+    font-size: 0.875rem;
+    color: var(--color-text, #F0F0F0);
+    flex: 1;
+    transition: color var(--transition-fast, 150ms ease);
+  }
+
+  .zn-filters__option-count {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary, #8A8A8A);
+    flex-shrink: 0;
+  }
+
+  /* Price range */
+  .zn-filters__price-range {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  .zn-filters__price-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .zn-filters__price-field label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-text-secondary, #8A8A8A);
+    margin-bottom: 0;
+  }
+
+  .zn-filters__price-input {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--color-surface-elevated, #1E1E1E);
+    border: 1px solid var(--color-border, #2A2A2A);
+    border-radius: var(--border-radius, 8px);
+    color: var(--color-text, #F0F0F0);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 0.875rem;
+    transition: border-color var(--transition-fast, 150ms ease);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+  }
+
+  .zn-filters__price-input::-webkit-outer-spin-button,
+  .zn-filters__price-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .zn-filters__price-input:focus {
+    outline: none;
+    border-color: var(--color-accent, #00D4AA);
+    box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.15);
+  }
+
+  .zn-filters__price-separator {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary, #8A8A8A);
+    padding-bottom: 10px;
+    flex-shrink: 0;
+  }
+</style>
+
+<div class="zn-filters" data-filters-component>
+  <form
+    action="{{ collection.url }}"
+    method="get"
+    data-collection-filters
+    data-section-id="{{ section_id }}"
+    id="FilterForm-{{ section_id }}"
+  >
+    {%- comment -%} Active filter pills {%- endcomment -%}
+    {%- if has_active_filters -%}
+      <div class="zn-filters__active" data-active-filters aria-label="{{ active_label }}">
+        {%- for filter in collection.filters -%}
+          {%- for value in filter.active_values -%}
+            {%- render 'filter-pill', value: value -%}
+          {%- endfor -%}
+        {%- endfor -%}
+        {%- assign clear_url = collection.url | append: '?sort_by=' | append: collection.sort_by -%}
+        <a href="{{ clear_url }}" class="zn-filters__clear-all" data-filter-clear-all>
+          {{ clear_all_label }}
+        </a>
+      </div>
+    {%- else -%}
+      <div class="zn-filters__active" data-active-filters aria-label="{{ active_label }}"></div>
+    {%- endif -%}
+
+    {%- comment -%} Preserve sort_by {%- endcomment -%}
+    <input type="hidden" name="sort_by" value="{{ collection.sort_by }}">
+
+    {%- comment -%} Filter groups {%- endcomment -%}
+    {%- for filter in collection.filters -%}
+      <details
+        class="zn-filters__group"
+        data-filter-group
+        {% if filter.active_values.size > 0 %}open{% endif %}
+      >
+        <summary class="zn-filters__group-title">
+          <span class="zn-filters__group-title-inner">
+            {{ filter.label }}
+            {%- if filter.active_values.size > 0 -%}
+              <span class="zn-filters__group-count" aria-label="{{ filter.active_values.size }} active">{{ filter.active_values.size }}</span>
+            {%- endif -%}
+          </span>
+          <svg class="zn-filters__group-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </summary>
+        <div class="zn-filters__group-body">
+          {%- case filter.type -%}
+            {%- when 'list' -%}
+              {%- for value in filter.values -%}
+                <label class="zn-filters__option{% if value.count == 0 and value.active == false %} zn-filters__option--disabled{% endif %}">
+                  <input
+                    type="checkbox"
+                    class="zn-checkbox"
+                    name="{{ value.param_name }}"
+                    value="{{ value.value }}"
+                    {% if value.active %}checked{% endif %}
+                    {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                    data-filter-input
+                    aria-label="{{ value.label }} ({{ value.count }})"
+                  >
+                  <span class="zn-filters__option-label">{{ value.label }}</span>
+                  <span class="zn-filters__option-count">({{ value.count }})</span>
+                </label>
+              {%- endfor -%}
+
+            {%- when 'price_range' -%}
+              <div class="zn-filters__price-range">
+                <div class="zn-filters__price-field">
+                  <label for="Filter-{{ filter.label | handleize }}-min-{{ section_id }}">{{ price_from }}</label>
+                  <input
+                    type="number"
+                    id="Filter-{{ filter.label | handleize }}-min-{{ section_id }}"
+                    class="zn-filters__price-input"
+                    name="{{ filter.min_value.param_name }}"
+                    {% if filter.min_value.value != blank %}
+                      value="{{ filter.min_value.value | money_without_currency | remove: ',' }}"
+                    {% endif %}
+                    min="0"
+                    max="{{ filter.range_max | money_without_currency | remove: ',' }}"
+                    placeholder="0"
+                    data-filter-input
+                    data-filter-price
+                    data-price-min
+                  >
+                </div>
+                <span class="zn-filters__price-separator">—</span>
+                <div class="zn-filters__price-field">
+                  <label for="Filter-{{ filter.label | handleize }}-max-{{ section_id }}">{{ price_to }}</label>
+                  <input
+                    type="number"
+                    id="Filter-{{ filter.label | handleize }}-max-{{ section_id }}"
+                    class="zn-filters__price-input"
+                    name="{{ filter.max_value.param_name }}"
+                    {% if filter.max_value.value != blank %}
+                      value="{{ filter.max_value.value | money_without_currency | remove: ',' }}"
+                    {% endif %}
+                    min="0"
+                    max="{{ filter.range_max | money_without_currency | remove: ',' }}"
+                    placeholder="{{ filter.range_max | money_without_currency | remove: ',' }}"
+                    data-filter-input
+                    data-filter-price
+                    data-price-max
+                  >
+                </div>
+              </div>
+          {%- endcase -%}
+        </div>
+      </details>
+    {%- endfor -%}
+
+    {%- comment -%} Noscript fallback submit button {%- endcomment -%}
+    <noscript>
+      <button type="submit" class="btn btn--primary btn--full-width" style="margin-top:16px">
+        {{ 'collection.filter' | t }}
+      </button>
+    </noscript>
+  </form>
+</div>

@@ -1,0 +1,761 @@
+{% doc %}
+  Renders the predictive search overlay dialog.
+  Uses Shopify's /search/suggest.json API via JavaScript with 300ms debounce.
+  No parameters required — call as {% render 'predictive-search' %}.
+
+  Accessibility:
+  - Combobox pattern (role="combobox", aria-expanded, aria-autocomplete, aria-controls)
+  - aria-live region for result count announcements
+  - role="listbox" / role="option" on results
+  - Keyboard navigation: ArrowDown/ArrowUp cycle results, Enter navigates, Escape closes
+  - Focus trapped inside dialog while open
+  - Focus returns to trigger button on close
+
+  Usage:
+    {% render 'predictive-search' %}
+{% enddoc %}
+
+{%- assign search_title      = 'predictive_search.title' | t -%}
+{%- assign search_placeholder = 'predictive_search.placeholder' | t -%}
+{%- assign close_label       = 'predictive_search.close' | t -%}
+{%- assign products_label    = 'predictive_search.products' | t -%}
+{%- assign collections_label = 'predictive_search.collections' | t -%}
+{%- assign articles_label    = 'predictive_search.articles' | t -%}
+{%- assign pages_label       = 'predictive_search.pages' | t -%}
+{%- assign loading_label     = 'predictive_search.loading' | t -%}
+{%- assign results_label     = 'predictive_search.results_count' | t: count: 0 -%}
+
+<style>
+  /* Full-screen search overlay dialog */
+  .zn-search {
+    border: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    position: fixed;
+    inset: 0;
+    background: var(--color-overlay, rgba(10, 10, 10, 0.92));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: var(--z-modal, 400);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 80px;
+    opacity: 0;
+    transition: opacity var(--transition-base, 250ms ease);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .zn-search[open] {
+    opacity: 1;
+    animation: none; /* override dialog base animation */
+  }
+
+  .zn-search::backdrop {
+    display: none; /* we handle backdrop ourselves */
+  }
+
+  /* Inner container */
+  .zn-search__inner {
+    width: 100%;
+    max-width: 720px;
+    padding: 0 20px 40px;
+  }
+
+  /* Input area */
+  .zn-search__form {
+    position: relative;
+  }
+
+  .zn-search__input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--color-surface, #141414);
+    border: 1.5px solid var(--color-border, #2A2A2A);
+    border-radius: var(--border-radius, 8px);
+    transition: border-color var(--transition-fast, 150ms ease), box-shadow var(--transition-fast, 150ms ease);
+  }
+
+  .zn-search__input-wrap:focus-within {
+    border-color: var(--color-accent, #00D4AA);
+    box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.15);
+  }
+
+  .zn-search__icon {
+    color: var(--color-text-secondary, #8A8A8A);
+    flex-shrink: 0;
+  }
+
+  .zn-search__input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--color-text, #F0F0F0);
+    font-family: var(--font-body, 'Inter', sans-serif);
+    font-size: 1.0625rem;
+    padding: 0;
+    min-width: 0;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .zn-search__input::placeholder {
+    color: var(--color-text-secondary, #8A8A8A);
+  }
+
+  .zn-search__input:focus {
+    outline: none;
+    box-shadow: none;
+    border-color: transparent;
+  }
+
+  .zn-search__close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--color-surface-elevated, #1E1E1E);
+    border: 1px solid var(--color-border, #2A2A2A);
+    border-radius: 6px;
+    color: var(--color-text-secondary, #8A8A8A);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition:
+      background var(--transition-fast, 150ms ease),
+      color var(--transition-fast, 150ms ease),
+      border-color var(--transition-fast, 150ms ease);
+  }
+
+  .zn-search__close-btn:hover {
+    background: rgba(0, 212, 170, 0.12);
+    color: var(--color-accent, #00D4AA);
+    border-color: var(--color-accent, #00D4AA);
+  }
+
+  /* Results container */
+  .zn-search__results {
+    margin-top: 16px;
+    max-height: 60vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  /* Result group */
+  .zn-search__group {
+    margin-bottom: 8px;
+  }
+
+  .zn-search__group-title {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary, #8A8A8A);
+    padding: 10px 12px 6px;
+  }
+
+  /* Individual result item */
+  .zn-search__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--border-radius, 8px);
+    text-decoration: none;
+    color: var(--color-text, #F0F0F0);
+    transition:
+      background var(--transition-fast, 150ms ease),
+      color var(--transition-fast, 150ms ease);
+    cursor: pointer;
+    outline: none;
+  }
+
+  .zn-search__item:hover,
+  .zn-search__item:focus {
+    background: var(--color-surface-elevated, #1E1E1E);
+    text-decoration: none;
+    color: var(--color-text, #F0F0F0);
+  }
+
+  .zn-search__item--active {
+    background: rgba(0, 212, 170, 0.1);
+    border: 1px solid rgba(0, 212, 170, 0.25);
+  }
+
+  .zn-search__item--active:hover {
+    background: rgba(0, 212, 170, 0.15);
+  }
+
+  /* Product thumbnail */
+  .zn-search__thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--color-surface-elevated, #1E1E1E);
+    flex-shrink: 0;
+  }
+
+  .zn-search__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .zn-search__thumb--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary, #8A8A8A);
+  }
+
+  /* Product info */
+  .zn-search__item-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .zn-search__item-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text, #F0F0F0);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+  }
+
+  .zn-search__item-price {
+    font-size: 0.8rem;
+    color: var(--color-accent, #00D4AA);
+    font-weight: 600;
+    margin-top: 2px;
+    display: block;
+  }
+
+  .zn-search__item-meta {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary, #8A8A8A);
+    margin-top: 2px;
+    display: block;
+  }
+
+  .zn-search__item-type {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    background: var(--color-surface-elevated, #1E1E1E);
+    border: 1px solid var(--color-border, #2A2A2A);
+    border-radius: 4px;
+    color: var(--color-text-secondary, #8A8A8A);
+    flex-shrink: 0;
+  }
+
+  /* View all link */
+  .zn-search__view-all {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    margin-top: 8px;
+    border-top: 1px solid var(--color-border, #2A2A2A);
+    color: var(--color-accent, #00D4AA);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 0 0 var(--border-radius, 8px) var(--border-radius, 8px);
+    transition: background var(--transition-fast, 150ms ease);
+  }
+
+  .zn-search__view-all:hover {
+    background: rgba(0, 212, 170, 0.08);
+    text-decoration: none;
+    color: var(--color-accent, #00D4AA);
+  }
+
+  /* Empty / loading states */
+  .zn-search__empty {
+    padding: 32px 12px;
+    text-align: center;
+    color: var(--color-text-secondary, #8A8A8A);
+    font-size: 0.9375rem;
+  }
+
+  .zn-search__loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px 12px;
+    color: var(--color-text-secondary, #8A8A8A);
+    font-size: 0.875rem;
+  }
+
+  /* Status / live region */
+  .zn-search__status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  /* Hint text below input */
+  .zn-search__hint {
+    margin-top: 8px;
+    font-size: 0.75rem;
+    color: var(--color-text-secondary, #8A8A8A);
+    text-align: center;
+  }
+
+  @media (max-width: 767px) {
+    .zn-search {
+      padding-top: 24px;
+      align-items: flex-start;
+    }
+
+    .zn-search__inner {
+      padding: 0 16px 80px;
+    }
+  }
+</style>
+
+<dialog
+  class="zn-search"
+  id="zn-search-dialog"
+  aria-label="{{ search_title }}"
+  data-predictive-search
+>
+  <div class="zn-search__inner">
+    <form
+      class="zn-search__form"
+      action="{{ routes.search_url }}"
+      method="get"
+      role="search"
+      data-search-form
+    >
+      <input type="hidden" name="type" value="product,article,page">
+
+      <div
+        class="zn-search__input-wrap"
+        role="combobox"
+        aria-expanded="false"
+        aria-haspopup="listbox"
+        aria-owns="zn-search-results"
+        data-search-combobox
+      >
+        <svg class="zn-search__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.5"/>
+          <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+
+        <input
+          type="search"
+          name="q"
+          class="zn-search__input"
+          placeholder="{{ search_placeholder }}"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          aria-autocomplete="list"
+          aria-controls="zn-search-results"
+          aria-activedescendant=""
+          data-search-input
+          id="zn-search-input"
+        >
+
+        <button
+          type="button"
+          class="zn-search__close-btn"
+          aria-label="{{ close_label }}"
+          data-search-close
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <p class="zn-search__hint" aria-hidden="true">
+        <kbd>ESC</kbd> to close &nbsp; <kbd>↑↓</kbd> to navigate &nbsp; <kbd>↵</kbd> to open
+      </p>
+    </form>
+
+    <div
+      id="zn-search-results"
+      class="zn-search__results"
+      role="listbox"
+      aria-label="{{ search_title }}"
+      data-search-results
+    >
+    </div>
+
+    <div
+      class="zn-search__status"
+      aria-live="polite"
+      role="status"
+      data-search-status
+    ></div>
+  </div>
+</dialog>
+
+<script>
+  (function () {
+    'use strict';
+
+    var dialog        = document.getElementById('zn-search-dialog');
+    var combobox      = dialog ? dialog.querySelector('[data-search-combobox]') : null;
+    var input         = dialog ? dialog.querySelector('[data-search-input]') : null;
+    var resultsEl     = dialog ? dialog.querySelector('[data-search-results]') : null;
+    var statusEl      = dialog ? dialog.querySelector('[data-search-status]') : null;
+    var closeBtn      = dialog ? dialog.querySelector('[data-search-close]') : null;
+
+    if (!dialog || !input || !resultsEl) return;
+
+    var debounceTimer = null;
+    var activeIndex   = -1;
+    var resultItems   = [];
+    var lastQuery     = '';
+    var triggerEl     = null;
+
+    // Group labels (injected from Liquid to keep translations server-side)
+    // Templates use {{QUERY}} / {{COUNT}} as safe placeholders (no HTML in them).
+    // escapeHtml is applied to the substituted value, not the template.
+    var LABELS = {
+      products:    '{{ products_label | escape }}',
+      collections: '{{ collections_label | escape }}',
+      articles:    '{{ articles_label | escape }}',
+      pages:       '{{ pages_label | escape }}',
+      no_results:  '{{ 'predictive_search.no_results' | t: query: 'XQUERYX' }}',
+      view_all:    '{{ 'predictive_search.view_all' | t: query: 'XQUERYX' }}',
+      loading:     '{{ loading_label | escape }}',
+      results_count: '{{ 'predictive_search.results_count' | t: count: 'XCOUNTX' }}'
+    };
+
+    // Replace safe placeholder in a template string with a value.
+    // Use forHtml=true when inserting into innerHTML (escapes value).
+    // Use forHtml=false (or omit) when setting textContent.
+    function formatLabel(template, placeholder, value, forHtml) {
+      var safe = forHtml ? escapeHtml(value) : String(value);
+      return template.replace(placeholder, safe);
+    }
+
+    // ── Open / Close ──────────────────────────────────────────
+
+    function openSearch(trigger) {
+      triggerEl = trigger || null;
+      dialog.showModal();
+      document.body.style.overflow = 'hidden';
+      // Delay focus so dialog animation doesn't steal it
+      setTimeout(function () {
+        input.focus();
+        input.select();
+      }, 50);
+      // If there was a previous query, show stale results immediately
+      if (lastQuery) {
+        performSearch(lastQuery, false);
+      }
+    }
+
+    function closeSearch() {
+      dialog.close();
+      document.body.style.overflow = '';
+      activeIndex = -1;
+      if (combobox) combobox.setAttribute('aria-expanded', 'false');
+      if (input) input.setAttribute('aria-activedescendant', '');
+      if (triggerEl) {
+        triggerEl.focus();
+      }
+    }
+
+    // ── Fetch & Render ────────────────────────────────────────
+
+    function performSearch(query, updateHistory) {
+      if (!query || query.trim().length < 2) {
+        resultsEl.innerHTML = '';
+        if (combobox) combobox.setAttribute('aria-expanded', 'false');
+        if (statusEl) statusEl.textContent = '';
+        return;
+      }
+
+      lastQuery = query;
+      showLoading();
+
+      var url = '/search/suggest.json?q=' + encodeURIComponent(query)
+        + '&resources[type]=product,collection,article,page'
+        + '&resources[limit]=4'
+        + '&resources[options][unavailable_products]=last';
+
+      fetch(url)
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          renderResults(data, query);
+        })
+        .catch(function () {
+          resultsEl.innerHTML = '<p class="zn-search__empty">' + formatLabel(LABELS.no_results, 'XQUERYX', query, true) + '</p>';
+          if (statusEl) statusEl.textContent = formatLabel(LABELS.no_results, 'XQUERYX', query);
+        });
+    }
+
+    function showLoading() {
+      resultsEl.innerHTML =
+        '<div class="zn-search__loading">'
+        + '<span class="spinner" aria-hidden="true"></span>'
+        + escapeHtml(LABELS.loading)
+        + '</div>';
+      if (statusEl) statusEl.textContent = LABELS.loading;
+    }
+
+    function renderResults(data, query) {
+      var resources = data.resources && data.resources.results ? data.resources.results : {};
+      var products    = resources.products    || [];
+      var collections = resources.collections || [];
+      var articles    = resources.articles    || [];
+      var pages       = resources.pages       || [];
+
+      var totalCount = products.length + collections.length + articles.length + pages.length;
+      resultItems = [];
+      var html = '';
+
+      if (totalCount === 0) {
+        html = '<p class="zn-search__empty">'
+          + formatLabel(LABELS.no_results, 'XQUERYX', query, true)
+          + '</p>';
+        resultsEl.innerHTML = html;
+        if (combobox) combobox.setAttribute('aria-expanded', 'false');
+        if (statusEl) statusEl.textContent = formatLabel(LABELS.no_results, 'XQUERYX', query);
+        return;
+      }
+
+      // Products group
+      if (products.length > 0) {
+        html += '<div class="zn-search__group" role="group" aria-label="' + escapeHtml(LABELS.products) + '">';
+        html += '<p class="zn-search__group-title">' + escapeHtml(LABELS.products) + '</p>';
+        products.forEach(function (p) {
+          var idx = resultItems.length;
+          resultItems.push({ url: p.url });
+          var price = p.price !== undefined ? formatMoney(p.price) : '';
+          var imgHtml = '';
+          if (p.featured_image && p.featured_image.url) {
+            imgHtml = '<div class="zn-search__thumb"><img src="' + escapeAttr(p.featured_image.url) + '" alt="' + escapeAttr(p.title) + '" width="48" height="48" loading="lazy"></div>';
+          } else {
+            imgHtml = '<div class="zn-search__thumb zn-search__thumb--placeholder"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>';
+          }
+          html += '<a href="' + escapeAttr(p.url) + '" class="zn-search__item" role="option" id="zn-search-opt-' + idx + '" data-search-index="' + idx + '" aria-selected="false">'
+            + imgHtml
+            + '<span class="zn-search__item-info">'
+            + '<span class="zn-search__item-title">' + escapeHtml(p.title) + '</span>'
+            + (price ? '<span class="zn-search__item-price">' + escapeHtml(price) + '</span>' : '')
+            + '</span>'
+            + '</a>';
+        });
+        html += '</div>';
+      }
+
+      // Collections group
+      if (collections.length > 0) {
+        html += buildSimpleGroup(LABELS.collections, collections, resultItems);
+      }
+
+      // Articles group
+      if (articles.length > 0) {
+        html += buildSimpleGroup(LABELS.articles, articles, resultItems);
+      }
+
+      // Pages group
+      if (pages.length > 0) {
+        html += buildSimpleGroup(LABELS.pages, pages, resultItems);
+      }
+
+      // View all link
+      html += '<a href="' + escapeAttr('/search?q=' + encodeURIComponent(query) + '&type=product,article,page') + '" class="zn-search__view-all">'
+        + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35" stroke-linecap="round"/></svg>'
+        + formatLabel(LABELS.view_all, 'XQUERYX', query, true)
+        + '</a>';
+
+      resultsEl.innerHTML = html;
+      activeIndex = -1;
+
+      if (combobox) combobox.setAttribute('aria-expanded', 'true');
+      if (statusEl) {
+        statusEl.textContent = formatLabel(LABELS.results_count, 'XCOUNTX', totalCount);
+      }
+
+      // Attach click listeners
+      resultsEl.querySelectorAll('[data-search-index]').forEach(function (el) {
+        el.addEventListener('click', function (e) {
+          // Allow default navigation
+          closeSearch();
+        });
+      });
+    }
+
+    function buildSimpleGroup(label, items, collector) {
+      var html = '<div class="zn-search__group" role="group" aria-label="' + escapeHtml(label) + '">';
+      html += '<p class="zn-search__group-title">' + escapeHtml(label) + '</p>';
+      items.forEach(function (item) {
+        var idx = collector.length;
+        collector.push({ url: item.url });
+        html += '<a href="' + escapeAttr(item.url) + '" class="zn-search__item" role="option" id="zn-search-opt-' + idx + '" data-search-index="' + idx + '" aria-selected="false">'
+          + '<span class="zn-search__item-info">'
+          + '<span class="zn-search__item-title">' + escapeHtml(item.title) + '</span>'
+          + '</span>'
+          + '</a>';
+      });
+      html += '</div>';
+      return html;
+    }
+
+    // ── Keyboard Navigation ───────────────────────────────────
+
+    function setActiveItem(index) {
+      var items = resultsEl.querySelectorAll('[data-search-index]');
+      if (!items.length) return;
+
+      // Clamp
+      if (index < 0) index = items.length - 1;
+      if (index >= items.length) index = 0;
+      activeIndex = index;
+
+      items.forEach(function (el, i) {
+        var isActive = i === activeIndex;
+        el.classList.toggle('zn-search__item--active', isActive);
+        el.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+
+      var activeEl = items[activeIndex];
+      if (activeEl) {
+        input.setAttribute('aria-activedescendant', activeEl.id);
+        activeEl.scrollIntoView({ block: 'nearest' });
+      }
+    }
+
+    input.addEventListener('keydown', function (e) {
+      var items = resultsEl.querySelectorAll('[data-search-index]');
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          setActiveItem(activeIndex + 1);
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          setActiveItem(activeIndex - 1);
+          break;
+        case 'Enter':
+          if (activeIndex >= 0 && resultItems[activeIndex]) {
+            e.preventDefault();
+            window.location.href = resultItems[activeIndex].url;
+            closeSearch();
+          }
+          break;
+        case 'Escape':
+          closeSearch();
+          break;
+      }
+    });
+
+    // ── Input Debounce ────────────────────────────────────────
+
+    input.addEventListener('input', function () {
+      var query = this.value.trim();
+      clearTimeout(debounceTimer);
+      activeIndex = -1;
+      if (input) input.setAttribute('aria-activedescendant', '');
+      debounceTimer = setTimeout(function () {
+        performSearch(query, true);
+      }, 300);
+    });
+
+    // ── Close on dialog backdrop click ────────────────────────
+
+    dialog.addEventListener('click', function (e) {
+      if (e.target === dialog) closeSearch();
+    });
+
+    // ── Close button ──────────────────────────────────────────
+
+    if (closeBtn) closeBtn.addEventListener('click', closeSearch);
+
+    // ── dialog close event ────────────────────────────────────
+
+    dialog.addEventListener('close', function () {
+      document.body.style.overflow = '';
+      if (triggerEl) triggerEl.focus();
+    });
+
+    // ── Open triggers (header button + bottom tab bar) ────────
+
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-search-open]');
+      if (btn) {
+        e.preventDefault();
+        openSearch(btn);
+      }
+    });
+
+    // ── Focus trap ────────────────────────────────────────────
+
+    dialog.addEventListener('keydown', function (e) {
+      if (e.key !== 'Tab') return;
+      var focusable = Array.from(dialog.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )).filter(function (el) {
+        return !el.disabled && el.offsetParent !== null;
+      });
+      if (!focusable.length) return;
+      var first = focusable[0];
+      var last  = focusable[focusable.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    });
+
+    // ── Utilities ─────────────────────────────────────────────
+
+    function escapeHtml(str) {
+      var d = document.createElement('div');
+      d.appendChild(document.createTextNode(String(str)));
+      return d.innerHTML;
+    }
+
+    function escapeAttr(str) {
+      return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function formatMoney(cents) {
+      if (window.Shopify && window.Shopify.formatMoney) {
+        return window.Shopify.formatMoney(cents);
+      }
+      var amount = (cents / 100).toFixed(2);
+      var currency = (window.Shopify && window.Shopify.currency && window.Shopify.currency.active) || 'USD';
+      try {
+        return new Intl.NumberFormat('en', { style: 'currency', currency: currency }).format(cents / 100);
+      } catch (err) {
+        return '$' + amount;
+      }
+    }
+
+  })();
+</script>

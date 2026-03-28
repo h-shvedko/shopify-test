@@ -151,17 +151,17 @@
     <span>{{ home_label }}</span>
   </a>
 
-  <a
-    href="{{ routes.search_url }}"
+  <button
+    type="button"
     class="bottom-tab-bar__tab{% if is_search %} bottom-tab-bar__tab--active{% endif %}"
     aria-label="{{ search_label }}"
-    {% if is_search %}aria-current="page"{% endif %}
+    data-search-open
   >
     <span class="bottom-tab-bar__icon-wrap">
       {% render 'icon', name: 'search', size: 22 %}
     </span>
     <span>{{ search_label }}</span>
-  </a>
+  </button>
 
   <button
     type="button"

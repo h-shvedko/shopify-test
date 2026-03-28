@@ -8,7 +8,7 @@
         "show_sort": true,
         "show_filter": true,
         "show_product_count": true,
-        "image_ratio": "portrait"
+        "filter_layout": "sidebar"
       }
     }
   },
