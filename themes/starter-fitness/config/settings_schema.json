@@ -202,6 +202,56 @@
     ]
   },
   {
+    "name": "t:settings.seo.name",
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:settings.seo.organization_header.content"
+      },
+      {
+        "id": "seo_organization_logo",
+        "type": "image_picker",
+        "label": "t:settings.seo.seo_organization_logo.label",
+        "info": "t:settings.seo.seo_organization_logo.info"
+      },
+      {
+        "type": "header",
+        "content": "t:settings.seo.social_sharing_header.content"
+      },
+      {
+        "id": "seo_default_image",
+        "type": "image_picker",
+        "label": "t:settings.seo.seo_default_image.label",
+        "info": "t:settings.seo.seo_default_image.info"
+      },
+      {
+        "id": "seo_twitter_handle",
+        "type": "text",
+        "label": "t:settings.seo.seo_twitter_handle.label",
+        "placeholder": "@yourhandle",
+        "info": "t:settings.seo.seo_twitter_handle.info"
+      },
+      {
+        "type": "header",
+        "content": "t:settings.seo.advanced_header.content"
+      },
+      {
+        "id": "seo_noindex_paginated",
+        "type": "checkbox",
+        "label": "t:settings.seo.seo_noindex_paginated.label",
+        "info": "t:settings.seo.seo_noindex_paginated.info",
+        "default": true
+      },
+      {
+        "id": "seo_noindex_filtered",
+        "type": "checkbox",
+        "label": "t:settings.seo.seo_noindex_filtered.label",
+        "info": "t:settings.seo.seo_noindex_filtered.info",
+        "default": true
+      }
+    ]
+  },
+  {
     "name": "t:settings.cart.name",
     "settings": [
       {

@@ -149,6 +149,19 @@
     "low_stock": "Low stock — only {{ count }} remaining",
     "out_of_stock": "Out of stock"
   },
+  "predictive_search": {
+    "title": "Search",
+    "placeholder": "Search programs, gear & more...",
+    "close": "Close search",
+    "products": "Products",
+    "collections": "Collections",
+    "articles": "Articles",
+    "pages": "Pages",
+    "no_results": "No results for \"{{ query }}\"",
+    "results_count": "{{ count }} results found",
+    "view_all": "View all results for \"{{ query }}\"",
+    "loading": "Searching..."
+  },
   "collection": {
     "filter": "Filter",
     "sort": "Sort",
@@ -156,7 +169,15 @@
     "products_count": "{{ count }} products",
     "empty": "No products match your filters",
     "compare_selected": "{{ count }} items selected",
-    "clear_compare": "Clear compare"
+    "clear_compare": "Clear compare",
+    "clear_filters": "Clear all filters",
+    "clear_filter": "Remove filter: {{ label }}",
+    "filter_price_from": "From",
+    "filter_price_to": "To",
+    "show_results": "Show {{ count }} results",
+    "active_filters": "Active filters",
+    "filter_by": "Filter by {{ label }}",
+    "loading_results": "Loading results..."
   },
   "collections": {
     "heading": "Shop by category",
@@ -693,5 +714,25 @@
     "next": "Next page",
     "page": "Page {{ number }}",
     "current_page": "Page {{ number }}, current page"
+  },
+  "cart_drawer": {
+    "title": "Your cart",
+    "title_with_count": "Your cart ({{ count }})",
+    "empty": "Your cart is empty",
+    "empty_cta": "Start shopping",
+    "subtotal": "Subtotal",
+    "shipping_note": "Shipping calculated at checkout",
+    "checkout": "Checkout",
+    "continue_shopping": "Continue shopping",
+    "free_shipping_remaining": "Add {{ amount }} more for free shipping",
+    "free_shipping_achieved": "You've unlocked free shipping!",
+    "upsells_heading": "Complete your routine",
+    "add": "Add",
+    "adding": "Adding...",
+    "remove": "Remove",
+    "view_cart": "View full cart"
+  },
+  "seo": {
+    "default_description": "Shop premium fitness gear and programs at {{ shop_name }}"
   }
 }

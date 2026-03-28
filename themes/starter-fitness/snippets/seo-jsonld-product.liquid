@@ -1,0 +1,88 @@
+{% doc %}
+  Outputs Product JSON-LD structured data for product pages.
+
+  Offer type:
+  - Single variant (product.has_only_default_variant): uses @type "Offer"
+    with the first variant's price.
+  - Multi-variant: uses @type "AggregateOffer" with lowPrice / highPrice.
+
+  Availability mapping:
+  - product.available = true  → https://schema.org/InStock
+  - product.available = false → https://schema.org/OutOfStock
+
+  aggregateRating is included only when product.metafields.reviews.rating
+  is present (requires a compatible reviews app that writes to this metafield).
+
+  Images: up to 10 product images at 1200px width.
+
+  @param {product} product - The product object (required)
+
+  @example
+    {%- render 'seo-jsonld-product', product: product -%}
+{% enddoc %}
+
+{%- liquid
+  if product.available
+    assign availability = 'https://schema.org/InStock'
+  else
+    assign availability = 'https://schema.org/OutOfStock'
+  endif
+
+  assign first_variant = product.selected_or_first_available_variant
+-%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": {{ product.title | json }},
+  "url": {{ shop.url | append: product.url | json }}
+  {%- if product.description != blank -%}
+  ,"description": {{ product.description | strip_html | truncate: 5000 | json }}
+  {%- endif -%}
+  {%- if product.vendor != blank -%}
+  ,"brand": {
+    "@type": "Brand",
+    "name": {{ product.vendor | json }}
+  }
+  {%- endif -%}
+  {%- if first_variant.sku != blank -%}
+  ,"sku": {{ first_variant.sku | json }}
+  {%- endif -%}
+  {%- if product.images.size > 0 -%}
+  ,"image": [
+    {%- for image in product.images limit: 10 -%}
+      {%- unless forloop.first -%},{%- endunless -%}
+      "https:{{ image | image_url: width: 1200 }}"
+    {%- endfor -%}
+  ]
+  {%- endif -%}
+  {%- if product.has_only_default_variant -%}
+  ,"offers": {
+    "@type": "Offer",
+    "priceCurrency": {{ cart.currency.iso_code | json }},
+    "price": "{{ first_variant.price | money_without_currency | remove: ',' }}",
+    "availability": {{ availability | json }},
+    "url": {{ shop.url | append: product.url | json }},
+    "priceValidUntil": "{{ 'now' | date: '%Y' | plus: 1 }}-12-31"
+  }
+  {%- else -%}
+  ,"offers": {
+    "@type": "AggregateOffer",
+    "priceCurrency": {{ cart.currency.iso_code | json }},
+    "lowPrice": "{{ product.price_min | money_without_currency | remove: ',' }}",
+    "highPrice": "{{ product.price_max | money_without_currency | remove: ',' }}",
+    "offerCount": {{ product.variants.size }},
+    "availability": {{ availability | json }},
+    "url": {{ shop.url | append: product.url | json }}
+  }
+  {%- endif -%}
+  {%- if product.metafields.reviews.rating != blank -%}
+  ,"aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "{{ product.metafields.reviews.rating.value }}",
+    "reviewCount": "{{ product.metafields.reviews.rating_count }}"
+  }
+  {%- endif -%}
+}
+</script>

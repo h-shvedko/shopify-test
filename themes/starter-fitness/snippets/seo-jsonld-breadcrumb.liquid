@@ -1,0 +1,64 @@
+{% doc %}
+  Outputs BreadcrumbList JSON-LD structured data.
+  Automatically detects product vs collection context from the template name.
+
+  Breadcrumb structure:
+  - Collection pages: Home > Collection title (no item URL on last item)
+  - Product pages:    Home > Collection title (if collection present) > Product title
+                      Home > Product title (if no collection context)
+
+  The last item always omits the "item" URL property per Google's spec,
+  because it represents the current page.
+
+  No parameters — uses global Shopify objects (collection, product, shop).
+
+  @example
+    {%- render 'seo-jsonld-breadcrumb' -%}
+{% enddoc %}
+
+{%- liquid
+  assign home_name = 'general.home' | t
+-%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": {{ home_name | json }},
+      "item": {{ shop.url | json }}
+    }
+    {%- if template.name == 'collection' -%}
+    ,{
+      "@type": "ListItem",
+      "position": 2,
+      "name": {{ collection.title | json }}
+    }
+    {%- endif -%}
+    {%- if template.name == 'product' -%}
+      {%- if collection != nil and collection.title != blank -%}
+    ,{
+      "@type": "ListItem",
+      "position": 2,
+      "name": {{ collection.title | json }},
+      "item": {{ shop.url | append: collection.url | json }}
+    }
+    ,{
+      "@type": "ListItem",
+      "position": 3,
+      "name": {{ product.title | json }}
+    }
+      {%- else -%}
+    ,{
+      "@type": "ListItem",
+      "position": 2,
+      "name": {{ product.title | json }}
+    }
+      {%- endif -%}
+    {%- endif -%}
+  ]
+}
+</script>

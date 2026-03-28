@@ -1,0 +1,49 @@
+{% doc %}
+  Outputs CollectionPage JSON-LD structured data for collection pages.
+
+  The mainEntity is an ItemList of the products on the current page
+  (limited to the first 12 to keep the payload reasonable).
+
+  Each ListItem includes:
+  - position (1-based forloop index)
+  - url (fully qualified)
+  - name
+  - image (only when the product has a featured image)
+
+  @param {collection} collection - The collection object (required)
+
+  @example
+    {%- render 'seo-jsonld-collection', collection: collection -%}
+{% enddoc %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": {{ collection.title | json }},
+  "url": {{ shop.url | append: collection.url | json }}
+  {%- if collection.description != blank -%}
+  ,"description": {{ collection.description | strip_html | json }}
+  {%- endif -%}
+  ,"mainEntity": {
+    "@type": "ItemList",
+    "numberOfItems": {{ collection.products_count }},
+    "itemListElement": [
+      {%- assign item_count = 0 -%}
+      {%- for product in collection.products limit: 12 -%}
+        {%- if item_count > 0 -%},{%- endif -%}
+        {
+          "@type": "ListItem",
+          "position": {{ forloop.index }},
+          "name": {{ product.title | json }},
+          "url": {{ shop.url | append: product.url | json }}
+          {%- if product.featured_image -%}
+          ,"image": "https:{{ product.featured_image | image_url: width: 800 }}"
+          {%- endif -%}
+        }
+        {%- assign item_count = item_count | plus: 1 -%}
+      {%- endfor -%}
+    ]
+  }
+}
+</script>

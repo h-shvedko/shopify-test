@@ -1,0 +1,98 @@
+{% doc %}
+  Outputs Organization and WebSite JSON-LD structured data.
+  Rendered once on every page via layout/theme.liquid.
+
+  Organization schema includes:
+  - name, url, logo, email, sameAs social profile links
+
+  WebSite schema includes:
+  - name, url, SearchAction (sitelinks searchbox potentialAction)
+
+  Data sources:
+  - shop.name, shop.url, shop.email
+  - settings.seo_organization_logo (falls back to settings.logo if empty)
+  - settings.social_instagram, social_facebook, social_twitter,
+    social_youtube, social_tiktok
+
+  No parameters — uses global Shopify objects and theme settings.
+
+  @example
+    {%- render 'seo-jsonld-organization' -%}
+{% enddoc %}
+
+{%- liquid
+  assign org_logo = nil
+  if settings.seo_organization_logo != blank
+    assign org_logo = settings.seo_organization_logo | image_url: width: 512
+  elsif settings.logo != blank
+    assign org_logo = settings.logo | image_url: width: 512
+  endif
+
+  assign same_as_urls = ''
+  if settings.social_instagram != blank
+    assign same_as_urls = same_as_urls | append: settings.social_instagram | append: '|'
+  endif
+  if settings.social_facebook != blank
+    assign same_as_urls = same_as_urls | append: settings.social_facebook | append: '|'
+  endif
+  if settings.social_twitter != blank
+    assign same_as_urls = same_as_urls | append: settings.social_twitter | append: '|'
+  endif
+  if settings.social_youtube != blank
+    assign same_as_urls = same_as_urls | append: settings.social_youtube | append: '|'
+  endif
+  if settings.social_tiktok != blank
+    assign same_as_urls = same_as_urls | append: settings.social_tiktok | append: '|'
+  endif
+  assign same_as_array = same_as_urls | split: '|'
+-%}
+
+<script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": {{ shop.name | json }},
+    "url": {{ shop.url | json }}
+    {%- if org_logo != nil -%}
+    ,"logo": {
+      "@type": "ImageObject",
+      "url": "https:{{ org_logo }}"
+    }
+    {%- endif -%}
+    {%- if shop.email != blank -%}
+    ,"contactPoint": {
+      "@type": "ContactPoint",
+      "email": {{ shop.email | json }},
+      "contactType": "customer service"
+    }
+    {%- endif -%}
+    {%- if same_as_array.size > 0 -%}
+    ,"sameAs": [
+      {%- assign printed_count = 0 -%}
+      {%- for url in same_as_array -%}
+        {%- if url != blank -%}
+          {%- if printed_count > 0 -%},{%- endif -%}
+          {{ url | json }}
+          {%- assign printed_count = printed_count | plus: 1 -%}
+        {%- endif -%}
+      {%- endfor -%}
+    ]
+    {%- endif -%}
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": {{ shop.name | json }},
+    "url": {{ shop.url | json }},
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": {{ shop.url | append: '/search?q={search_term_string}' | json }}
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+]
+</script>

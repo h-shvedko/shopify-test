@@ -45,6 +45,32 @@
       "name": "Dark mode",
       "enable_dark_mode_toggle": { "label": "Show dark / light mode toggle" }
     },
+    "seo": {
+      "name": "SEO",
+      "organization_header": { "content": "Organization schema" },
+      "seo_organization_logo": {
+        "label": "Organization logo",
+        "info": "Used in Google search results. Falls back to header logo if empty."
+      },
+      "social_sharing_header": { "content": "Social sharing" },
+      "seo_default_image": {
+        "label": "Default sharing image",
+        "info": "Fallback image for Open Graph / Twitter cards when no page-specific image exists. Recommended: 1200x630px."
+      },
+      "seo_twitter_handle": {
+        "label": "Twitter / X handle",
+        "info": "Include the @ symbol, e.g. @zenithfitness"
+      },
+      "advanced_header": { "content": "Advanced" },
+      "seo_noindex_paginated": {
+        "label": "Noindex paginated pages",
+        "info": "Prevents search engines from indexing page 2, 3, etc. of collections."
+      },
+      "seo_noindex_filtered": {
+        "label": "Noindex filtered collections",
+        "info": "Prevents indexing of tag-filtered collection URLs to avoid duplicate content."
+      }
+    },
     "cart": {
       "name": "Cart",
       "free_shipping_threshold": { "label": "Free shipping threshold ($)" }
@@ -62,7 +88,8 @@
         "show_announcement": { "label": "Show announcement bar" },
         "show_search": { "label": "Show search icon" },
         "sticky_header": { "label": "Sticky header" },
-        "transparent_header": { "label": "Transparent header on homepage" }
+        "transparent_header": { "label": "Transparent header on homepage" },
+        "enable_predictive_search": { "label": "Enable predictive search" }
       }
     },
     "footer": {
@@ -158,7 +185,13 @@
         "show_sort": { "label": "Show sort dropdown" },
         "show_filters": { "label": "Show filter panel" },
         "show_compare": { "label": "Enable product compare" },
-        "show_quick_add": { "label": "Show quick add button" }
+        "show_quick_add": { "label": "Show quick add button" },
+        "show_product_count": { "label": "Show product count" },
+        "filter_layout": {
+          "label": "Filter layout",
+          "sidebar": "Sidebar",
+          "horizontal": "Horizontal bar"
+        }
       }
     },
     "product_detail": {
@@ -338,6 +371,17 @@
         "subheading": { "label": "Subheading" },
         "sort": { "label": "Sort collections by" },
         "columns_desktop": { "label": "Desktop columns" }
+      }
+    },
+    "cart_drawer": {
+      "name": "Cart drawer",
+      "settings": {
+        "enable": { "label": "Enable cart drawer" },
+        "show_free_shipping_bar": { "label": "Show free shipping progress bar" },
+        "show_upsells": { "label": "Show upsell recommendations" },
+        "upsells_heading": { "label": "Upsells heading" },
+        "upsell_collection": { "label": "Fallback upsell collection" },
+        "upsell_count": { "label": "Number of upsell products" }
       }
     }
   },

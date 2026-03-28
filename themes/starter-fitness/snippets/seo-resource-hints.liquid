@@ -1,0 +1,17 @@
+{% doc %}
+  Outputs preconnect and dns-prefetch resource hints for known external origins
+  used by all Shopify themes: the Shopify CDN and the Shopify font CDN.
+
+  Placing these early in <head> allows the browser to establish TCP/TLS
+  connections before it encounters the actual resource requests, shaving
+  measurable time off first-byte latency for images and fonts.
+
+  No parameters — hints are static and apply to every page.
+
+  @example
+    {%- render 'seo-resource-hints' -%}
+{% enddoc %}
+<link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+<link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.shopify.com">
+<link rel="dns-prefetch" href="https://fonts.shopifycdn.com">

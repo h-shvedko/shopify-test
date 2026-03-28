@@ -113,6 +113,43 @@
   </div>
 </section>
 
+{%- comment -%} FAQPage structured data {%- endcomment -%}
+{%- assign faq_has_items = false -%}
+{%- for block in section.blocks -%}
+  {%- if block.type == 'faq_item' -%}
+    {%- if block.settings.question != blank -%}
+      {%- assign faq_has_items = true -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- if faq_has_items -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {%- assign faq_printed = 0 -%}
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'faq_item' -%}
+        {%- if block.settings.question != blank -%}
+          {%- if faq_printed > 0 -%},{%- endif -%}
+          {
+            "@type": "Question",
+            "name": {{ block.settings.question | json }},
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": {{ block.settings.answer | strip_html | json }}
+            }
+          }
+          {%- assign faq_printed = faq_printed | plus: 1 -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  ]
+}
+</script>
+{%- endif -%}
+
 {% stylesheet %}
   /* === Zenith FAQ Section === */
 

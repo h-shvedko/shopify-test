@@ -18,6 +18,9 @@
 
     <link rel="canonical" href="{{ canonical_url }}">
 
+    {%- render 'seo-meta-tags' -%}
+    {%- render 'seo-resource-hints' -%}
+
     {%- if settings.favicon != blank -%}
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
     {%- endif -%}
@@ -36,6 +39,18 @@
     {%- endif -%}
     {%- if settings.font_serif != blank -%}
       <style>{{ settings.font_serif | font_face }}</style>
+    {%- endif -%}
+
+    {%- render 'seo-jsonld-organization' -%}
+
+    {%- if template.name == 'product' -%}
+      {%- render 'seo-jsonld-product', product: product -%}
+      {%- render 'seo-jsonld-breadcrumb' -%}
+    {%- endif -%}
+
+    {%- if template.name == 'collection' -%}
+      {%- render 'seo-jsonld-collection', collection: collection -%}
+      {%- render 'seo-jsonld-breadcrumb' -%}
     {%- endif -%}
   </head>
 

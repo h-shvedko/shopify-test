@@ -1,0 +1,98 @@
+{% doc %}
+  Outputs Open Graph, Twitter Card, and robots meta tags for every page.
+  Rendered in <head> via layout/theme.liquid.
+
+  Open Graph image priority:
+    1. Product featured image (product pages)
+    2. Collection image (collection pages)
+    3. settings.seo_default_image (all other pages, or as fallback)
+
+  Robots noindex is applied when:
+    - settings.seo_noindex_paginated is true AND current_page > 1
+    - settings.seo_noindex_filtered is true AND current_tags is not empty
+
+  No parameters — uses global Shopify objects only.
+
+  @example
+    {%- render 'seo-meta-tags' -%}
+{% enddoc %}
+
+{%- liquid
+  assign og_description = page_description | default: shop.description
+  assign og_type = 'website'
+  if template.name == 'product'
+    assign og_type = 'product'
+  endif
+
+  assign og_image = nil
+  if template.name == 'product'
+    if product.featured_image
+      assign og_image = product.featured_image | image_url: width: 1200
+    endif
+  elsif template.name == 'collection'
+    if collection.image
+      assign og_image = collection.image | image_url: width: 1200
+    endif
+  endif
+  if og_image == nil
+    if settings.seo_default_image != blank
+      assign og_image = settings.seo_default_image | image_url: width: 1200
+    endif
+  endif
+
+  assign should_noindex = false
+  if settings.seo_noindex_paginated
+    if current_page > 1
+      assign should_noindex = true
+    endif
+  endif
+  if settings.seo_noindex_filtered
+    if current_tags != blank
+      assign should_noindex = true
+    endif
+  endif
+-%}
+
+{%- comment -%} Open Graph {%- endcomment -%}
+<meta property="og:site_name" content="{{ shop.name | escape }}">
+<meta property="og:url" content="{{ canonical_url }}">
+<meta property="og:title" content="{{ page_title | escape }}">
+<meta property="og:type" content="{{ og_type }}">
+{%- if og_description != blank -%}
+  <meta property="og:description" content="{{ og_description | strip_html | escape }}">
+{%- endif -%}
+{%- if og_image != nil -%}
+  <meta property="og:image" content="https:{{ og_image }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+{%- endif -%}
+<meta property="og:locale" content="{{ request.locale.iso_code | replace: '-', '_' }}">
+
+{%- comment -%} Product-specific Open Graph tags {%- endcomment -%}
+{%- if template.name == 'product' -%}
+  <meta property="og:price:amount" content="{{ product.price | money_without_currency }}">
+  <meta property="og:price:currency" content="{{ cart.currency.iso_code }}">
+  {%- if product.available -%}
+    <meta property="product:availability" content="in stock">
+  {%- else -%}
+    <meta property="product:availability" content="out of stock">
+  {%- endif -%}
+{%- endif -%}
+
+{%- comment -%} Twitter Card {%- endcomment -%}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ page_title | escape }}">
+{%- if og_description != blank -%}
+  <meta name="twitter:description" content="{{ og_description | strip_html | escape }}">
+{%- endif -%}
+{%- if og_image != nil -%}
+  <meta name="twitter:image" content="https:{{ og_image }}">
+{%- endif -%}
+{%- if settings.seo_twitter_handle != blank -%}
+  <meta name="twitter:site" content="{{ settings.seo_twitter_handle | escape }}">
+{%- endif -%}
+
+{%- comment -%} Robots meta — noindex for paginated or tag-filtered pages {%- endcomment -%}
+{%- if should_noindex -%}
+  <meta name="robots" content="noindex, follow">
+{%- endif -%}
