@@ -51,6 +51,7 @@
           {{ 'wholesale.add_all_to_cart' | t }}
           (<span data-quick-order-count>0</span>)
         </button>
+        <p class="quick-order__error" data-quick-order-error hidden role="alert"></p>
       </div>
 
       <div class="quick-order__table-wrapper">
@@ -406,6 +407,7 @@
     var section = document.querySelector('.quick-order');
     if (!section) return;
 
+    var cartErrorMsg = {{ 'wholesale.cart_error' | t | json }};
     var searchInput = section.querySelector('[data-quick-order-search]');
     var submitBtns = section.querySelectorAll('[data-quick-order-submit], [data-quick-order-submit-footer]');
     var countEls = section.querySelectorAll('[data-quick-order-count], [data-quick-order-count-footer]');
@@ -497,7 +499,7 @@
         .then(function (res) {
           if (!res.ok) {
             return res.json().then(function (data) {
-              throw new Error(data.description || 'Could not add items to cart');
+              throw new Error(data.description || cartErrorMsg);
             });
           }
           return res.json();
@@ -507,7 +509,12 @@
         })
         .catch(function (err) {
           setLoading(false);
-          alert(err.message);
+          var errorEl = document.querySelector('[data-quick-order-error]');
+          if (errorEl) {
+            errorEl.textContent = err.message;
+            errorEl.hidden = false;
+            setTimeout(function () { errorEl.hidden = true; }, 5000);
+          }
         });
     }
 

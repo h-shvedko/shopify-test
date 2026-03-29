@@ -7,7 +7,7 @@
   {% if recommendations.products_count > 0 %}
     <section class="related-products section-padding" data-product-id="{{ product.id }}" data-products-count="{{ section.settings.products_count }}">
       <div class="container">
-        <h2 class="related-products__heading">{{ section.settings.heading }}</h2>
+        <h2 class="related-products__heading">{{ section.settings.heading | escape }}</h2>
         <div class="related-products__grid" data-related-products>
           {% for recommendation in recommendations.products limit: section.settings.products_count %}
             {% render 'product-card', product: recommendation, customer_tags: ws_tags %}
@@ -19,7 +19,7 @@
 {% else %}
   <section class="related-products section-padding" data-product-id="{{ product.id }}" data-products-count="{{ section.settings.products_count }}">
     <div class="container">
-      <h2 class="related-products__heading">{{ section.settings.heading }}</h2>
+      <h2 class="related-products__heading">{{ section.settings.heading | escape }}</h2>
       <div class="related-products__grid" data-related-products>
       </div>
     </div>

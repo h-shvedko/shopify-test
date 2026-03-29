@@ -150,11 +150,7 @@
     "sold_out": "Sold out"
   },
   "wholesale": {
-    "badge_wholesale": "Wholesale",
-    "badge_vip": "VIP",
-    "badge_distributor": "Distributor",
     "your_price": "Your price",
-    "retail_price": "Retail price",
     "you_save": "You save {{ percent }}%",
     "pricing_applied": "Wholesale pricing applied",
     "tier_label": "Tier: {{ name }}",
@@ -172,9 +168,8 @@
     "search_products": "Search products...",
     "add_all_to_cart": "Add all to cart",
     "adding_to_cart": "Adding...",
-    "added_all": "Items added to cart",
+    "cart_error": "Could not add items to cart",
     "quick_order_gated": "You must be logged in with a wholesale account to access the quick order form.",
-    "apply_heading": "Apply for wholesale pricing",
     "application_subject": "Wholesale account application",
     "field_business_name": "Business name",
     "field_contact_name": "Contact name",
@@ -193,10 +188,7 @@
     "order_volume_500_2000": "$500 – $2,000",
     "order_volume_2000_5000": "$2,000 – $5,000",
     "order_volume_over_5000": "Over $5,000",
-    "required_field": "Required",
     "quantity_for": "Quantity for {{ title }}",
-    "cta_heading": "Save more with wholesale pricing",
-    "cta_subtitle": "Get exclusive pricing on bulk orders. Apply for a wholesale account today.",
     "cta_button": "Apply for wholesale",
     "already_wholesale": "You already have wholesale pricing on your account."
   }
