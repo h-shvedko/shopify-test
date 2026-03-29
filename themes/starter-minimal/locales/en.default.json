@@ -149,6 +149,37 @@
     "bestseller": "Bestseller",
     "sold_out": "Sold out"
   },
+  "subscriptions": {
+    "one_time_purchase": "One-time purchase",
+    "subscribe_and_save": "Subscribe & save {{ percent }}%",
+    "select_frequency": "Delivery frequency",
+    "per_delivery": "{{ price }} per delivery",
+    "you_save": "You save {{ amount }} per delivery",
+    "cancel_anytime": "Cancel or pause anytime",
+    "commitment_notice": "{{ count }}-delivery minimum commitment",
+    "subscription_label": "Subscription",
+    "delivery_every": "Delivered every {{ interval }}",
+    "savings_badge": "Save {{ percent }}%",
+    "based_on_retail": "Subscription pricing is based on the retail price"
+  },
+  "bundles": {
+    "frequently_bought_together": "Frequently bought together",
+    "complete_the_set": "Complete the set",
+    "bundle_total": "Bundle total",
+    "bundle_savings": "You save {{ amount }}",
+    "bundle_discount": "{{ percent }}% off when bought together",
+    "add_bundle_to_cart": "Add bundle to cart",
+    "adding_bundle": "Adding...",
+    "bundle_added": "Bundle added to cart",
+    "bundle_error": "Could not add bundle to cart",
+    "this_item": "This item",
+    "included_in_bundle": "Part of a bundle",
+    "bundle_label": "Bundle",
+    "shop_this_bundle": "Shop this bundle",
+    "curated_bundles_heading": "Curated brewing bundles",
+    "curated_bundles_subtitle": "Everything you need to start brewing, bundled together at a discount.",
+    "items_included": "{{ count }} items included"
+  },
   "wholesale": {
     "your_price": "Your price",
     "you_save": "You save {{ percent }}%",

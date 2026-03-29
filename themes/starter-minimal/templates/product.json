@@ -11,8 +11,16 @@
       },
       "block_order": ["break_1", "break_2", "break_3"]
     },
+    "bundle": {
+      "type": "product-bundle",
+      "settings": {
+        "heading": "Frequently bought together",
+        "discount_percent": 10,
+        "max_products": 3
+      }
+    },
     "tabs": { "type": "product-tabs", "settings": {} },
     "related": { "type": "related-products", "settings": {} }
   },
-  "order": ["main", "wholesale_pricing", "tabs", "related"]
+  "order": ["main", "wholesale_pricing", "bundle", "tabs", "related"]
 }

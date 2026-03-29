@@ -1,0 +1,82 @@
+{% doc %}
+  Renders subscription delivery info, savings badge, and cancellation notice.
+  Used by subscription-option and subscription-cart-badge.
+
+  @param {object} selling_plan - The selling plan object. Snippet renders nothing when blank.
+  @param {boolean} show_savings - Show savings badge. Default: true.
+  @param {number} savings_percent - Override savings percentage for display. Falls back to plan price adjustments.
+
+  @example
+  {% render 'subscription-info', selling_plan: plan, show_savings: true, savings_percent: 15 %}
+{% enddoc %}
+
+{% if selling_plan != blank %}
+  {%- liquid
+    assign show_savings_badge = show_savings | default: true
+    assign display_percent = savings_percent | default: 0
+
+    if display_percent == 0
+      for adj in selling_plan.price_adjustments
+        if adj.value_type == 'percentage'
+          assign display_percent = adj.value
+        endif
+      endfor
+    endif
+
+    assign plan_interval = selling_plan.options | first
+  -%}
+
+  <div class="subscription-info">
+    <ul class="subscription-info__list" role="list">
+      {% if plan_interval != blank %}
+        <li class="subscription-info__item">
+          {% render 'icon', name: 'truck', size: 16 %}
+          <span>{{ 'subscriptions.delivery_every' | t: interval: plan_interval.value }}</span>
+        </li>
+      {% endif %}
+
+      {% if show_savings_badge %}
+        {% if display_percent > 0 %}
+          <li class="subscription-info__item">
+            {% render 'icon', name: 'tag', size: 16 %}
+            {%- assign savings_label = 'subscriptions.savings_badge' | t: percent: display_percent -%}
+            {% render 'badge', type: 'subscription', label: savings_label %}
+          </li>
+        {% endif %}
+      {% endif %}
+
+      <li class="subscription-info__item">
+        {% render 'icon', name: 'check', size: 16 %}
+        <span>{{ 'subscriptions.cancel_anytime' | t }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <style>
+    .subscription-info {
+      margin-top: 8px;
+    }
+
+    .subscription-info__list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .subscription-info__item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+    }
+
+    .subscription-info__item .icon {
+      flex-shrink: 0;
+      color: var(--color-success);
+    }
+  </style>
+{% endif %}

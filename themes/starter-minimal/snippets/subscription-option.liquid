@@ -1,0 +1,386 @@
+{% doc %}
+  Renders the purchase option selector (one-time vs subscribe & save) on the product page.
+  Reads product.selling_plan_groups to build the UI. When no selling plan groups exist,
+  renders nothing. The hidden selling_plan input is managed by product-detail.liquid.
+
+  @param {object} product - The product object.
+
+  @example
+  {% render 'subscription-option', product: product %}
+{% enddoc %}
+
+{% if product.selling_plan_groups.size > 0 %}
+  {%- liquid
+    assign first_group = product.selling_plan_groups.first
+    assign first_plan = first_group.selling_plans.first
+    assign first_adj_value = 0
+    for adj in first_plan.price_adjustments
+      if adj.value_type == 'percentage'
+        assign first_adj_value = adj.value
+      endif
+    endfor
+  -%}
+
+  <div class="subscription-option" data-subscription-option>
+    <fieldset class="subscription-option__fieldset">
+      <legend class="visually-hidden">{{ 'subscriptions.select_frequency' | t }}</legend>
+
+      <label class="subscription-option__radio-label subscription-option__radio-label--active">
+        <input
+          type="radio"
+          name="purchase_option"
+          value="one_time"
+          class="subscription-option__radio"
+          checked
+          data-purchase-option="one_time"
+        >
+        <span class="subscription-option__radio-content">
+          <span class="subscription-option__radio-title">{{ 'subscriptions.one_time_purchase' | t }}</span>
+          <span class="subscription-option__radio-price" data-one-time-price>
+            {{ product.selected_or_first_available_variant.price | money }}
+          </span>
+        </span>
+      </label>
+
+      <label class="subscription-option__radio-label">
+        <input
+          type="radio"
+          name="purchase_option"
+          value="subscribe"
+          class="subscription-option__radio"
+          data-purchase-option="subscribe"
+        >
+        <span class="subscription-option__radio-content">
+          <span class="subscription-option__radio-title">
+            {{ 'subscriptions.subscribe_and_save' | t: percent: first_adj_value }}
+          </span>
+          <span class="subscription-option__radio-price" data-subscribe-price></span>
+        </span>
+      </label>
+    </fieldset>
+
+    <div class="subscription-option__frequency" data-frequency-selector hidden>
+      <label class="subscription-option__frequency-label" for="subscription-frequency">
+        {{ 'subscriptions.select_frequency' | t }}
+      </label>
+      <select
+        id="subscription-frequency"
+        class="subscription-option__frequency-select"
+        data-frequency-select
+      >
+        {% for group in product.selling_plan_groups %}
+          {% for plan in group.selling_plans %}
+            {%- liquid
+              assign plan_adj_value = 0
+              for adj in plan.price_adjustments
+                if adj.value_type == 'percentage'
+                  assign plan_adj_value = adj.value
+                endif
+              endfor
+            -%}
+            <option
+              value="{{ plan.id }}"
+              data-plan-id="{{ plan.id }}"
+              data-adjustment-value="{{ plan_adj_value }}"
+              data-adjustment-type="percentage"
+            >
+              {{ plan.name }}
+            </option>
+          {% endfor %}
+        {% endfor %}
+      </select>
+
+      {%- assign active_plan = first_plan -%}
+      <div data-subscription-info-container>
+        {% render 'subscription-info',
+          selling_plan: active_plan,
+          show_savings: true,
+          savings_percent: first_adj_value
+        %}
+      </div>
+
+      {% if customer %}
+        {% if settings.wholesale_enabled %}
+          <p class="subscription-option__retail-note">
+            {% render 'icon', name: 'tag', size: 14 %}
+            {{ 'subscriptions.based_on_retail' | t }}
+          </p>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+
+  <script type="application/json" id="subscription-plan-data">
+    {
+      "groups": [
+        {% for group in product.selling_plan_groups %}
+          {
+            "id": {{ group.id | json }},
+            "name": {{ group.name | json }},
+            "plans": [
+              {% for plan in group.selling_plans %}
+                {%- liquid
+                  assign plan_adj_value = 0
+                  assign plan_adj_type = 'percentage'
+                  for adj in plan.price_adjustments
+                    if adj.value_type == 'percentage'
+                      assign plan_adj_value = adj.value
+                      assign plan_adj_type = 'percentage'
+                    elsif adj.value_type == 'fixed_amount'
+                      assign plan_adj_value = adj.value
+                      assign plan_adj_type = 'fixed_amount'
+                    endif
+                  endfor
+                -%}
+                {
+                  "id": {{ plan.id }},
+                  "name": {{ plan.name | json }},
+                  "price_adjustment_value": {{ plan_adj_value }},
+                  "price_adjustment_type": {{ plan_adj_type | json }}
+                }{% unless forloop.last %},{% endunless %}
+              {% endfor %}
+            ]
+          }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ],
+      "original_price_cents": {{ product.selected_or_first_available_variant.price }}
+    }
+  </script>
+
+  <style>
+    .subscription-option {
+      margin: 16px 0;
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+    }
+
+    .subscription-option__fieldset {
+      border: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .subscription-option__radio-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--color-border);
+      transition: background-color 0.15s ease;
+    }
+
+    .subscription-option__radio-label:last-child {
+      border-bottom: none;
+    }
+
+    .subscription-option__radio-label:hover {
+      background-color: var(--color-background-alt);
+    }
+
+    .subscription-option__radio-label--selected {
+      background-color: #fffbeb;
+    }
+
+    .subscription-option__radio {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      accent-color: var(--color-primary);
+      cursor: pointer;
+    }
+
+    .subscription-option__radio-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      gap: 8px;
+    }
+
+    .subscription-option__radio-title {
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--color-text);
+    }
+
+    .subscription-option__radio-price {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--color-text);
+      white-space: nowrap;
+    }
+
+    .subscription-option__frequency {
+      padding: 16px;
+      background: #fffbeb;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .subscription-option__frequency-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 8px;
+    }
+
+    .subscription-option__frequency-select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius);
+      background: var(--color-background);
+      font-size: 0.9375rem;
+      color: var(--color-text);
+      cursor: pointer;
+      appearance: auto;
+    }
+
+    .subscription-option__frequency-select:focus {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    .subscription-option__retail-note {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-size: 0.8125rem;
+      color: var(--color-text-secondary);
+      font-style: italic;
+    }
+  </style>
+
+  <script>
+    (function () {
+      var optionEl = document.querySelector('[data-subscription-option]');
+      if (!optionEl) return;
+
+      var planDataEl = document.getElementById('subscription-plan-data');
+      if (!planDataEl) return;
+
+      var planData;
+      try {
+        planData = JSON.parse(planDataEl.textContent);
+      } catch (e) {
+        return;
+      }
+
+      var radios = optionEl.querySelectorAll('[data-purchase-option]');
+      var frequencySelector = optionEl.querySelector('[data-frequency-selector]');
+      var frequencySelect = optionEl.querySelector('[data-frequency-select]');
+      var sellingPlanInput = document.querySelector('[data-selling-plan-input]');
+      var priceEls = document.querySelectorAll('.product-detail__price .price__regular, .product-detail__price [data-regular-price]');
+      var subscribePriceEl = optionEl.querySelector('[data-subscribe-price]');
+      var oneTimePriceEl = optionEl.querySelector('[data-one-time-price]');
+
+      var originalPriceCents = planData.original_price_cents;
+
+      function formatMoney(cents) {
+        var amount = (cents / 100).toFixed(2);
+        return '$' + amount.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      }
+
+      function getPlanById(id) {
+        var found = null;
+        planData.groups.forEach(function (group) {
+          group.plans.forEach(function (plan) {
+            if (plan.id === id) {
+              found = plan;
+            }
+          });
+        });
+        return found;
+      }
+
+      function calcSubscribePrice(plan) {
+        if (!plan) return originalPriceCents;
+        if (plan.price_adjustment_type === 'percentage') {
+          return Math.round(originalPriceCents * (1 - plan.price_adjustment_value / 100));
+        }
+        if (plan.price_adjustment_type === 'fixed_amount') {
+          return Math.max(0, originalPriceCents - plan.price_adjustment_value);
+        }
+        return originalPriceCents;
+      }
+
+      function updateRadioLabelStyles(selectedValue) {
+        radios.forEach(function (radio) {
+          var label = radio.closest('.subscription-option__radio-label');
+          if (!label) return;
+          if (radio.value === selectedValue) {
+            label.classList.add('subscription-option__radio-label--selected');
+          } else {
+            label.classList.remove('subscription-option__radio-label--selected');
+          }
+        });
+      }
+
+      function applySubscribeMode(plan) {
+        var priceCents = calcSubscribePrice(plan);
+        if (subscribePriceEl) {
+          subscribePriceEl.textContent = formatMoney(priceCents);
+        }
+        if (frequencySelector) {
+          frequencySelector.hidden = false;
+        }
+        if (sellingPlanInput && plan) {
+          sellingPlanInput.value = plan.id;
+        }
+        updateRadioLabelStyles('subscribe');
+      }
+
+      function applyOneTimeMode() {
+        if (frequencySelector) {
+          frequencySelector.hidden = true;
+        }
+        if (sellingPlanInput) {
+          sellingPlanInput.value = '';
+        }
+        updateRadioLabelStyles('one_time');
+      }
+
+      // Seed the subscribe price display from first plan
+      (function seedInitialSubscribePrice() {
+        var firstPlan = null;
+        if (planData.groups.length > 0 && planData.groups[0].plans.length > 0) {
+          firstPlan = planData.groups[0].plans[0];
+        }
+        if (firstPlan && subscribePriceEl) {
+          subscribePriceEl.textContent = formatMoney(calcSubscribePrice(firstPlan));
+        }
+      })();
+
+      radios.forEach(function (radio) {
+        radio.addEventListener('change', function () {
+          if (radio.value === 'subscribe') {
+            var selectedId = frequencySelect ? parseInt(frequencySelect.value, 10) : null;
+            var plan = selectedId ? getPlanById(selectedId) : null;
+            if (!plan && planData.groups.length > 0) {
+              plan = planData.groups[0].plans[0] || null;
+            }
+            applySubscribeMode(plan);
+          } else {
+            applyOneTimeMode();
+          }
+        });
+      });
+
+      if (frequencySelect) {
+        frequencySelect.addEventListener('change', function () {
+          var selectedId = parseInt(frequencySelect.value, 10);
+          var plan = getPlanById(selectedId);
+          if (sellingPlanInput && plan) {
+            sellingPlanInput.value = plan.id;
+          }
+          if (subscribePriceEl && plan) {
+            subscribePriceEl.textContent = formatMoney(calcSubscribePrice(plan));
+          }
+        });
+      }
+    })();
+  </script>
+{% endif %}

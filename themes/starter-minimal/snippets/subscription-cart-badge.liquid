@@ -1,0 +1,70 @@
+{% doc %}
+  Renders a subscription badge on a cart line item when the item has a selling plan allocation.
+  Shows delivery frequency and per-delivery price. Renders nothing for one-time purchase items.
+
+  @param {object} line_item - The cart line item to check for subscription data.
+
+  @example
+  {% render 'subscription-cart-badge', line_item: item %}
+{% enddoc %}
+
+{% if line_item.selling_plan_allocation != blank %}
+  {%- liquid
+    assign allocation = line_item.selling_plan_allocation
+    assign plan = allocation.selling_plan
+    assign per_delivery_price = allocation.per_delivery_price
+    assign compare_price = line_item.original_line_price
+
+    assign plan_interval = plan.options | first
+  -%}
+
+  <div class="subscription-cart-badge">
+    <div class="subscription-cart-badge__header">
+      {% render 'icon', name: 'repeat', size: 14 %}
+      <span class="subscription-cart-badge__label">
+        {{ 'subscriptions.subscription_label' | t }}
+        {% if plan_interval != blank %}
+          &mdash; {{ 'subscriptions.delivery_every' | t: interval: plan_interval.value }}
+        {% endif %}
+      </span>
+    </div>
+    {% if per_delivery_price != compare_price %}
+      {%- assign per_delivery_formatted = per_delivery_price | money -%}
+      <p class="subscription-cart-badge__price">
+        {{ 'subscriptions.per_delivery' | t: price: per_delivery_formatted }}
+      </p>
+    {% endif %}
+  </div>
+
+  <style>
+    .subscription-cart-badge {
+      margin-top: 6px;
+      padding: 6px 10px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 6px;
+      display: inline-flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .subscription-cart-badge__header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--color-success);
+    }
+
+    .subscription-cart-badge__label {
+      font-size: 0.8125rem;
+      font-weight: 600;
+    }
+
+    .subscription-cart-badge__price {
+      font-size: 0.8125rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+      padding-left: 20px;
+    }
+  </style>
+{% endif %}

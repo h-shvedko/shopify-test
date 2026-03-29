@@ -24,6 +24,13 @@
                 {% if item.variant.title != 'Default Title' %}
                   <p class="cart-content__item-variant">{{ item.variant.title }}</p>
                 {% endif %}
+                {% if item.properties._bundle_id != blank %}
+                  {%- assign bundle_label = 'bundles.included_in_bundle' | t -%}
+                  {% render 'badge', type: 'bundle', label: bundle_label %}
+                {% endif %}
+                {% if section.settings.show_subscription_details %}
+                  {% render 'subscription-cart-badge', line_item: item %}
+                {% endif %}
                 <p class="cart-content__item-price">{{ item.original_line_price | money }}</p>
               </div>
               <div class="cart-content__item-actions">
@@ -41,6 +48,10 @@
         </div>
 
         <div class="cart-content__summary">
+          {% if section.settings.show_bundle_grouping %}
+            {% render 'bundle-cart-group', cart: cart %}
+          {% endif %}
+
           {% if settings.wholesale_enabled %}
             {% if section.settings.show_wholesale_savings %}
               {% if customer %}
@@ -335,6 +346,18 @@
       "type": "checkbox",
       "id": "show_wholesale_savings",
       "label": "t:sections.cart_content.settings.show_wholesale_savings.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_subscription_details",
+      "label": "t:sections.cart_content.settings.show_subscription_details.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bundle_grouping",
+      "label": "t:sections.cart_content.settings.show_bundle_grouping.label",
       "default": true
     }
   ],

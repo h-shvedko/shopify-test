@@ -137,7 +137,30 @@
         "show_rating": { "label": "Show rating" },
         "show_stock": { "label": "Show stock indicator" },
         "show_description": { "label": "Show description" },
-        "show_wholesale_pricing": { "label": "Show wholesale pricing" }
+        "show_wholesale_pricing": { "label": "Show wholesale pricing" },
+        "show_subscription_options": { "label": "Show subscription options" }
+      }
+    },
+    "product_bundle": {
+      "name": "Product bundle",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "discount_percent": { "label": "Bundle discount percentage" },
+        "max_products": { "label": "Maximum products in bundle" }
+      }
+    },
+    "bundle_landing_hero": {
+      "name": "Bundle landing hero",
+      "settings": {
+        "image": { "label": "Background image" },
+        "heading": { "label": "Heading" },
+        "subtitle": { "label": "Subtitle" }
+      }
+    },
+    "bundle_showcase": {
+      "name": "Bundle showcase",
+      "settings": {
+        "heading": { "label": "Heading" }
       }
     },
     "product_tabs": {
@@ -161,7 +184,9 @@
       "settings": {
         "show_free_shipping_bar": { "label": "Show free shipping progress bar" },
         "show_payment_icons": { "label": "Show payment icons" },
-        "show_wholesale_savings": { "label": "Show wholesale savings summary" }
+        "show_wholesale_savings": { "label": "Show wholesale savings summary" },
+        "show_subscription_details": { "label": "Show subscription details on line items" },
+        "show_bundle_grouping": { "label": "Show bundle item grouping" }
       }
     },
     "main_page": {
@@ -279,6 +304,17 @@
         "min_quantity": { "label": "Minimum quantity" },
         "discount_percent": { "label": "Discount percentage" },
         "label": { "label": "Label" }
+      }
+    },
+    "bundle_card": {
+      "name": "Bundle card",
+      "settings": {
+        "title": { "label": "Bundle title" },
+        "description": { "label": "Description" },
+        "image": { "label": "Bundle image" },
+        "products": { "label": "Products in bundle" },
+        "discount_percent": { "label": "Discount percentage" },
+        "url": { "label": "Link URL" }
       }
     }
   }

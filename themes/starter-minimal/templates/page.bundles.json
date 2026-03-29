@@ -1,0 +1,20 @@
+{
+  "sections": {
+    "hero": {
+      "type": "bundle-landing-hero",
+      "settings": {
+        "heading": "Curated brewing bundles",
+        "subtitle": "Everything you need to start brewing, bundled together at a discount."
+      }
+    },
+    "showcase": {
+      "type": "bundle-showcase",
+      "settings": {
+        "heading": "Shop our bundles"
+      },
+      "blocks": {},
+      "block_order": []
+    }
+  },
+  "order": ["hero", "showcase"]
+}

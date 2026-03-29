@@ -1,0 +1,147 @@
+{% doc %}
+  Renders cart line items grouped by their _bundle_id line property.
+  Items without a _bundle_id render normally (not affected by this snippet).
+  This snippet only renders the bundle summary panels — the individual line items
+  are still rendered by cart-content.liquid in the main items loop.
+
+  @param {object} cart - The cart object.
+
+  @example
+  {% render 'bundle-cart-group', cart: cart %}
+{% enddoc %}
+
+{%- liquid
+  assign bundle_ids = ''
+  for item in cart.items
+    assign bundle_id = item.properties._bundle_id
+    if bundle_id != blank
+      unless bundle_ids contains bundle_id
+        if bundle_ids == ''
+          assign bundle_ids = bundle_id
+        else
+          assign bundle_ids = bundle_ids | append: '|' | append: bundle_id
+        endif
+      endunless
+    endif
+  endfor
+-%}
+
+{% if bundle_ids != '' %}
+  {%- assign bundle_id_array = bundle_ids | split: '|' -%}
+
+  <div class="bundle-cart-groups">
+    {% for bid in bundle_id_array %}
+      {%- liquid
+        assign group_total = 0
+        assign group_item_count = 0
+        for item in cart.items
+          if item.properties._bundle_id == bid
+            assign group_total = group_total | plus: item.original_line_price
+            assign group_item_count = group_item_count | plus: 1
+          endif
+        endfor
+      -%}
+
+      {% if group_item_count > 0 %}
+        <div class="bundle-cart-group">
+          <div class="bundle-cart-group__header">
+            {% render 'icon', name: 'package', size: 16 %}
+            {%- assign bundle_label = 'bundles.bundle_label' | t -%}
+            {% render 'badge', type: 'bundle', label: bundle_label %}
+            <span class="bundle-cart-group__count">
+              {{ 'bundles.items_included' | t: count: group_item_count }}
+            </span>
+          </div>
+
+          <ul class="bundle-cart-group__items" role="list">
+            {% for item in cart.items %}
+              {% if item.properties._bundle_id == bid %}
+                <li class="bundle-cart-group__item">
+                  <span class="bundle-cart-group__item-title">{{ item.product.title }}</span>
+                  <span class="bundle-cart-group__item-price">{{ item.original_line_price | money }}</span>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+
+          <div class="bundle-cart-group__total">
+            <span>{{ 'bundles.bundle_total' | t }}</span>
+            <span class="bundle-cart-group__total-price">{{ group_total | money }}</span>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <style>
+    .bundle-cart-groups {
+      margin-bottom: 20px;
+    }
+
+    .bundle-cart-group {
+      border: 1px solid var(--color-primary);
+      border-left: 4px solid var(--color-primary);
+      border-radius: var(--border-radius);
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      background: #fffbeb;
+    }
+
+    .bundle-cart-group__header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      color: var(--color-primary);
+    }
+
+    .bundle-cart-group__count {
+      font-size: 0.8125rem;
+      color: var(--color-text-secondary);
+    }
+
+    .bundle-cart-group__items {
+      list-style: none;
+      margin: 0 0 10px;
+      padding: 0;
+    }
+
+    .bundle-cart-group__item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+      font-size: 0.875rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .bundle-cart-group__item:last-child {
+      border-bottom: none;
+    }
+
+    .bundle-cart-group__item-title {
+      color: var(--color-text);
+    }
+
+    .bundle-cart-group__item-price {
+      font-weight: 600;
+      color: var(--color-text);
+      white-space: nowrap;
+    }
+
+    .bundle-cart-group__total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9375rem;
+      font-weight: 700;
+      padding-top: 8px;
+      border-top: 2px solid var(--color-primary);
+    }
+
+    .bundle-cart-group__total-price {
+      color: var(--color-primary);
+    }
+  </style>
+{% endif %}

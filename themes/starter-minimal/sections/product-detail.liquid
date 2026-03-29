@@ -31,6 +31,12 @@
         {% render 'price', product: product %}
       </div>
 
+      {% if section.settings.show_subscription_options %}
+        {% if product.selling_plan_groups.size > 0 %}
+          {% render 'subscription-option', product: product %}
+        {% endif %}
+      {% endif %}
+
       {% if settings.wholesale_enabled %}
         {% if section.settings.show_wholesale_pricing %}
           {% if customer %}
@@ -79,6 +85,7 @@
       {%- assign added_msg = 'products.added_to_cart' | t -%}
       {% form 'product', product, data-product-form: '', data-added-message: added_msg %}
         <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+        <input type="hidden" name="selling_plan" value="" data-selling-plan-input>
         <div class="product-detail__quantity">
           {% render 'quantity-selector', value: ws_min, name: 'quantity', min: ws_min %}
         </div>
@@ -313,6 +320,12 @@
       "type": "checkbox",
       "id": "show_wholesale_pricing",
       "label": "t:sections.product_detail.settings.show_wholesale_pricing.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_subscription_options",
+      "label": "t:sections.product_detail.settings.show_subscription_options.label",
       "default": true
     }
   ],
