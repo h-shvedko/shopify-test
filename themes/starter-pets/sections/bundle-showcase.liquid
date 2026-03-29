@@ -4,13 +4,13 @@
       {%- assign bs_heading = section.settings.heading | default: '' -%}
       {%- assign bs_subheading = section.settings.subheading | default: '' -%}
 
-      <h1 class="bundle-showcase__heading">
+      <h2 class="bundle-showcase__heading">
         {%- if bs_heading != blank -%}
           {{ bs_heading }}
         {%- else -%}
           {{ 'bundles.shop_bundles_heading' | t }}
         {%- endif -%}
-      </h1>
+      </h2>
       <p class="bundle-showcase__subheading">
         {%- if bs_subheading != blank -%}
           {{ bs_subheading }}

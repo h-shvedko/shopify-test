@@ -255,7 +255,7 @@
         <div class="sub-picker__option-body">
           <span class="sub-picker__option-title">
             {{ 'subscriptions.subscribe_label' | t }}
-            <span class="sub-picker__savings-badge" data-savings-badge>
+            <span class="sub-picker__savings-badge" data-savings-badge data-save-template="{{ 'subscriptions.subscribe_save' | t: percent: '__PCT__' }}">
               {{ 'subscriptions.subscribe_save' | t: percent: display_percent }}
             </span>
           </span>
@@ -380,7 +380,7 @@
           subscribePriceEl.textContent = formatMoney(subPrice);
         }
         if (savingsBadge) {
-          savingsBadge.textContent = 'Subscribe & save ' + pct + '%';
+          savingsBadge.textContent = (savingsBadge.dataset.saveTemplate || '').replace('__PCT__', pct);
         }
       }
 

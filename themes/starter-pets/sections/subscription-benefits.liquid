@@ -1,7 +1,9 @@
 {%- liquid
   assign bg_color = section.settings.background_color | default: '#F5F0E8'
-  assign heading = section.settings.heading | default: 'subscription_benefits.heading' | t
-  assign subheading = section.settings.subheading | default: 'subscription_benefits.subheading' | t
+  assign heading_fallback = 'subscription_benefits.heading' | t
+  assign subheading_fallback = 'subscription_benefits.subheading' | t
+  assign heading = section.settings.heading | default: heading_fallback
+  assign subheading = section.settings.subheading | default: subheading_fallback
 -%}
 
 <section

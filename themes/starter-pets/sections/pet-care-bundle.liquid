@@ -46,7 +46,7 @@
     endif
   -%}
 
-  <section class="bundle section-padding" id="{{ bundle_id }}">
+  <section class="bundle section-padding" id="{{ bundle_id }}" data-savings-template="{{ 'bundles.bundle_savings' | t: amount: '___AMT___' }}">
     <div class="container">
       <div class="bundle__header">
         <h2 class="bundle__heading">
@@ -389,7 +389,7 @@
         if (totalEl) totalEl.textContent = formatMoney(totalDiscounted);
         if (savingsEl) {
           if (savings > 0 && checkedCards.length >= 2) {
-            savingsEl.textContent = 'You save ' + formatMoney(savings);
+            savingsEl.textContent = (bundleSection.dataset.savingsTemplate || '').replace('___AMT___', formatMoney(savings));
           } else {
             savingsEl.textContent = '';
           }

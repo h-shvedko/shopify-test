@@ -44,7 +44,7 @@
                 {% if item.properties._bundle != blank %}
                   <div class="cart-content__bundle-tag">
                     {% render 'icon', name: 'package', size: 14 %}
-                    <span>{{ item.properties._bundle }}</span>
+                    <span>{{ item.properties._bundle | escape }}</span>
                   </div>
                 {% endif %}
 
