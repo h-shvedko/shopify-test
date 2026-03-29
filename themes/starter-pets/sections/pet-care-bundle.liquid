@@ -164,8 +164,9 @@
       <div class="bundle__toast" data-bundle-toast aria-live="polite" aria-atomic="true"></div>
     </div>
   </section>
+{% endif %}
 
-  {% stylesheet %}
+{% stylesheet %}
     .bundle {
       background: var(--color-background, #F5F0E8);
       padding-top: 56px;
@@ -468,7 +469,6 @@
       recalculate();
     })();
   </script>
-{% endif %}
 
 {% schema %}
 {

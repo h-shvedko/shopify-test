@@ -20,7 +20,7 @@
       <div class="product-bundle__layout">
         <div class="product-bundle__products" data-bundle-products>
 
-          {{- /* Current product card — always checked, disabled */ -}}
+          {% comment %}Current product card — always checked, disabled{% endcomment %}
           <div class="product-bundle__card product-bundle__card--current">
             <label class="product-bundle__card-inner">
               <input
@@ -53,7 +53,7 @@
             </label>
           </div>
 
-          {{- /* Bundle products from metafield */ -}}
+          {% comment %}Bundle products from metafield{% endcomment %}
           {% for bundle_product in bundle_products limit: max %}
             {% if bundle_product.available %}
               {%- assign bundle_variant = bundle_product.selected_or_first_available_variant -%}
