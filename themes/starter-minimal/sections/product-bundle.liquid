@@ -11,7 +11,7 @@
 {% if has_bundle %}
   {%- assign max = section.settings.max_products | minus: 1 -%}
 
-  <section class="product-bundle section-padding" data-product-bundle>
+  <section class="product-bundle section-padding" data-product-bundle data-bundle-added-msg="{{ 'bundles.bundle_added' | t }}" data-error-msg="{{ 'bundles.bundle_error' | t }}">
     <div class="container">
       {% if section.settings.heading != blank %}
         <h2 class="product-bundle__heading">{{ section.settings.heading }}</h2>
@@ -437,7 +437,7 @@
           .then(function (response) {
             if (!response.ok) {
               return response.json().then(function (data) {
-                throw new Error(data.description || 'Could not add bundle to cart');
+                throw new Error(data.description || addBtn.closest('[data-product-bundle]').dataset.errorMsg);
               });
             }
             return response.json();

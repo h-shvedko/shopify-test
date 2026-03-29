@@ -12,7 +12,11 @@
 
 {% if selling_plan != blank %}
   {%- liquid
-    assign show_savings_badge = show_savings | default: true
+    if show_savings == false
+      assign show_savings_badge = false
+    else
+      assign show_savings_badge = true
+    endif
     assign display_percent = savings_percent | default: 0
 
     if display_percent == 0

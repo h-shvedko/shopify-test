@@ -57,7 +57,7 @@
             {% for item in cart.items %}
               {% if item.properties._bundle_id == bid %}
                 <li class="bundle-cart-group__item">
-                  <span class="bundle-cart-group__item-title">{{ item.product.title }}</span>
+                  <span class="bundle-cart-group__item-title">{{ item.product.title | escape }}</span>
                   <span class="bundle-cart-group__item-price">{{ item.original_line_price | money }}</span>
                 </li>
               {% endif %}
