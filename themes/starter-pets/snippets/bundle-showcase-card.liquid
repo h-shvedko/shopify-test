@@ -1,0 +1,286 @@
+{% doc %}
+  Renders a large product card for the bundle showcase landing page.
+  Displays included bundle products via the `custom.bundle_products` metafield.
+
+  @param {object} product - The parent bundle product object. Required.
+  @param {string} [label] - Custom bundle label. Falls back to product.title.
+  @param {string} [description] - Custom description. Falls back to product.description excerpt.
+
+  The card renders:
+  - Product featured image (full top)
+  - Label or product title
+  - Description excerpt
+  - "Includes X products" count from metafield
+  - Circular thumbnails of included products (up to 4, with "+N more" overflow)
+  - Price with optional savings badge
+  - "View bundle" link to product URL
+
+  Usage:
+    {%- assign card_label = block.settings.label | default: '' -%}
+    {%- assign card_desc = block.settings.description | default: '' -%}
+    {% render 'bundle-showcase-card',
+      product: block_product,
+      label: card_label,
+      description: card_desc
+    %}
+{% enddoc %}
+
+{%- liquid
+  assign bundle_label = label | default: product.title
+  assign bundle_desc = description | default: ''
+  if bundle_desc == blank
+    assign bundle_desc = product.description | strip_html | truncate: 120
+  endif
+  assign bundle_products = product.metafields.custom.bundle_products.value
+  assign include_count = bundle_products.size | default: 0
+  assign first_variant = product.selected_or_first_available_variant
+-%}
+
+<style>
+  .showcase-card {
+    background: var(--color-surface, #ffffff);
+    border: 1px solid var(--color-border, #E7E0D6);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .showcase-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .showcase-card__image-wrap {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--color-background, #F5F0E8);
+    position: relative;
+  }
+
+  .showcase-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  .showcase-card:hover .showcase-card__image {
+    transform: scale(1.05);
+  }
+
+  .showcase-card__image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    background: var(--color-background, #F5F0E8);
+  }
+
+  .showcase-card__body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .showcase-card__label {
+    font-family: var(--font-heading, 'Nunito', sans-serif);
+    font-weight: 800;
+    font-size: 1.125rem;
+    color: var(--color-text, #1C1917);
+    margin: 0 0 8px;
+    line-height: 1.3;
+  }
+
+  .showcase-card__desc {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary, #78716C);
+    font-family: var(--font-body, 'Quicksand', sans-serif);
+    line-height: 1.6;
+    margin: 0 0 16px;
+  }
+
+  .showcase-card__includes {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .showcase-card__includes-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-text-secondary, #78716C);
+    font-family: var(--font-body, 'Quicksand', sans-serif);
+  }
+
+  .showcase-card__thumbs {
+    display: flex;
+    align-items: center;
+    gap: -4px;
+  }
+
+  .showcase-card__thumb {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--color-surface, #ffffff);
+    overflow: hidden;
+    margin-right: -6px;
+    background: var(--color-background, #F5F0E8);
+    flex-shrink: 0;
+  }
+
+  .showcase-card__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .showcase-card__thumb-overflow {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--color-surface, #ffffff);
+    background: var(--color-primary, #059669);
+    color: #ffffff;
+    font-size: 0.625rem;
+    font-weight: 700;
+    font-family: var(--font-heading, 'Nunito', sans-serif);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-right: -6px;
+  }
+
+  .showcase-card__footer {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border, #E7E0D6);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .showcase-card__price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .showcase-card__price-current {
+    font-family: var(--font-heading, 'Nunito', sans-serif);
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: var(--color-text, #1C1917);
+  }
+
+  .showcase-card__price-compare {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary, #78716C);
+    text-decoration: line-through;
+    font-family: var(--font-body, 'Quicksand', sans-serif);
+  }
+
+  .showcase-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    background: var(--color-primary, #059669);
+    color: #ffffff;
+    font-family: var(--font-heading, 'Nunito', sans-serif);
+    font-weight: 700;
+    font-size: 0.875rem;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .showcase-card__cta:hover {
+    background: #047857;
+    transform: translateY(-1px);
+  }
+
+  .showcase-card__cta:focus-visible {
+    outline: 2px solid var(--color-primary, #059669);
+    outline-offset: 2px;
+  }
+</style>
+
+<article class="showcase-card">
+  <div class="showcase-card__image-wrap">
+    {% if product.featured_image %}
+      {%- assign sc_img_alt = product.featured_image.alt | default: bundle_label | escape -%}
+      {{ product.featured_image
+        | image_url: width: 600
+        | image_tag:
+          class: 'showcase-card__image',
+          loading: 'lazy',
+          alt: sc_img_alt,
+          width: 600,
+          height: 450
+      }}
+    {% else %}
+      <div class="showcase-card__image-placeholder" aria-hidden="true">🐾</div>
+    {% endif %}
+  </div>
+
+  <div class="showcase-card__body">
+    <h3 class="showcase-card__label">{{ bundle_label }}</h3>
+
+    {% if bundle_desc != blank %}
+      <p class="showcase-card__desc">{{ bundle_desc }}</p>
+    {% endif %}
+
+    {% if include_count > 0 %}
+      <div class="showcase-card__includes">
+        <span class="showcase-card__includes-label">
+          {{ 'bundles.includes_count' | t: count: include_count }}
+        </span>
+        <div class="showcase-card__thumbs" aria-hidden="true">
+          {%- assign thumb_limit = 4 -%}
+          {%- assign overflow_count = include_count | minus: thumb_limit -%}
+          {%- for bp in bundle_products limit: thumb_limit -%}
+            <div class="showcase-card__thumb">
+              {% if bp.featured_image %}
+                {%- assign bp_alt = bp.featured_image.alt | default: bp.title | escape -%}
+                {{ bp.featured_image
+                  | image_url: width: 64
+                  | image_tag: loading: 'lazy', alt: bp_alt, width: 64, height: 64
+                }}
+              {% endif %}
+            </div>
+          {%- endfor -%}
+          {% if overflow_count > 0 %}
+            <div class="showcase-card__thumb-overflow">+{{ overflow_count }}</div>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="showcase-card__footer">
+      <div class="showcase-card__price">
+        {% if first_variant.compare_at_price > first_variant.price %}
+          <span class="showcase-card__price-compare">{{ first_variant.compare_at_price | money }}</span>
+        {% endif %}
+        <span class="showcase-card__price-current">{{ first_variant.price | money }}</span>
+      </div>
+      <a href="{{ product.url }}" class="showcase-card__cta">
+        {{ 'bundles.view_bundle' | t }}
+      </a>
+    </div>
+  </div>
+</article>

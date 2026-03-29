@@ -126,7 +126,50 @@
     "quantity": "Quantity",
     "update": "Update cart",
     "note_label": "Add a note to your order",
-    "taxes_note": "Taxes and shipping calculated at checkout"
+    "taxes_note": "Taxes and shipping calculated at checkout",
+    "subscription_badge": "Subscription",
+    "delivery_frequency": "Delivery: {{ frequency }}",
+    "bundle_label": "Part of bundle"
+  },
+  "subscriptions": {
+    "one_time": "One-time purchase",
+    "subscribe_save": "Subscribe & save {{ percent }}%",
+    "subscribe_label": "Subscribe & save",
+    "frequency_label": "Delivery frequency",
+    "per_delivery": "{{ price }} per delivery",
+    "per_delivery_suffix": "per delivery",
+    "savings_note": "You save {{ amount }} per order",
+    "never_run_out": "Never run out of your pet's favorites",
+    "free_shipping_note": "Free shipping on all subscriptions",
+    "next_delivery": "Next delivery: {{ date }}",
+    "manage": "Manage subscription"
+  },
+  "subscription_benefits": {
+    "heading": "Why subscribe?",
+    "subheading": "Automatic deliveries so your pet never goes without",
+    "free_shipping": "Free shipping",
+    "free_shipping_desc": "Every subscription delivery ships free",
+    "save_on_every_order": "Save on every order",
+    "save_desc": "Up to 15% off the regular price",
+    "flexible_schedule": "Flexible schedule",
+    "flexible_desc": "Pause, skip, or cancel anytime",
+    "auto_delivery": "Auto-delivery",
+    "auto_delivery_desc": "Set it and forget it -- we will handle the rest"
+  },
+  "bundles": {
+    "heading": "Complete the care kit",
+    "subheading": "Everything your pet needs in one easy bundle",
+    "bundle_save": "Bundle & save {{ percent }}%",
+    "bundle_total": "Bundle total",
+    "bundle_savings": "You save {{ amount }}",
+    "add_bundle": "Add bundle to cart",
+    "select_at_least": "Select at least 2 products",
+    "added_to_cart": "Bundle added to cart!",
+    "includes_count": "Includes {{ count }} products",
+    "view_bundle": "View bundle",
+    "shop_bundles_heading": "Shop pet care bundles",
+    "shop_bundles_subheading": "Curated kits for every pet parent",
+    "no_bundles": "No bundle products configured. Add products in the theme editor."
   },
   "customer": {
     "login": "Log in",

@@ -118,7 +118,64 @@
         "show_rating": { "label": "Show star rating" },
         "show_stock": { "label": "Show stock indicator" },
         "show_vendor": { "label": "Show vendor / brand" },
-        "show_sku": { "label": "Show SKU" }
+        "show_sku": { "label": "Show SKU" },
+        "subscription_header": { "content": "Subscriptions" },
+        "enable_subscriptions": {
+          "label": "Enable subscribe & save",
+          "info": "Requires a subscription app (e.g., Shopify Subscriptions) to be installed with selling plans configured on products."
+        },
+        "subscription_save_percent": { "label": "Savings percentage (display fallback)" },
+        "bundle_header": { "content": "Bundles" },
+        "enable_bundles": { "label": "Show bundle section on product pages" }
+      }
+    },
+    "subscription_benefits": {
+      "name": "Subscription benefits",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "subheading": { "label": "Subheading" },
+        "background_color": { "label": "Background color" }
+      },
+      "blocks": {
+        "benefit_item": {
+          "name": "Benefit item",
+          "settings": {
+            "icon": { "label": "Icon" },
+            "heading": { "label": "Heading" },
+            "description": { "label": "Description" }
+          }
+        }
+      }
+    },
+    "pet_care_bundle": {
+      "name": "Pet care bundle",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "subheading": { "label": "Subheading" },
+        "discount_percent": { "label": "Bundle discount (%)" },
+        "discount_label": { "label": "Discount label" },
+        "bundle_source": { "label": "Bundle product source" },
+        "product_1": { "label": "Bundle product 1" },
+        "product_2": { "label": "Bundle product 2" },
+        "product_3": { "label": "Bundle product 3" },
+        "product_4": { "label": "Bundle product 4" }
+      }
+    },
+    "bundle_showcase": {
+      "name": "Bundle showcase",
+      "settings": {
+        "heading": { "label": "Heading" },
+        "subheading": { "label": "Subheading" }
+      },
+      "blocks": {
+        "bundle_card": {
+          "name": "Bundle card",
+          "settings": {
+            "product": { "label": "Bundle product" },
+            "label": { "label": "Bundle label" },
+            "description": { "label": "Description" }
+          }
+        }
       }
     },
     "testimonials": {

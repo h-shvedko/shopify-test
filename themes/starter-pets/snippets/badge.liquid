@@ -2,11 +2,12 @@
   Renders a small badge/label element for PawHaven product cards.
 
   @param {string} text - Text content to display inside the badge. Required.
-  @param {string} [type] - Badge variant. One of: sale, new, sold_out, custom.
+  @param {string} [type] - Badge variant. One of: sale, new, sold_out, custom, subscription.
       - sale: amber background (#D97706), white text
       - new: emerald background (#059669), white text
       - sold_out: stone background (#78716C), white text
       - custom: sand background, dark bark text
+      - subscription: emerald background (#059669), white text
       Default: "custom".
   @param {boolean} [small] - When true, applies reduced padding. Default: false.
 
@@ -15,6 +16,7 @@
     {% render 'badge', text: 'New arrival', type: 'new' %}
     {% render 'badge', text: 'Sold out', type: 'sold_out' %}
     {% render 'badge', text: 'Vet approved', type: 'custom' %}
+    {% render 'badge', text: 'Subscription', type: 'subscription', small: true %}
 {% enddoc %}
 
 <style>
@@ -53,6 +55,11 @@
     background-color: var(--color-background, #F5F0E8);
     color: var(--color-text, #1C1917);
     border: 1px solid var(--color-border, #E7E0D6);
+  }
+
+  .badge--subscription {
+    background-color: var(--color-primary, #059669);
+    color: #ffffff;
   }
 </style>
 

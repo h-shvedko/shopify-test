@@ -1,0 +1,202 @@
+{% doc %}
+  Renders a compact product card with a checkbox for bundle selection.
+  Used inside the pet-care-bundle section to allow customers to deselect
+  individual items before adding the bundle to cart.
+
+  @param {object} product - Shopify product object. Required.
+  @param {boolean} [checked] - Whether the checkbox starts checked. Default: true.
+  @param {number} [index] - Numeric index for unique IDs (0-based). Default: 0.
+
+  The card displays:
+  - Checkbox in the top-right corner (defaults to checked)
+  - Product image (1:1 aspect ratio)
+  - Product title (clamped to 2 lines)
+  - First available variant price
+  - Variant info when product has more than 1 variant
+
+  Data attributes used by bundle JS:
+  - data-bundle-card - marks the card wrapper
+  - data-bundle-variant-id - the variant ID to add to cart
+  - data-bundle-price - variant price in cents (integer)
+  - data-bundle-title - product title for accessibility / toast
+
+  Usage:
+    {% render 'bundle-product-card', product: p, checked: true, index: forloop.index0 %}
+{% enddoc %}
+
+{%- liquid
+  assign card_id = 'bundle-card-' | append: product.id | append: '-' | append: index
+  assign is_checked = checked | default: true
+  assign first_variant = product.selected_or_first_available_variant
+-%}
+
+<style>
+  .bundle-card {
+    position: relative;
+    background: var(--color-surface, #ffffff);
+    border: 2px solid var(--color-border, #E7E0D6);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .bundle-card--checked {
+    border-color: var(--color-primary, #059669);
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15);
+  }
+
+  .bundle-card__checkbox-wrap {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+  }
+
+  .bundle-card__checkbox-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: var(--color-surface, #ffffff);
+    border: 2px solid var(--color-border, #E7E0D6);
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  }
+
+  .bundle-card__checkbox {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .bundle-card__checkbox:checked + .bundle-card__checkbox-label {
+    background: var(--color-primary, #059669);
+    border-color: var(--color-primary, #059669);
+  }
+
+  .bundle-card__checkbox:focus-visible + .bundle-card__checkbox-label {
+    outline: 2px solid var(--color-primary, #059669);
+    outline-offset: 2px;
+  }
+
+  .bundle-card__check-icon {
+    display: none;
+    color: #ffffff;
+  }
+
+  .bundle-card__checkbox:checked ~ .bundle-card__check-icon,
+  .bundle-card__checkbox:checked + .bundle-card__checkbox-label .bundle-card__check-icon {
+    display: block;
+  }
+
+  .bundle-card__image-wrap {
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--color-background, #F5F0E8);
+  }
+
+  .bundle-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.25s ease;
+  }
+
+  .bundle-card:hover .bundle-card__image {
+    transform: scale(1.04);
+  }
+
+  .bundle-card__image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    background: var(--color-background, #F5F0E8);
+  }
+
+  .bundle-card__info {
+    padding: 10px 12px 12px;
+  }
+
+  .bundle-card__title {
+    font-family: var(--font-heading, 'Nunito', sans-serif);
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: var(--color-text, #1C1917);
+    line-height: 1.35;
+    margin: 0 0 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .bundle-card__variant {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary, #78716C);
+    margin: 0 0 4px;
+    font-family: var(--font-body, 'Quicksand', sans-serif);
+  }
+
+  .bundle-card__price {
+    font-family: var(--font-heading, 'Nunito', sans-serif);
+    font-weight: 700;
+    font-size: 0.9375rem;
+    color: var(--color-primary, #059669);
+    margin: 0;
+  }
+</style>
+
+<div
+  class="bundle-card{% if is_checked %} bundle-card--checked{% endif %}"
+  data-bundle-card
+  data-bundle-variant-id="{{ first_variant.id }}"
+  data-bundle-price="{{ first_variant.price }}"
+  data-bundle-title="{{ product.title | escape }}"
+>
+  <div class="bundle-card__checkbox-wrap">
+    <input
+      type="checkbox"
+      class="bundle-card__checkbox"
+      id="{{ card_id }}"
+      {% if is_checked %}checked{% endif %}
+      aria-label="{{ product.title | escape }}"
+      data-bundle-checkbox
+    >
+    <label class="bundle-card__checkbox-label" for="{{ card_id }}" aria-hidden="true">
+      <svg class="bundle-card__check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+    </label>
+  </div>
+
+  <div class="bundle-card__image-wrap">
+    {% if product.featured_image %}
+      {%- assign card_img_alt = product.featured_image.alt | default: product.title | escape -%}
+      {{ product.featured_image
+        | image_url: width: 300
+        | image_tag:
+          class: 'bundle-card__image',
+          loading: 'lazy',
+          alt: card_img_alt,
+          width: 300,
+          height: 300
+      }}
+    {% else %}
+      <div class="bundle-card__image-placeholder" aria-hidden="true">🐾</div>
+    {% endif %}
+  </div>
+
+  <div class="bundle-card__info">
+    <p class="bundle-card__title">{{ product.title }}</p>
+    {% if product.has_only_default_variant == false %}
+      <p class="bundle-card__variant">{{ first_variant.title }}</p>
+    {% endif %}
+    <p class="bundle-card__price">{{ first_variant.price | money }}</p>
+  </div>
+</div>

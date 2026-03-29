@@ -1,7 +1,12 @@
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
   assign added_msg = 'products.added_to_cart' | t
+  assign save_pct = section.settings.subscription_save_percent | default: 10
 -%}
+
+<script>
+  window.__pdVariants = {{ product.variants | json }};
+</script>
 
 <section class="pd section-padding">
   <div class="container">
@@ -94,6 +99,14 @@
                 </div>
               {% endfor %}
             </div>
+          {% endif %}
+
+          {% if section.settings.enable_subscriptions %}
+            {% render 'subscription-picker',
+              product: product,
+              current_variant: current_variant,
+              save_percent_fallback: save_pct
+            %}
           {% endif %}
 
           <div class="pd__quantity">
@@ -702,6 +715,10 @@
 
           if (match) {
             variantIdInput.value = match.id;
+            document.dispatchEvent(new CustomEvent('variant:changed', {
+              bubbles: true,
+              detail: { variant: match }
+            }));
           }
         });
       });
@@ -789,6 +806,33 @@
       "type": "checkbox",
       "id": "enable_trust_badges",
       "label": "t:sections.product_detail.settings.enable_trust_badges.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.product_detail.settings.subscription_header.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_subscriptions",
+      "label": "t:sections.product_detail.settings.enable_subscriptions.label",
+      "info": "t:sections.product_detail.settings.enable_subscriptions.info",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "subscription_save_percent",
+      "label": "t:sections.product_detail.settings.subscription_save_percent.label",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "t:sections.product_detail.settings.bundle_header.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_bundles",
+      "label": "t:sections.product_detail.settings.enable_bundles.label",
       "default": true
     }
   ],

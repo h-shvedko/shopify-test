@@ -1,0 +1,542 @@
+{%- liquid
+  assign bundle_source = section.settings.bundle_source | default: 'metafield'
+  assign discount_pct = section.settings.discount_percent | default: 10
+  assign bundle_label = section.settings.discount_label | default: 'Bundle & save'
+  assign bundle_heading = section.settings.heading | default: ''
+  assign bundle_subheading = section.settings.subheading | default: ''
+
+  assign bundle_products = nil
+  assign use_manual = false
+
+  if bundle_source == 'metafield'
+    assign bundle_products = product.metafields.custom.bundle_products.value
+  else
+    assign use_manual = true
+  endif
+
+  assign has_bundle = false
+  if use_manual
+    if section.settings.product_1 != blank
+      assign has_bundle = true
+    endif
+    if section.settings.product_2 != blank
+      assign has_bundle = true
+    endif
+  else
+    if bundle_products != blank
+      if bundle_products.size > 0
+        assign has_bundle = true
+      endif
+    endif
+  endif
+-%}
+
+{% if has_bundle %}
+  {%- assign bundle_id = 'bundle-' | append: section.id -%}
+  {%- assign add_bundle_msg = 'bundles.add_bundle' | t -%}
+  {%- assign added_msg = 'bundles.added_to_cart' | t -%}
+  {%- assign select_msg = 'bundles.select_at_least' | t -%}
+
+  {%- liquid
+    if use_manual
+      assign mp1 = section.settings.product_1
+      assign mp2 = section.settings.product_2
+      assign mp3 = section.settings.product_3
+      assign mp4 = section.settings.product_4
+    endif
+  -%}
+
+  <section class="bundle section-padding" id="{{ bundle_id }}">
+    <div class="container">
+      <div class="bundle__header">
+        <h2 class="bundle__heading">
+          {%- if bundle_heading != blank -%}
+            {{ bundle_heading }}
+          {%- else -%}
+            {{ 'bundles.heading' | t }}
+          {%- endif -%}
+        </h2>
+        <p class="bundle__subheading">
+          {%- if bundle_subheading != blank -%}
+            {{ bundle_subheading }}
+          {%- else -%}
+            {{ 'bundles.subheading' | t }}
+          {%- endif -%}
+        </p>
+        {% if discount_pct > 0 %}
+          <span class="bundle__save-badge">
+            {{ 'bundles.bundle_save' | t: percent: discount_pct }}
+          </span>
+        {% endif %}
+      </div>
+
+      {%- comment -%} Serialize bundle product data for JS {%- endcomment -%}
+      <script type="application/json" id="{{ bundle_id }}-data">
+        {
+          "discountPercent": {{ discount_pct | json }},
+          "bundleLabel": {{ bundle_label | json }},
+          "addedMessage": {{ added_msg | json }},
+          "selectMessage": {{ select_msg | json }},
+          "products": [
+            {%- if use_manual -%}
+              {%- assign manual_first = true -%}
+              {%- if mp1 != blank -%}
+                {%- assign bp_variant = mp1.selected_or_first_available_variant -%}
+                { "productId": {{ mp1.id | json }}, "variantId": {{ bp_variant.id | json }}, "price": {{ bp_variant.price | json }}, "title": {{ mp1.title | json }} }
+                {%- assign manual_first = false -%}
+              {%- endif -%}
+              {%- if mp2 != blank -%}
+                {%- unless manual_first -%},{%- endunless -%}
+                {%- assign bp_variant = mp2.selected_or_first_available_variant -%}
+                { "productId": {{ mp2.id | json }}, "variantId": {{ bp_variant.id | json }}, "price": {{ bp_variant.price | json }}, "title": {{ mp2.title | json }} }
+                {%- assign manual_first = false -%}
+              {%- endif -%}
+              {%- if mp3 != blank -%}
+                {%- unless manual_first -%},{%- endunless -%}
+                {%- assign bp_variant = mp3.selected_or_first_available_variant -%}
+                { "productId": {{ mp3.id | json }}, "variantId": {{ bp_variant.id | json }}, "price": {{ bp_variant.price | json }}, "title": {{ mp3.title | json }} }
+                {%- assign manual_first = false -%}
+              {%- endif -%}
+              {%- if mp4 != blank -%}
+                {%- unless manual_first -%},{%- endunless -%}
+                {%- assign bp_variant = mp4.selected_or_first_available_variant -%}
+                { "productId": {{ mp4.id | json }}, "variantId": {{ bp_variant.id | json }}, "price": {{ bp_variant.price | json }}, "title": {{ mp4.title | json }} }
+              {%- endif -%}
+            {%- else -%}
+              {%- for bp in bundle_products -%}
+                {%- assign bp_variant = bp.selected_or_first_available_variant -%}
+                {
+                  "productId": {{ bp.id | json }},
+                  "variantId": {{ bp_variant.id | json }},
+                  "price": {{ bp_variant.price | json }},
+                  "title": {{ bp.title | json }}
+                }{% unless forloop.last %},{% endunless %}
+              {%- endfor -%}
+            {%- endif -%}
+          ]
+        }
+      </script>
+
+      <div class="bundle__grid" data-bundle-grid>
+        {%- if use_manual -%}
+          {%- assign card_idx = 0 -%}
+          {%- if mp1 != blank -%}
+            {% render 'bundle-product-card', product: mp1, checked: true, index: card_idx %}
+            {%- assign card_idx = card_idx | plus: 1 -%}
+          {%- endif -%}
+          {%- if mp2 != blank -%}
+            {% render 'bundle-product-card', product: mp2, checked: true, index: card_idx %}
+            {%- assign card_idx = card_idx | plus: 1 -%}
+          {%- endif -%}
+          {%- if mp3 != blank -%}
+            {% render 'bundle-product-card', product: mp3, checked: true, index: card_idx %}
+            {%- assign card_idx = card_idx | plus: 1 -%}
+          {%- endif -%}
+          {%- if mp4 != blank -%}
+            {% render 'bundle-product-card', product: mp4, checked: true, index: card_idx %}
+          {%- endif -%}
+        {%- else -%}
+          {% for bp in bundle_products %}
+            {% render 'bundle-product-card', product: bp, checked: true, index: forloop.index0 %}
+          {% endfor %}
+        {%- endif -%}
+      </div>
+
+      <div class="bundle__summary" data-bundle-summary>
+        <div class="bundle__summary-info">
+          <div class="bundle__total-wrap">
+            <span class="bundle__total-label">{{ 'bundles.bundle_total' | t }}</span>
+            <span class="bundle__total-price" data-bundle-total>—</span>
+          </div>
+          <span class="bundle__savings" data-bundle-savings></span>
+        </div>
+        <button
+          type="button"
+          class="btn btn--primary bundle__add-btn"
+          data-bundle-add
+          aria-live="polite"
+          disabled
+        >
+          {{ add_bundle_msg }}
+        </button>
+      </div>
+
+      <div class="bundle__toast" data-bundle-toast aria-live="polite" aria-atomic="true"></div>
+    </div>
+  </section>
+
+  {% stylesheet %}
+    .bundle {
+      background: var(--color-background, #F5F0E8);
+      padding-top: 56px;
+      padding-bottom: 56px;
+    }
+
+    .bundle__header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .bundle__heading {
+      font-family: var(--font-heading, 'Nunito', sans-serif);
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 800;
+      color: var(--color-text, #1C1917);
+      margin: 0 0 10px;
+    }
+
+    .bundle__subheading {
+      font-size: 1rem;
+      color: var(--color-text-secondary, #78716C);
+      font-family: var(--font-body, 'Quicksand', sans-serif);
+      line-height: 1.6;
+      margin: 0 0 12px;
+    }
+
+    .bundle__save-badge {
+      display: inline-block;
+      background: var(--color-secondary, #D97706);
+      color: #ffffff;
+      font-family: var(--font-heading, 'Nunito', sans-serif);
+      font-weight: 700;
+      font-size: 0.875rem;
+      padding: 4px 14px;
+      border-radius: 100px;
+    }
+
+    .bundle__grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .bundle__summary {
+      background: var(--color-surface, #ffffff);
+      border: 1px solid var(--color-border, #E7E0D6);
+      border-radius: 12px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .bundle__summary-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .bundle__total-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .bundle__total-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--color-text-secondary, #78716C);
+      font-family: var(--font-body, 'Quicksand', sans-serif);
+    }
+
+    .bundle__total-price {
+      font-family: var(--font-heading, 'Nunito', sans-serif);
+      font-weight: 800;
+      font-size: 1.375rem;
+      color: var(--color-text, #1C1917);
+    }
+
+    .bundle__savings {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: var(--color-primary, #059669);
+      font-family: var(--font-heading, 'Nunito', sans-serif);
+    }
+
+    .bundle__add-btn {
+      padding: 14px 24px;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 24px;
+      background: var(--color-primary, #059669);
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+      font-family: var(--font-heading, 'Nunito', sans-serif);
+      white-space: nowrap;
+    }
+
+    .bundle__add-btn:hover:not(:disabled) {
+      background: #047857;
+      transform: translateY(-1px);
+    }
+
+    .bundle__add-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .bundle__toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: var(--color-text, #1C1917);
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 24px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      z-index: 9999;
+      white-space: nowrap;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .bundle__toast--visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (min-width: 768px) {
+      .bundle__grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .bundle__grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  {% endstylesheet %}
+
+  <script>
+    (function () {
+      var bundleSection = document.getElementById({{ bundle_id | json }});
+      if (!bundleSection) return;
+
+      var dataEl = document.getElementById({{ bundle_id | json }} + '-data');
+      if (!dataEl) return;
+
+      var data;
+      try {
+        data = JSON.parse(dataEl.textContent);
+      } catch (e) {
+        return;
+      }
+
+      var grid = bundleSection.querySelector('[data-bundle-grid]');
+      var totalEl = bundleSection.querySelector('[data-bundle-total]');
+      var savingsEl = bundleSection.querySelector('[data-bundle-savings]');
+      var addBtn = bundleSection.querySelector('[data-bundle-add]');
+      var toast = bundleSection.querySelector('[data-bundle-toast]');
+      var toastTimer = null;
+
+      function formatMoney(cents) {
+        var dollars = (cents / 100).toFixed(2);
+        return '$' + dollars.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      }
+
+      function updateCartBadge(count) {
+        var badges = document.querySelectorAll('[data-cart-count]');
+        badges.forEach(function (badge) {
+          badge.textContent = count;
+          badge.hidden = count === 0;
+        });
+      }
+
+      function showToast(message) {
+        if (!toast) return;
+        toast.textContent = message;
+        toast.classList.add('bundle__toast--visible');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          toast.classList.remove('bundle__toast--visible');
+        }, 3000);
+      }
+
+      function recalculate() {
+        var cards = grid.querySelectorAll('[data-bundle-card]');
+        var checkedCards = [];
+
+        cards.forEach(function (card) {
+          var checkbox = card.querySelector('[data-bundle-checkbox]');
+          var isChecked = checkbox && checkbox.checked;
+          card.classList.toggle('bundle-card--checked', !!isChecked);
+          if (isChecked) {
+            checkedCards.push({
+              variantId: parseInt(card.dataset.bundleVariantId, 10),
+              price: parseInt(card.dataset.bundlePrice, 10),
+              title: card.dataset.bundleTitle
+            });
+          }
+        });
+
+        var totalOriginal = checkedCards.reduce(function (sum, p) { return sum + p.price; }, 0);
+        var discountMultiplier = (100 - data.discountPercent) / 100;
+        var totalDiscounted = Math.round(totalOriginal * discountMultiplier);
+        var savings = totalOriginal - totalDiscounted;
+
+        if (totalEl) totalEl.textContent = formatMoney(totalDiscounted);
+        if (savingsEl) {
+          if (savings > 0 && checkedCards.length >= 2) {
+            savingsEl.textContent = 'You save ' + formatMoney(savings);
+          } else {
+            savingsEl.textContent = '';
+          }
+        }
+
+        if (addBtn) {
+          var canAdd = checkedCards.length >= 2;
+          addBtn.disabled = !canAdd;
+          addBtn.title = canAdd ? '' : data.selectMessage;
+        }
+
+        return checkedCards;
+      }
+
+      if (grid) {
+        grid.addEventListener('change', function (event) {
+          var checkbox = event.target.closest('[data-bundle-checkbox]');
+          if (!checkbox) return;
+          recalculate();
+        });
+      }
+
+      if (addBtn) {
+        addBtn.addEventListener('click', function () {
+          var cards = grid.querySelectorAll('[data-bundle-card]');
+          var items = [];
+          cards.forEach(function (card) {
+            var checkbox = card.querySelector('[data-bundle-checkbox]');
+            if (checkbox && checkbox.checked) {
+              items.push({
+                id: parseInt(card.dataset.bundleVariantId, 10),
+                quantity: 1,
+                properties: { '_bundle': data.bundleLabel }
+              });
+            }
+          });
+
+          if (items.length < 2) {
+            showToast(data.selectMessage);
+            return;
+          }
+
+          addBtn.disabled = true;
+          var originalText = addBtn.textContent;
+          addBtn.textContent = '...';
+
+          fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            body: JSON.stringify({ items: items })
+          })
+            .then(function (res) {
+              if (!res.ok) return res.json().then(function (d) { throw new Error(d.description || 'Error'); });
+              return res.json();
+            })
+            .then(function () {
+              return fetch('/cart.js', { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            })
+            .then(function (res) { return res.json(); })
+            .then(function (cart) {
+              updateCartBadge(cart.item_count);
+              document.dispatchEvent(new CustomEvent('cart:updated', {
+                detail: { item_count: cart.item_count }
+              }));
+              showToast(data.addedMessage);
+              addBtn.textContent = originalText;
+              addBtn.disabled = false;
+            })
+            .catch(function (err) {
+              showToast(err.message);
+              addBtn.textContent = originalText;
+              addBtn.disabled = false;
+            });
+        });
+      }
+
+      recalculate();
+    })();
+  </script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "t:sections.pet_care_bundle.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.pet_care_bundle.settings.heading.label",
+      "default": "Complete the care kit"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "t:sections.pet_care_bundle.settings.subheading.label",
+      "default": "Everything your pet needs in one easy bundle"
+    },
+    {
+      "type": "range",
+      "id": "discount_percent",
+      "label": "t:sections.pet_care_bundle.settings.discount_percent.label",
+      "min": 0,
+      "max": 30,
+      "step": 5,
+      "default": 10,
+      "unit": "%"
+    },
+    {
+      "type": "text",
+      "id": "discount_label",
+      "label": "t:sections.pet_care_bundle.settings.discount_label.label",
+      "default": "Bundle & save"
+    },
+    {
+      "type": "select",
+      "id": "bundle_source",
+      "label": "t:sections.pet_care_bundle.settings.bundle_source.label",
+      "options": [
+        { "value": "metafield", "label": "Product metafield (custom.bundle_products)" },
+        { "value": "manual", "label": "Manual product selection" }
+      ],
+      "default": "metafield"
+    },
+    {
+      "type": "product",
+      "id": "product_1",
+      "label": "t:sections.pet_care_bundle.settings.product_1.label"
+    },
+    {
+      "type": "product",
+      "id": "product_2",
+      "label": "t:sections.pet_care_bundle.settings.product_2.label"
+    },
+    {
+      "type": "product",
+      "id": "product_3",
+      "label": "t:sections.pet_care_bundle.settings.product_3.label"
+    },
+    {
+      "type": "product",
+      "id": "product_4",
+      "label": "t:sections.pet_care_bundle.settings.product_4.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Pet care bundle"
+    }
+  ]
+}
+{% endschema %}

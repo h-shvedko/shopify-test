@@ -28,6 +28,26 @@
                 {% if item.variant.title != 'Default Title' %}
                   <p class="cart-content__item-variant">{{ item.variant.title }}</p>
                 {% endif %}
+
+                {%- comment -%} Subscription info {%- endcomment -%}
+                {% if item.selling_plan_allocation %}
+                  <div class="cart-content__subscription">
+                    {%- assign sub_badge_text = 'cart.subscription_badge' | t -%}
+                    {% render 'badge', text: sub_badge_text, type: 'subscription', small: true %}
+                    <span class="cart-content__sub-frequency">
+                      {{ item.selling_plan_allocation.selling_plan.name }}
+                    </span>
+                  </div>
+                {% endif %}
+
+                {%- comment -%} Bundle grouping {%- endcomment -%}
+                {% if item.properties._bundle != blank %}
+                  <div class="cart-content__bundle-tag">
+                    {% render 'icon', name: 'package', size: 14 %}
+                    <span>{{ item.properties._bundle }}</span>
+                  </div>
+                {% endif %}
+
                 <p class="cart-content__item-price">{{ item.original_line_price | money }}</p>
                 <div class="cart-content__item-actions">
                   <div class="cart-content__qty" data-qty-wrapper>
@@ -182,6 +202,40 @@
     color: var(--color-text-secondary);
     margin: 4px 0;
     font-family: var(--font-body);
+  }
+
+  .cart-content__subscription {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 0;
+    flex-wrap: wrap;
+  }
+
+  .cart-content__sub-frequency {
+    font-size: 0.8125rem;
+    color: var(--color-primary, #059669);
+    font-weight: 600;
+    font-family: var(--font-body, 'Quicksand', sans-serif);
+  }
+
+  .cart-content__bundle-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--color-text-secondary, #78716C);
+    font-family: var(--font-body, 'Quicksand', sans-serif);
+    background: var(--color-background, #F5F0E8);
+    border: 1px solid var(--color-border, #E7E0D6);
+    border-radius: 6px;
+    padding: 2px 8px;
+    margin: 4px 0;
+  }
+
+  .cart-content__bundle-tag svg {
+    flex-shrink: 0;
+    opacity: 0.7;
   }
 
   .cart-content__item-price {

@@ -2,6 +2,18 @@
   "sections": {
     "main": {
       "type": "product-detail",
+      "settings": {
+        "enable_subscriptions": true,
+        "subscription_save_percent": 10,
+        "enable_bundles": true
+      }
+    },
+    "subscription-benefits": {
+      "type": "subscription-benefits",
+      "settings": {}
+    },
+    "bundle": {
+      "type": "pet-care-bundle",
       "settings": {}
     },
     "related": {
@@ -9,5 +21,5 @@
       "settings": {}
     }
   },
-  "order": ["main", "related"]
+  "order": ["main", "subscription-benefits", "bundle", "related"]
 }
